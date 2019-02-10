@@ -1,0 +1,57 @@
+#install.packages("RMariaDB")
+library(RMariaDB)
+library(tidyverse)
+
+HRSAMPLE <- dbConnect(RMariaDB::MariaDB(), user='newuser', password='newuser', dbname='hrsample', host='localhost')
+dbListTables(HRSAMPLE)
+
+# duplicate deskhistory for testing
+# temporary - replace deskhistory2 with deskhistory later and delete this command
+dbExecute(HRSAMPLE, "create table deskhistory2 select * from deskhistory;")
+
+# Retrieve deskhistorydup table
+deskhistory_table <- dbGetQuery(HRSAMPLE, "SELECT *  FROM deskhistory2")
+
+# select most recent row for each employee
+deskhistory_table_most_recent <- deskhistory_table %>% 
+  arrange(desc(desk_id_end_date)) %>% 
+  group_by(employee_num) %>% 
+  filter(row_number() == 1) %>% 
+  arrange(desk_id_end_date) 
+
+error_log <- data.frame(employee_num = integer(), desk_id = integer(), issue = character())
+
+hierarchy_with_depth.sql <- read_file("scripts/hierarchy_with_depth.sql")
+hierarchy_with_depth <- dbGetQuery(HRSAMPLE, hierarchy_with_depth.sql)
+
+# Start process/loop
+
+# Select 1st desk_id
+i=1
+
+temp_employee_num <- deskhistory_table_most_recent$employee_num[i]
+temp_desk_id <- deskhistory_table_most_recent$desk_id[i]
+temp_depth <- hierarchy_with_depth$depth[hierarchy_with_depth$desk_id == temp_desk_id]
+
+# if it is a termination, then next
+if (deskhistory_table_most_recent$termination_flag[i] == 1) {next}
+
+# if it is depth 0-3 then skip for now, leave plug
+if (temp_depth < 4) {
+  error_log <- error_log %>% 
+    bind_rows(data.frame(employee_num = temp_employee_num, desk_id = temp_desk_id, issue = "Job opening not filled because in depth 0-3"))
+}
+
+# leave plug that looks at salary and terms based on that
+# leave plug that looks at performance reviews to see if they should term (2 in a row should be 90% term probability)
+# if there are openings on the node for same job type that have end date within 90 days then take that desk_id (90%)
+# if it is not a special job like sales or legal then 
+# - look for another similar job type on other teams
+# -- retrieve desk_ids where job name and grandparent are same - (50%)if there is an opening in same dept and same job
+# -- if not, look at other same job openings around company (20%)
+# --- try to get it where the job region type is similar (PSI) (80%)
+# --- 20% should go to random region type
+# -- if not, look at new jobs that are next tier (1%)
+# -- else, keep same job, flag as promotion? (50%)
+# end date + 1 becomes new start date
+# look at v7 row 97 for next steps
