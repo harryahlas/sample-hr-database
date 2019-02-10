@@ -1,3 +1,5 @@
+setwd("C:\\Development\\R code\\database")
+
 library(RMariaDB)
 library(tidyverse)
 library(stringr)
@@ -13,6 +15,7 @@ dbExecute(HRSAMPLE, "CREATE TABLE deskhistory (
   desk_id INT (10) unsigned NOT NULL,
   desk_id_start_date DATE,
   desk_id_end_date DATE,
+  job_name
   termination_flag INT (8),
   promotion_flag INT (8),
   FOREIGN KEY (employee_num) REFERENCES employeeinfo (employee_num)  ON DELETE CASCADE ON UPDATE CASCADE,
@@ -236,6 +239,8 @@ deskhistory_table %>%
   select(first_name, last_name) %>% 
   n_distinct() == nrow(deskhistory_table)
 
+  
+df <- dbGetQuery(HRSAMPLE, "SELECT *  FROM deskhistory")
 
 # Upload data -------------------------------------------------------------
 
@@ -248,11 +253,12 @@ create_insert_deskhistory <- function(employee_num,
                                       termination_flag,
                                        database = HRSAMPLE) {
   insert_deskhistory_sql <- paste0(
-    "INSERT INTO deskhistory (employee_num, desk_id, desk_id_start_date, desk_id_end_date, termination_flag, promotion_flag) VALUES('",
+    "INSERT INTO deskhistory (employee_num, desk_id, desk_id_start_date, desk_id_end_date, job_name, termination_flag, promotion_flag) VALUES('",
     employee_num, "','",
     desk_id, "','",
     desk_id_start_date, "','",
     desk_id_end_date, "','",
+    job_name, "','",
     termination_flag, "', '0');")
   print(insert_deskhistory_sql)
   dbExecute(database, insert_deskhistory_sql)
@@ -265,40 +271,6 @@ for (i in (1:nrow(deskhistory_table))) {
                             deskhistory_table$start_date[i],
                             deskhistory_table$end_date[i],
                             deskhistory_table$termination_flag[i])
-}
-
-
-
-
-
-# Create and populate deskjob table ---------------------------------------
-
-df <- dbGetQuery(HRSAMPLE, "SELECT *  FROM deskhistory")
-
-# dbExecute(HRSAMPLE, "DROP TABLE deskjob")
-dbExecute(HRSAMPLE, "CREATE TABLE deskjob (
-          desk_id INT (10) unsigned NOT NULL,
-          job_name VARCHAR (255),
-          FOREIGN KEY (desk_id) REFERENCES hierarchy (desk_id)  ON DELETE CASCADE ON UPDATE CASCADE
-);")
-
-
-# Function to insert rows to deskjob
-create_insert_deskjob <- function(desk_id,
-                                  job_name,
-                                  database = HRSAMPLE) {
-  insert_deskjob_sql <- paste0(
-    "INSERT INTO deskjob (desk_id, job_name) VALUES('",
-    desk_id, "','",
-    job_name, "');")
-  print(insert_deskjob_sql)
-  dbExecute(database, insert_deskjob_sql)
-} 
-
-# Populate table 
-for (i in (1:nrow(deskhistory_table))) {
-  create_insert_deskjob(deskhistory_table$desk_id[i],
-                            deskhistory_table$job_name[i])
 }
 
 

@@ -1,0 +1,9 @@
+{
+    "path" : "C:/Development/github/sample-hr-database",
+    "sortOrder" : [
+        {
+            "ascending" : true,
+            "columnIndex" : 2
+        }
+    ]
+}
