@@ -1,0 +1,13 @@
+# Create deskhistory_table_most_recent. This selects the most recent row 
+# in deskhistory_table for each employee. So each desk_id has only 1 row. 
+# Think of this as the current layout of the organization.
+
+refresh_deskhistory_table_most_recent <- function(source_table = deskhistory_table) {
+  output_table <- source_table  %>%
+    arrange(desc(desk_id_end_date)) %>%
+    group_by(desk_id) %>%
+    filter(row_number() == 1) %>%
+    arrange(desk_id_end_date) %>%
+    filter(!is.na(desk_id))##### not sure why this needs to be here, maybe research
+  return(output_table)
+}

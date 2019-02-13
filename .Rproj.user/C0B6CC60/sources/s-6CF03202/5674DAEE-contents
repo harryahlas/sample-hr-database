@@ -1,4 +1,7 @@
-# Creates row to be input into deskhistory, see grow_employee_desk_history.R
+# create_deskhistory_row --------------------------------------------------
+# Used in 05
+# Creates row to be input into deskhistory table
+
 create_deskhistory_row <- function(f_temp_end_date = temp_end_date, 
                                    f_max_date = max_date,
                                    f_temp_employee_num = temp_employee_num, 
@@ -27,3 +30,22 @@ create_deskhistory_row <- function(f_temp_end_date = temp_end_date,
 
   return(f_temp_deskhistory_table)
   }
+
+
+
+# refresh_deskhistory_table_most_recent -----------------------------------
+# Used in 05
+# Create deskhistory_table_most_recent. This selects the most recent row 
+# in deskhistory_table for each employee. So each desk_id has only 1 row. 
+# Think of this as the current layout of the organization.
+# Does not need an argument.
+
+refresh_deskhistory_table_most_recent <- function(source_table = deskhistory_table) {
+  output_table <- source_table  %>%
+    arrange(desc(desk_id_end_date)) %>%
+    group_by(desk_id) %>%
+    filter(row_number() == 1) %>%
+    arrange(desk_id_end_date) %>%
+    filter(!is.na(desk_id))
+  return(output_table)
+}
