@@ -5,15 +5,15 @@
     "dirty" : false,
     "encoding" : "UTF-8",
     "folds" : "",
-    "hash" : "0",
+    "hash" : "1001737107",
     "id" : "8359F435",
-    "lastKnownWriteTime" : 1550022391,
-    "last_content_update" : 1550022391336,
+    "lastKnownWriteTime" : 1550039659,
+    "last_content_update" : 1550039659374,
     "path" : "C:/Development/github/sample-hr-database/05_grow_employee_desk_history.R",
     "project_path" : "05_grow_employee_desk_history.R",
     "properties" : {
-        "cursorPosition" : "272,2",
-        "scrollLine" : "252"
+        "cursorPosition" : "56,0",
+        "scrollLine" : "51"
     },
     "relative_order" : 3,
     "source_on_save" : false,

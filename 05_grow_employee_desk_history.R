@@ -42,12 +42,26 @@ i = 257
 i = 349
 i = 160 #eid2346
 
-###### NEXT:
-###### Add old jobname and new job name and region old/new 
-######to deskhistory table to help troubleshoot
+# run this first even though duplicative...
+# select most recent row for each employee
+deskhistory_table_most_recent <- deskhistory_table %>% 
+  arrange(desc(desk_id_end_date)) %>% 
+  group_by(desk_id) %>% 
+  filter(row_number() == 1) %>% 
+  arrange(desk_id_end_date) %>% 
+  filter(!is.na(desk_id))##### not sure why this needs to be here, maybe research
 
-for (i in (245:315)) {
+loopnumber = 0
+i = 1
 
+
+
+#for (i in (1:1500)) {
+# change to rank i + min below
+while (sort(deskhistory_table_most_recent$desk_id_end_date, TRUE)[length(deskhistory_table_most_recent$desk_id_end_date)- i] < as.Date("2008-07-01")) {
+
+  loopnumber = loopnumber + 1
+print(paste("starting loop", loopnumber))  
 # select most recent row for each employee
 deskhistory_table_most_recent <- deskhistory_table %>% 
   arrange(desc(desk_id_end_date)) %>% 
@@ -86,14 +100,16 @@ deskhistory_table_most_recent <- deskhistory_table %>%
   # if it is a termination, then next
   if (deskhistory_table_most_recent$termination_flag[i] == 1) {
     error_log <- error_log %>% 
-      bind_rows(data.frame(i = i, employee_num = temp_employee_num, desk_id = temp_desk_id, issue = paste(i, "Job opening not filled because it was a termination")))
+      bind_rows(data.frame(loopnumber = loopnumber, employee_num = temp_employee_num, desk_id = temp_desk_id, issue = paste("Job opening not filled because it was a termination")))
+    i = i +1 # increase row number to look at
     next}
   
   # if it is depth 0-3 then skip for now, leave plug
   if (temp_depth < 4) {
     error_log <- error_log %>% 
-      bind_rows(data.frame(i = i, employee_num = temp_employee_num, desk_id = temp_desk_id, issue = paste(i, "- Job opening not filled because in depth 0-3")))
-  next
+      bind_rows(data.frame(loopnumber = loopnumber, employee_num = temp_employee_num, desk_id = temp_desk_id, issue = paste("- Job opening not filled because in depth 0-3")))
+    i = i +1 # increase row number to look at
+      next
     }
   
   # Plug that looks at salary and terms based on that
@@ -134,7 +150,7 @@ deskhistory_table_most_recent <- deskhistory_table %>%
       f_temp_new_desk_id = temp_children_same_parent_job$desk_id[1])
 
     error_log <- error_log %>% 
-      bind_rows(data.frame(i = i, 
+      bind_rows(data.frame(loopnumber = loopnumber, 
                            employee_num = temp_employee_num, 
                            desk_id = temp_desk_id,
                            new_desk_id = temp_children_same_parent_job$desk_id[1],
@@ -142,17 +158,10 @@ deskhistory_table_most_recent <- deskhistory_table %>%
                            old_job = temp_job_name,
                            new_job = deskjob_table$job_name[deskjob_table$desk_id == temp_children_same_parent_job$desk_id[1]]))
     
-    #not sure if these prints below will work
-    print(paste("old info - desk_id:", temp_desk_id, "temp_job_name:", temp_job_name, 
-                "temp_employee_num:", temp_employee_num, "temp_end_date:", temp_end_date,
-                "org_name:", hierarchy_with_depth$org[hierarchy_with_depth$desk_id == temp_parent_id]))
-  
-    print("actual new info:")
-    print(temp_deskhistory_table)
     
     #########NOTE: THIS NEEDS TO BE CHANGED TO UPDATE THE DATABASE AND START OVER  
     deskhistory_table <- bind_rows(deskhistory_table, temp_deskhistory_table)
-    print("move to next option")
+    
     {next}
     
   }
@@ -178,24 +187,16 @@ deskhistory_table_most_recent <- deskhistory_table %>%
     temp_deskhistory_table <- create_deskhistory_row(
       f_temp_new_desk_id = temp_children_same_parent$desk_id[1])
     
-    #not sure if these prints below will work
-    print(paste("old info - desk_id:", temp_desk_id, "temp_job_name:", temp_job_name, 
-                "temp_employee_num:", temp_employee_num, "temp_end_date:", temp_end_date,
-                "org_name:", hierarchy_with_depth$org[hierarchy_with_depth$desk_id == temp_parent_id]))
-    
-    print("actual new info:")
-    print(temp_deskhistory_table)
     
     #########NOTE: THIS NEEDS TO BE CHANGED TO UPDATE THE DATABASE AND START OVER  
     deskhistory_table <- bind_rows(deskhistory_table, temp_deskhistory_table)
-    print("move to next option")
-
+    
     error_log <- error_log %>% 
-      bind_rows(data.frame(i = i, 
+      bind_rows(data.frame(loopnumber = loopnumber, 
                            employee_num = temp_employee_num, 
                            desk_id = temp_desk_id,
                            new_desk_id = temp_children_same_parent$desk_id[1],
-                           issue = paste(i, "Job added, same org maybe same job"),
+                           issue = paste("Job added, same org maybe same job"),
                            old_job = temp_job_name,
                            new_job = deskjob_table$job_name[deskjob_table$desk_id == temp_children_same_parent$desk_id[1]]))
     
@@ -203,7 +204,7 @@ deskhistory_table_most_recent <- deskhistory_table %>%
     next
   } else if (same_node_availability == TRUE) {
     error_log <- error_log %>% 
-      bind_rows(data.frame(i = i, employee_num = temp_employee_num, desk_id = temp_desk_id, issue = paste(i, "This did not happen: same_node_availability == TRUE & sample(0:100,1) > 50)")))
+      bind_rows(data.frame(loopnumber = loopnumber, employee_num = temp_employee_num, desk_id = temp_desk_id, issue = paste(i, "This did not happen: same_node_availability == TRUE & sample(0:100,1) > 50)")))
   } else if (temp_job_name %in% jobs_that_can_change_org$job_name &
              sample(0:100,1) > 40) {
     ############WHY ISN'T THIS GETTING REACHED?
@@ -229,7 +230,7 @@ deskhistory_table_most_recent <- deskhistory_table %>%
       deskhistory_table <- bind_rows(deskhistory_table, temp_deskhistory_table)
       
       error_log <- error_log %>% 
-        bind_rows(data.frame(i = i, 
+        bind_rows(data.frame(loopnumber = loopnumber, 
                              employee_num = temp_employee_num, 
                              desk_id = temp_desk_id,
                              new_desk_id = temp_deskhistory_table$desk_id[1],
@@ -249,7 +250,7 @@ deskhistory_table_most_recent <- deskhistory_table %>%
     f_temp_promotion_flag = 1)
 
   error_log <- error_log %>% 
-    bind_rows(data.frame(i = i, 
+    bind_rows(data.frame(loopnumber = loopnumber, 
                          employee_num = temp_employee_num, 
                          desk_id = temp_desk_id,
                          new_desk_id = temp_desk_id, #temp_children_same_parent$desk_id[1], ### <- PRETTY SURE THIS IS WRONG
@@ -307,4 +308,16 @@ deskhistorytroubleshoot <- deskhistory_table %>%
   left_join(hierarchy_with_depth %>% select(desk_id, new_org = org)) %>% 
   left_join(hierarchy_with_depth %>% select(desk_id, old_org = org), by = c("prior_desk_id" = "desk_id"))
 
+error_log %>% 
+  mutate(loopround = round(loopnumber, -2),
+         issue = gsub('[[:digit:]]+|', '', issue)) %>% 
+  count(loopround, issue) %>% 
+  ggplot(aes(x = loopround, y = n)) +
+  geom_col() +
+  facet_wrap(~issue)
 
+
+bob <- error_log %>% 
+  mutate(loopround = round(loopnumber, -2),
+         issue = gsub('[[:digit:]]+', '', issue)) %>% 
+  count(loopround,issue)
