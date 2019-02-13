@@ -5,6 +5,9 @@ source("01_functions.R")
 
 # Import jobs
 jobs <- read_csv("data/jobs.csv")
+jobs_that_can_change_org <- jobs %>% 
+  filter(cannot_change_org == 0) %>% 
+  select(job_name)
 
 # highest possible date to quit job, needs to be an imported variable
 max_date <- as.Date('2019/01/01')
@@ -16,9 +19,10 @@ dbListTables(HRSAMPLE)
 # temporary - replace deskhistory2 with deskhistory later and delete this command
 dbExecute(HRSAMPLE, "create table deskhistory2 select * from deskhistory;")
 
-################ Start loop here
+################ Start real loop here
 
 # Retrieve tables from database
+### note this will need to be updated, remove 2 from name
 deskhistory_table <- dbGetQuery(HRSAMPLE, "SELECT *  FROM deskhistory2")
 deskjob_table <- dbGetQuery(HRSAMPLE, "SELECT *  FROM deskjob")
 
@@ -32,12 +36,25 @@ error_log <- data.frame(employee_num = integer(), desk_id = integer(), issue = c
 
 #####START LOOP HERE
 
+# Select 1st desk_id
+i=251
+i = 257
+i = 349
+i = 160 #eid2346
+
+###### NEXT:
+###### Add old jobname and new job name and region old/new 
+######to deskhistory table to help troubleshoot
+
+for (i in (245:315)) {
+
 # select most recent row for each employee
 deskhistory_table_most_recent <- deskhistory_table %>% 
   arrange(desc(desk_id_end_date)) %>% 
   group_by(desk_id) %>% 
   filter(row_number() == 1) %>% 
-  arrange(desk_id_end_date) 
+  arrange(desk_id_end_date) %>% 
+  filter(!is.na(desk_id))##### not sure why this needs to be here, maybe research
 
 
 # Start process/loop - comments repeated below
@@ -59,15 +76,7 @@ deskhistory_table_most_recent <- deskhistory_table %>%
 # look at v7 row 97 for next steps
 
 
-# Select 1st desk_id
-i=1
-i = 311
 
-###### NEXT:
-###### Add old jobname and new job name and region old/new 
-######to deskhistory table to help troubleshoot
-
-for (i in (312:314)) {
   temp_employee_num <- deskhistory_table_most_recent$employee_num[i]
   temp_desk_id <- deskhistory_table_most_recent$desk_id[i]
   temp_depth <- hierarchy_with_depth$depth[hierarchy_with_depth$desk_id == temp_desk_id]
@@ -75,13 +84,17 @@ for (i in (312:314)) {
   temp_job_name <- deskjob_table$job_name[deskjob_table$desk_id == temp_desk_id]
   
   # if it is a termination, then next
-  if (deskhistory_table_most_recent$termination_flag[i] == 1) {next}
+  if (deskhistory_table_most_recent$termination_flag[i] == 1) {
+    error_log <- error_log %>% 
+      bind_rows(data.frame(i = i, employee_num = temp_employee_num, desk_id = temp_desk_id, issue = paste(i, "Job opening not filled because it was a termination")))
+    next}
   
   # if it is depth 0-3 then skip for now, leave plug
   if (temp_depth < 4) {
     error_log <- error_log %>% 
-      bind_rows(data.frame(employee_num = temp_employee_num, desk_id = temp_desk_id, issue = "Job opening not filled because in depth 0-3"))
-  }
+      bind_rows(data.frame(i = i, employee_num = temp_employee_num, desk_id = temp_desk_id, issue = paste(i, "- Job opening not filled because in depth 0-3")))
+  next
+    }
   
   # Plug that looks at salary and terms based on that
   # salary_check_term_flag <- salary_check(temp_employee_num, temp_end_date)
@@ -112,14 +125,22 @@ for (i in (312:314)) {
     arrange(days_since_last_opening)  
     
   same_node_and_job_availability <- if_else(nrow(temp_children_same_parent_job) == 0, FALSE, TRUE)
-  
-  
+
   if(same_node_and_job_availability == TRUE) {
   
     #note: all create_deskhistory_row needs is the new desk_id
     #and to make sure temp_end_date and temp_employee_num are correct
     temp_deskhistory_table <- create_deskhistory_row(
       f_temp_new_desk_id = temp_children_same_parent_job$desk_id[1])
+
+    error_log <- error_log %>% 
+      bind_rows(data.frame(i = i, 
+                           employee_num = temp_employee_num, 
+                           desk_id = temp_desk_id,
+                           new_desk_id = temp_children_same_parent_job$desk_id[1],
+                           issue = paste(i, "Job added, same org and job"),
+                           old_job = temp_job_name,
+                           new_job = deskjob_table$job_name[deskjob_table$desk_id == temp_children_same_parent_job$desk_id[1]]))
     
     #not sure if these prints below will work
     print(paste("old info - desk_id:", temp_desk_id, "temp_job_name:", temp_job_name, 
@@ -155,7 +176,7 @@ for (i in (312:314)) {
     {
   
     temp_deskhistory_table <- create_deskhistory_row(
-      f_temp_new_desk_id = temp_children_same_parent_job$desk_id[1])
+      f_temp_new_desk_id = temp_children_same_parent$desk_id[1])
     
     #not sure if these prints below will work
     print(paste("old info - desk_id:", temp_desk_id, "temp_job_name:", temp_job_name, 
@@ -168,13 +189,73 @@ for (i in (312:314)) {
     #########NOTE: THIS NEEDS TO BE CHANGED TO UPDATE THE DATABASE AND START OVER  
     deskhistory_table <- bind_rows(deskhistory_table, temp_deskhistory_table)
     print("move to next option")
-    {next}
+
+    error_log <- error_log %>% 
+      bind_rows(data.frame(i = i, 
+                           employee_num = temp_employee_num, 
+                           desk_id = temp_desk_id,
+                           new_desk_id = temp_children_same_parent$desk_id[1],
+                           issue = paste(i, "Job added, same org maybe same job"),
+                           old_job = temp_job_name,
+                           new_job = deskjob_table$job_name[deskjob_table$desk_id == temp_children_same_parent$desk_id[1]]))
+    
+    
+    next
+  } else if (same_node_availability == TRUE) {
+    error_log <- error_log %>% 
+      bind_rows(data.frame(i = i, employee_num = temp_employee_num, desk_id = temp_desk_id, issue = paste(i, "This did not happen: same_node_availability == TRUE & sample(0:100,1) > 50)")))
+  } else if (temp_job_name %in% jobs_that_can_change_org$job_name &
+             sample(0:100,1) > 40) {
+    ############WHY ISN'T THIS GETTING REACHED?
+    ####NEXT
+    # else move to same job in different node (as long as not sales)
+    # if it is a job that can change (not sales/attorney etc)
+    # select all open jobs for that position within last 90 days
+    temp_same_job_any_org <- deskhistory_table_most_recent %>% 
+      left_join(deskjob_table) %>% 
+      filter(job_name == temp_job_name) %>% 
+      mutate(days_since_last_opening = temp_end_date - desk_id_end_date) %>% 
+      filter(days_since_last_opening < 90,
+             days_since_last_opening > 0) %>% 
+      arrange(days_since_last_opening) 
+    
+    same_job_availability <- if_else(nrow(temp_same_job_any_org) == 0, FALSE, TRUE)
+    
+    if(same_job_availability == TRUE) # Same job available elsewhere in company
+    {
+      temp_deskhistory_table <- create_deskhistory_row(
+        f_temp_new_desk_id = temp_same_job_any_org$desk_id[1])
+
+      deskhistory_table <- bind_rows(deskhistory_table, temp_deskhistory_table)
+      
+      error_log <- error_log %>% 
+        bind_rows(data.frame(i = i, 
+                             employee_num = temp_employee_num, 
+                             desk_id = temp_desk_id,
+                             new_desk_id = temp_deskhistory_table$desk_id[1],
+                             issue = paste(i, "got same job in different org"),
+                             old_job = temp_job_name,
+                             new_job = deskjob_table$job_name[deskjob_table$desk_id == temp_deskhistory_table$desk_id[1]]))
+      next
+    }
+      
+    
   }
   
+    
   # else give promotion
   temp_deskhistory_table <- create_deskhistory_row(
     f_temp_new_desk_id = temp_desk_id,
     f_temp_promotion_flag = 1)
+
+  error_log <- error_log %>% 
+    bind_rows(data.frame(i = i, 
+                         employee_num = temp_employee_num, 
+                         desk_id = temp_desk_id,
+                         new_desk_id = temp_desk_id, #temp_children_same_parent$desk_id[1], ### <- PRETTY SURE THIS IS WRONG
+                         issue = paste(i, "gave promotion"),
+                         old_job = temp_job_name,
+                         new_job = "same job due to promotion"))
   
   #not sure if these prints below will work
   print(paste("old info - desk_id:", temp_desk_id, "temp_job_name:", temp_job_name, 
@@ -188,7 +269,8 @@ for (i in (312:314)) {
   deskhistory_table <- bind_rows(deskhistory_table, temp_deskhistory_table)
   print("move to next option")
 }
-# PLUG - If there are openings in this node within the last 90 days - 50% take this job
+
+  # PLUG - If there are openings in this node within the last 90 days - 50% take this job
 # needs to be same or greater level, ie not attorney to paralegal
 
 # if it is a special job...
@@ -210,4 +292,19 @@ for (i in (312:314)) {
 
 # end date + 1 becomes new start date
 # look at v7 row 97 for next steps
+
+#this table is for troubleshooting
+deskhistorytroubleshoot <- deskhistory_table %>% 
+  left_join(deskjob_table) %>% 
+  rename(new_job_name = job_name) %>% 
+  mutate(prior_end_date = desk_id_start_date - 1) %>% 
+  left_join(deskhistory_table %>% 
+              select(prior_desk_id = desk_id, 
+                     prior_end_date = desk_id_end_date, 
+                     employee_num)) %>% 
+  left_join(deskjob_table, by = c("prior_desk_id" = "desk_id")) %>% 
+  rename(old_job_name = job_name) %>% 
+  left_join(hierarchy_with_depth %>% select(desk_id, new_org = org)) %>% 
+  left_join(hierarchy_with_depth %>% select(desk_id, old_org = org), by = c("prior_desk_id" = "desk_id"))
+
 

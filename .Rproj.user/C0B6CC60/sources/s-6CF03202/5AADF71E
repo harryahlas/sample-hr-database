@@ -1,0 +1,29 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1549948364038.000,
+    "dirty" : false,
+    "encoding" : "",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "5AADF71E",
+    "lastKnownWriteTime" : 27303570963497060,
+    "last_content_update" : 1549948364038,
+    "path" : null,
+    "project_path" : null,
+    "properties" : {
+        "cacheKey" : "DB027F7F",
+        "caption" : "deskhistorytroubleshoot",
+        "contentUrl" : "grid_resource/gridviewer.html?env=&obj=deskhistorytroubleshoot&cache_key=DB027F7F",
+        "displayedObservations" : "1255",
+        "environment" : "",
+        "object" : "deskhistorytroubleshoot",
+        "preview" : "0",
+        "totalObservations" : "1255",
+        "variables" : "12"
+    },
+    "relative_order" : 4,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_dataframe"
+}
