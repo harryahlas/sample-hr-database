@@ -52,7 +52,7 @@ i = 1
 loopnumber = 0
 
 # The upcoming while loop will update records that have a desk_id_end_date up to this date
-run_through_date <- as.Date("2008-07-01")
+run_through_date <- as.Date("2004-07-01")
 
 
 # while loop --------------------------------------------------------------
@@ -76,7 +76,7 @@ while (sort(deskhistory_table_most_recent$desk_id_end_date, TRUE)[length(deskhis
   # Get information about employee and their current job before they move on
   temp_employee_num <- deskhistory_table_most_recent$employee_num[i]
   temp_desk_id <- deskhistory_table_most_recent$desk_id[i]
-  temp_depth <- hierarchy_with_depth$depth[hierarchy_with_depth$desk_id == temp_desk_id]
+  temp_depth <-  deskhistory_table_most_recent$depth[i]
   temp_end_date <- deskhistory_table_most_recent$desk_id_end_date[i]
   temp_job_name <- deskjob_table$job_name[deskjob_table$desk_id == temp_desk_id]
   
@@ -90,12 +90,146 @@ while (sort(deskhistory_table_most_recent$desk_id_end_date, TRUE)[length(deskhis
   
   ####NEED TO UPDATE LEADERS BELOW
   # if it is depth 0-3 then skip for now, leave plug
-  if (temp_depth < 4) {
-    error_log <- error_log %>% 
-      bind_rows(data.frame(loopnumber = loopnumber, employee_num = temp_employee_num, desk_id = temp_desk_id, issue = paste("- Job opening not filled because in depth 0-3")))
-    i = i +1 # increase row number to look at (CAN BE REMOVED WHEN THIS PIECE IS FIXED)
+  if (temp_depth == 3) {
+    
+    # This code is essentially the same for levels 1, 2, and 3
+    # look for open level 1 jobs within past 90 days.  
+    # If there are any then take them
+    # else promotion, same job
+    # 10% chance of terminating
+    
+    temp_same_level <- get_temp_same_level()
+    
+    # Are there any rows that meet this criteria?    
+    same_level_availability <- if_else(nrow(temp_same_level) == 0, FALSE, TRUE)
+    
+    if(same_level_availability == TRUE) {
+      
+      # If so create a row 
+      # Note: this function determines the duration of this new job as well as whether
+      # or not the employee will terminate after this job
+      temp_deskhistory_table <- create_deskhistory_row(
+        f_temp_new_desk_id = temp_same_level$desk_id[1])
+      
+      # Add new row to deskhistory_table
+      deskhistory_table <- bind_rows(deskhistory_table, temp_deskhistory_table)
+      
+      # Error log printout for troubleshooting
+      error_log <- error_log %>% 
+        bind_rows(data.frame(loopnumber = loopnumber, 
+                             employee_num = temp_employee_num, 
+                             desk_id = temp_desk_id,
+                             new_desk_id = temp_same_level$desk_id[1],
+                             issue = paste("Job added, same level in hierarchy (", temp_level, ")."),
+                             old_job = temp_job_name,
+                             new_job = deskjob_table$job_name[deskjob_table$desk_id == temp_same_level$desk_id[1]]))
+      
       next
+    } else {
+      error_log <- error_log %>% 
+        bind_rows(data.frame(loopnumber = loopnumber, employee_num = temp_employee_num, desk_id = temp_desk_id, issue = paste("Job opening not available at that level (", temp_level, ")")))
+      i = i +1 # increase row number to look at because job did not change
+      
     }
+    next
+  }
+
+  if (temp_depth == 2) {
+    
+    # This code is essentially the same for levels 1, 2, and 3
+    # look for open level 1 jobs within past 90 days.  
+    # If there are any then take them
+    # else promotion, same job
+    # 10% chance of terminating
+    
+    temp_same_level <- get_temp_same_level()
+    
+    # Are there any rows that meet this criteria?    
+    same_level_availability <- if_else(nrow(temp_same_level) == 0, FALSE, TRUE)
+    
+    if(same_level_availability == TRUE) {
+      
+      # If so create a row 
+      # Note: this function determines the duration of this new job as well as whether
+      # or not the employee will terminate after this job
+      temp_deskhistory_table <- create_deskhistory_row(
+        f_temp_new_desk_id = temp_same_level$desk_id[1])
+      
+      # Add new row to deskhistory_table
+      deskhistory_table <- bind_rows(deskhistory_table, temp_deskhistory_table)
+      
+      # Error log printout for troubleshooting
+      error_log <- error_log %>% 
+        bind_rows(data.frame(loopnumber = loopnumber, 
+                             employee_num = temp_employee_num, 
+                             desk_id = temp_desk_id,
+                             new_desk_id = temp_same_level$desk_id[1],
+                             issue = paste("Job added, same level in hierarchy (", temp_level, ")."),
+                             old_job = temp_job_name,
+                             new_job = deskjob_table$job_name[deskjob_table$desk_id == temp_same_level$desk_id[1]]))
+      
+      next
+    } else {
+      error_log <- error_log %>% 
+        bind_rows(data.frame(loopnumber = loopnumber, employee_num = temp_employee_num, desk_id = temp_desk_id, issue = paste("Job opening not available at that level (", temp_level, ")")))
+      i = i +1 # increase row number to look at because job did not change
+      
+    }
+    next
+  }
+  
+  if (temp_depth == 1) {
+    
+    # This code is essentially the same for levels 1, 2, and 3
+    # look for open level 1 jobs within past 90 days.  
+    # If there are any then take them
+    # else promotion, same job
+    # 10% chance of terminating
+    
+    temp_same_level <- get_temp_same_level()
+    
+    # Are there any rows that meet this criteria?    
+    same_level_availability <- if_else(nrow(temp_same_level) == 0, FALSE, TRUE)
+    
+    if(same_level_availability == TRUE) {
+      
+      # If so create a row 
+      # Note: this function determines the duration of this new job as well as whether
+      # or not the employee will terminate after this job
+      temp_deskhistory_table <- create_deskhistory_row(
+        f_temp_new_desk_id = temp_same_level$desk_id[1])
+      
+      # Add new row to deskhistory_table
+      deskhistory_table <- bind_rows(deskhistory_table, temp_deskhistory_table)
+      
+      # Error log printout for troubleshooting
+      error_log <- error_log %>% 
+        bind_rows(data.frame(loopnumber = loopnumber, 
+                             employee_num = temp_employee_num, 
+                             desk_id = temp_desk_id,
+                             new_desk_id = temp_same_level$desk_id[1],
+                             issue = paste("Job added, same level in hierarchy (", temp_level, ")."),
+                             old_job = temp_job_name,
+                             new_job = deskjob_table$job_name[deskjob_table$desk_id == temp_same_level$desk_id[1]]))
+      
+      next
+    } else {
+      error_log <- error_log %>% 
+        bind_rows(data.frame(loopnumber = loopnumber, employee_num = temp_employee_num, desk_id = temp_desk_id, issue = paste("Job opening not available at that level (", temp_level, ")")))
+      i = i +1 # increase row number to look at because job did not change
+      
+    }
+    next
+  }
+
+  # Skip if CEO
+  if (temp_depth == 0) { 
+    
+    error_log <- error_log %>% 
+      bind_rows(data.frame(loopnumber = loopnumber, employee_num = temp_employee_num, desk_id = temp_desk_id, issue = paste("CEO, not changing")))
+    i = i +1 # increase row number to look at (CAN BE REMOVED WHEN THIS PIECE IS FIXED)
+    next
+  }
   
   # Future plug that looks at salary and terms based on that
   # salary_check_term_flag <- salary_check(temp_employee_num, temp_end_date)
@@ -236,23 +370,27 @@ while (sort(deskhistory_table_most_recent$desk_id_end_date, TRUE)[length(deskhis
     
   }
   
-    
+  
   # If none of above conditions are met, give promotion, keeping same desk_id.
   temp_deskhistory_table <- create_deskhistory_row(
     f_temp_new_desk_id = temp_desk_id,
     f_temp_promotion_flag = 1)
 
+  deskhistory_table <- bind_rows(deskhistory_table, temp_deskhistory_table)
+############
+  ##### missing add to database here
+  
   # Error log printout for troubleshooting
   error_log <- error_log %>% 
     bind_rows(data.frame(loopnumber = loopnumber, 
                          employee_num = temp_employee_num, 
                          desk_id = temp_desk_id,
                          new_desk_id = temp_desk_id, #temp_children_same_parent$desk_id[1], ### <- PRETTY SURE THIS IS WRONG
-                         issue = paste(i, "gave promotion"),
+                         issue = paste("gave promotion"),
                          old_job = temp_job_name,
                          new_job = "same job due to promotion"))
   
-  print(paste0(loopnumber, "loopnumber"))
+  print(paste0(loopnumber, "loopnumber.  Date: ", sort(deskhistory_table_most_recent$desk_id_end_date, TRUE)[length(deskhistory_table_most_recent$desk_id_end_date)- i] ))
 }
 
 # Other possible plugs:
@@ -284,3 +422,7 @@ error_log %>%
   facet_wrap(~issue)
 
 
+job_changes <- deskhistorytroubleshoot %>% 
+  filter(!is.na(old_job_name)) %>% 
+  count(old_job_name, new_job_name)
+  

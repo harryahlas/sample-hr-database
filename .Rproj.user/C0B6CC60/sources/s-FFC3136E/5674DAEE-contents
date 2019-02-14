@@ -40,12 +40,33 @@ create_deskhistory_row <- function(f_temp_end_date = temp_end_date,
 # Think of this as the current layout of the organization.
 # Does not need an argument.
 
-refresh_deskhistory_table_most_recent <- function(source_table = deskhistory_table) {
+refresh_deskhistory_table_most_recent <- function(source_table = deskhistory_table,
+                                                  depth_table = hierarchy_with_depth) {
   output_table <- source_table  %>%
     arrange(desc(desk_id_end_date)) %>%
     group_by(desk_id) %>%
     filter(row_number() == 1) %>%
     arrange(desk_id_end_date) %>%
-    filter(!is.na(desk_id))
+    filter(!is.na(desk_id)) %>% 
+    left_join(depth_table %>% select(desk_id, depth))
+  return(output_table)
+}
+
+
+
+# get_temp_same_level -----------------------------------------------------
+# Used in 05
+# Gets list of all open jobs for that hierarchy level within default 90 days
+
+get_temp_same_level <- function (f_temp_depth = temp_depth,
+                                 f_temp_desk_id = temp_desk_id,
+                                 source_table = deskhistory_table_most_recent,
+                                 opening_window = 90) {
+  output_table <- source_table %>% 
+    filter(depth == f_temp_depth, desk_id != f_temp_desk_id) %>% 
+    mutate(days_since_last_opening = temp_end_date - desk_id_end_date) %>% 
+    filter(days_since_last_opening < opening_window,
+           days_since_last_opening > 0) %>% 
+    arrange(days_since_last_opening)
   return(output_table)
 }

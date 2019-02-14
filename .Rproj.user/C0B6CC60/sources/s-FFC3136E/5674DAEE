@@ -5,20 +5,20 @@
     "dirty" : false,
     "encoding" : "UTF-8",
     "folds" : "",
-    "hash" : "0",
+    "hash" : "2165197772",
     "id" : "5674DAEE",
-    "lastKnownWriteTime" : 1550041402,
-    "last_content_update" : 1550041402326,
+    "lastKnownWriteTime" : 1550130214,
+    "last_content_update" : 1550130214793,
     "path" : "C:/Development/github/sample-hr-database/01_functions.R",
     "project_path" : "01_functions.R",
     "properties" : {
-        "cursorPosition" : "10,0",
+        "cursorPosition" : "58,76",
         "docOutlineVisible" : "1",
-        "scrollLine" : "3",
+        "scrollLine" : "52",
         "tempName" : "Untitled1"
     },
     "relative_order" : 2,
-    "source_on_save" : false,
+    "source_on_save" : true,
     "source_window" : "",
     "type" : "r_source"
 }
