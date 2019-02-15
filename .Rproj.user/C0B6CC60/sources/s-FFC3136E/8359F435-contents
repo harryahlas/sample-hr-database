@@ -20,6 +20,15 @@ dbListTables(HRSAMPLE)
 # temporary - replace deskhistory2 with deskhistory later and delete this command
 dbExecute(HRSAMPLE, "create table deskhistory2 select * from deskhistory;")
 
+# Retrieve employeeinfo table.  This is used to find new hires.
+employeeinfo_table <- dbGetQuery(HRSAMPLE, "SELECT *  FROM employeeinfo")
+
+# Load hierarchy_table_with_state, saved from 04.
+# Note this will not account for new jobs if they are created after step 04.
+load("data/hierarchy_table_with_state.rda")
+
+# Reimport city/state info
+cities <- read_delim("data/cities.csv", delim = "|")
 
 # Retrieve tables from database
 # deskhistory_table is the table that will be updated here. It has already been
@@ -52,7 +61,7 @@ i = 1
 loopnumber = 0
 
 # The upcoming while loop will update records that have a desk_id_end_date up to this date
-run_through_date <- as.Date("2004-07-01")
+run_through_date <- as.Date("2002-07-01")
 
 
 # while loop --------------------------------------------------------------
@@ -69,7 +78,7 @@ while (sort(deskhistory_table_most_recent$desk_id_end_date, TRUE)[length(deskhis
   
   # update the loopnumber
   loopnumber = loopnumber + 1
-
+print("made it 1")
   # Refresh deskhistory_table_most_recent, which has only the most recent desk records.
   deskhistory_table_most_recent <- refresh_deskhistory_table_most_recent()  
 
@@ -111,7 +120,19 @@ while (sort(deskhistory_table_most_recent$desk_id_end_date, TRUE)[length(deskhis
       temp_deskhistory_table <- create_deskhistory_row(
         f_temp_new_desk_id = temp_same_level$desk_id[1])
       
-      # Add new row to deskhistory_table
+      # Create new hire to fill open position 50% of time
+      external_hire_text <- "" # for error log
+      if (sample(1:2,1 ) == 1) {
+        external_hire_employee_number <- find_external_hire()
+        external_hire_text <- "and position filled by external hire"
+        temp_deskhistory_table_append <- create_deskhistory_row(
+          f_temp_new_desk_id = temp_desk_id,
+          f_temp_employee_num = external_hire_employee_number)
+        temp_deskhistory_table <- temp_deskhistory_table %>% 
+          bind_rows(temp_deskhistory_table_append)
+      }
+
+            # Add new row to deskhistory_table
       deskhistory_table <- bind_rows(deskhistory_table, temp_deskhistory_table)
       
       # Error log printout for troubleshooting
@@ -120,14 +141,14 @@ while (sort(deskhistory_table_most_recent$desk_id_end_date, TRUE)[length(deskhis
                              employee_num = temp_employee_num, 
                              desk_id = temp_desk_id,
                              new_desk_id = temp_same_level$desk_id[1],
-                             issue = paste("Job added, same level in hierarchy (", temp_level, ")."),
+                             issue = paste("Job added, same level in hierarchy (", temp_depth, ").", external_hire_text),
                              old_job = temp_job_name,
                              new_job = deskjob_table$job_name[deskjob_table$desk_id == temp_same_level$desk_id[1]]))
       
       next
     } else {
       error_log <- error_log %>% 
-        bind_rows(data.frame(loopnumber = loopnumber, employee_num = temp_employee_num, desk_id = temp_desk_id, issue = paste("Job opening not available at that level (", temp_level, ")")))
+        bind_rows(data.frame(loopnumber = loopnumber, employee_num = temp_employee_num, desk_id = temp_desk_id, issue = paste("Job opening not available at that level (", temp_depth, ")")))
       i = i +1 # increase row number to look at because job did not change
       
     }
@@ -155,6 +176,18 @@ while (sort(deskhistory_table_most_recent$desk_id_end_date, TRUE)[length(deskhis
       temp_deskhistory_table <- create_deskhistory_row(
         f_temp_new_desk_id = temp_same_level$desk_id[1])
       
+      # Create new hire to fill open position 50% of time
+      external_hire_text <- "" # for error log
+      if (sample(1:2,1 ) == 1) {
+        external_hire_employee_number <- find_external_hire()
+        external_hire_text <- "and position filled by external hire"
+        temp_deskhistory_table_append <- create_deskhistory_row(
+          f_temp_new_desk_id = temp_desk_id,
+          f_temp_employee_num = external_hire_employee_number)
+        temp_deskhistory_table <- temp_deskhistory_table %>% 
+          bind_rows(temp_deskhistory_table_append)
+      }
+      
       # Add new row to deskhistory_table
       deskhistory_table <- bind_rows(deskhistory_table, temp_deskhistory_table)
       
@@ -164,14 +197,14 @@ while (sort(deskhistory_table_most_recent$desk_id_end_date, TRUE)[length(deskhis
                              employee_num = temp_employee_num, 
                              desk_id = temp_desk_id,
                              new_desk_id = temp_same_level$desk_id[1],
-                             issue = paste("Job added, same level in hierarchy (", temp_level, ")."),
+                             issue = paste("Job added, same level in hierarchy (", temp_depth, ").", external_hire_text),
                              old_job = temp_job_name,
                              new_job = deskjob_table$job_name[deskjob_table$desk_id == temp_same_level$desk_id[1]]))
       
       next
     } else {
       error_log <- error_log %>% 
-        bind_rows(data.frame(loopnumber = loopnumber, employee_num = temp_employee_num, desk_id = temp_desk_id, issue = paste("Job opening not available at that level (", temp_level, ")")))
+        bind_rows(data.frame(loopnumber = loopnumber, employee_num = temp_employee_num, desk_id = temp_desk_id, issue = paste("Job opening not available at that level (", temp_depth, ")")))
       i = i +1 # increase row number to look at because job did not change
       
     }
@@ -198,6 +231,18 @@ while (sort(deskhistory_table_most_recent$desk_id_end_date, TRUE)[length(deskhis
       # or not the employee will terminate after this job
       temp_deskhistory_table <- create_deskhistory_row(
         f_temp_new_desk_id = temp_same_level$desk_id[1])
+
+            # Create new hire to fill open position 50% of time
+      external_hire_text <- "" # for error log
+      if (sample(1:2,1 ) == 1) {
+        external_hire_employee_number <- find_external_hire()
+        external_hire_text <- "and position filled by external hire"
+        temp_deskhistory_table_append <- create_deskhistory_row(
+          f_temp_new_desk_id = temp_desk_id,
+          f_temp_employee_num = external_hire_employee_number)
+        temp_deskhistory_table <- temp_deskhistory_table %>% 
+          bind_rows(temp_deskhistory_table_append)
+      }
       
       # Add new row to deskhistory_table
       deskhistory_table <- bind_rows(deskhistory_table, temp_deskhistory_table)
@@ -208,14 +253,14 @@ while (sort(deskhistory_table_most_recent$desk_id_end_date, TRUE)[length(deskhis
                              employee_num = temp_employee_num, 
                              desk_id = temp_desk_id,
                              new_desk_id = temp_same_level$desk_id[1],
-                             issue = paste("Job added, same level in hierarchy (", temp_level, ")."),
+                             issue = paste("Job added, same level in hierarchy (", temp_depth, ").", external_hire_text),
                              old_job = temp_job_name,
                              new_job = deskjob_table$job_name[deskjob_table$desk_id == temp_same_level$desk_id[1]]))
       
       next
     } else {
       error_log <- error_log %>% 
-        bind_rows(data.frame(loopnumber = loopnumber, employee_num = temp_employee_num, desk_id = temp_desk_id, issue = paste("Job opening not available at that level (", temp_level, ")")))
+        bind_rows(data.frame(loopnumber = loopnumber, employee_num = temp_employee_num, desk_id = temp_desk_id, issue = paste("Job opening not available at that level (", temp_depth, ")")))
       i = i +1 # increase row number to look at because job did not change
       
     }
@@ -230,6 +275,7 @@ while (sort(deskhistory_table_most_recent$desk_id_end_date, TRUE)[length(deskhis
     i = i +1 # increase row number to look at (CAN BE REMOVED WHEN THIS PIECE IS FIXED)
     next
   }
+  print("made it 2")
   
   # Future plug that looks at salary and terms based on that
   # salary_check_term_flag <- salary_check(temp_employee_num, temp_end_date)
@@ -259,34 +305,53 @@ while (sort(deskhistory_table_most_recent$desk_id_end_date, TRUE)[length(deskhis
            days_since_last_opening > 0,
            job_name == temp_job_name) %>% 
     arrange(days_since_last_opening)  
-
+  print("made it 3")
+  
   # Are there any rows that meet this criteria?    
   same_node_and_job_availability <- if_else(nrow(temp_children_same_parent_job) == 0, FALSE, TRUE)
 
   if(same_node_and_job_availability == TRUE) {
-  
+    print("made it 4")
+    
     # If so create a row for the oldest opening to be added to deskhistory_table
     # Note: this function determines the duration of this new job as well as whether
     # or not the employee will terminate after this job
     temp_deskhistory_table <- create_deskhistory_row(
       f_temp_new_desk_id = temp_children_same_parent_job$desk_id[1])
+    print("made it 5")
+    
+    # Create new hire to fill open position 50% of time
+    external_hire_text <- "" # for error log
+    if (sample(1:2,1 ) == 1) {
+      external_hire_employee_number <- find_external_hire()
+      external_hire_text <- "and position filled by external hire"
+      temp_deskhistory_table_append <- create_deskhistory_row(
+        f_temp_new_desk_id = temp_desk_id,
+        f_temp_employee_num = external_hire_employee_number)
+      temp_deskhistory_table <- temp_deskhistory_table %>% 
+        bind_rows(temp_deskhistory_table_append)
+      print("made it 6")
+    }
+    
     
     # Add new row to deskhistory_table
     deskhistory_table <- bind_rows(deskhistory_table, temp_deskhistory_table)
-    
+
+
     # Error log printout for troubleshooting
     error_log <- error_log %>% 
       bind_rows(data.frame(loopnumber = loopnumber, 
                            employee_num = temp_employee_num, 
                            desk_id = temp_desk_id,
                            new_desk_id = temp_children_same_parent_job$desk_id[1],
-                           issue = paste(i, "Job added, same org and job"),
+                           issue = paste("Job added, same org and job", external_hire_text),
                            old_job = temp_job_name,
                            new_job = deskjob_table$job_name[deskjob_table$desk_id == temp_children_same_parent_job$desk_id[1]]))
     
     next
   }
-          
+  print("made it 7")
+  
     # Similar to logic above with a few differences. It can be a different job in the same node.
   # And it can be 90 days old (vs 60). Also note there is a 65% chance of this happening.
   temp_children_same_parent <- hierarchy_with_depth %>% 
@@ -304,11 +369,27 @@ while (sort(deskhistory_table_most_recent$desk_id_end_date, TRUE)[length(deskhis
   if(same_node_availability == TRUE &
      sample(0:100,1) > 35) # 65% of the time have this happen
     {
-  
+    print("made it 8")
+    
     # Create a row for the oldest opening to be added to deskhistory_table
     temp_deskhistory_table <- create_deskhistory_row(
       f_temp_new_desk_id = temp_children_same_parent$desk_id[1])
     
+    
+    # Create new hire to fill open position 50% of time
+    external_hire_text <- "" # for error log
+    if (sample(1:2,1 ) == 1) {
+      print("made it 9")
+      
+      external_hire_employee_number <- find_external_hire()
+      external_hire_text <- "and position filled by external hire"
+      temp_deskhistory_table_append <- create_deskhistory_row(
+        f_temp_new_desk_id = temp_desk_id,
+        f_temp_employee_num = external_hire_employee_number)
+      temp_deskhistory_table <- temp_deskhistory_table %>% 
+        bind_rows(temp_deskhistory_table_append)
+    }
+
     # Add new row to deskhistory_table
     deskhistory_table <- bind_rows(deskhistory_table, temp_deskhistory_table)
     
@@ -318,21 +399,23 @@ while (sort(deskhistory_table_most_recent$desk_id_end_date, TRUE)[length(deskhis
                            employee_num = temp_employee_num, 
                            desk_id = temp_desk_id,
                            new_desk_id = temp_children_same_parent$desk_id[1],
-                           issue = paste("Job added, same org maybe same job"),
+                           issue = paste("Job added, same org maybe same job", external_hire_text),
                            old_job = temp_job_name,
                            new_job = deskjob_table$job_name[deskjob_table$desk_id == temp_children_same_parent$desk_id[1]]))
 
     next
 
   } else if (same_node_availability == TRUE) {
-
+    print("made it 10")
+    
     # Update error log if same node different job doesn't happen due to random sample.
     error_log <- error_log %>% 
       bind_rows(data.frame(loopnumber = loopnumber, employee_num = temp_employee_num, desk_id = temp_desk_id, issue = paste("Random sample prevented different job in same node.")))
   
   } else if (temp_job_name %in% jobs_that_can_change_org$job_name &
              sample(0:100,1) > 40) {
-
+    print("made it 11")
+    
     # Repeat process for jobs that can change (not sales/attorney etc)
     # Select all open jobs for that position within last 90 days
     temp_same_job_any_org <- deskhistory_table_most_recent %>% 
@@ -347,10 +430,26 @@ while (sort(deskhistory_table_most_recent$desk_id_end_date, TRUE)[length(deskhis
     same_job_availability <- if_else(nrow(temp_same_job_any_org) == 0, FALSE, TRUE)
     
     if(same_job_availability == TRUE) {
-    
+      print("made it 12")
+      
       # Create a row for the oldest opening to be added to deskhistory_table
       temp_deskhistory_table <- create_deskhistory_row(
         f_temp_new_desk_id = temp_same_job_any_org$desk_id[1])
+      
+      
+      
+      # Create new hire to fill open position 50% of time
+      external_hire_text <- "" # for error log
+      if (sample(1:2,1 ) == 1) {
+        external_hire_employee_number <- find_external_hire()
+        external_hire_text <- "and position filled by external hire"
+        temp_deskhistory_table_append <- create_deskhistory_row(
+          f_temp_new_desk_id = temp_desk_id,
+          f_temp_employee_num = external_hire_employee_number)
+        temp_deskhistory_table <- temp_deskhistory_table %>% 
+          bind_rows(temp_deskhistory_table_append)
+        print("made it 13")
+      }
       
       # Add new row to deskhistory_table
       deskhistory_table <- bind_rows(deskhistory_table, temp_deskhistory_table)
@@ -361,7 +460,7 @@ while (sort(deskhistory_table_most_recent$desk_id_end_date, TRUE)[length(deskhis
                              employee_num = temp_employee_num, 
                              desk_id = temp_desk_id,
                              new_desk_id = temp_deskhistory_table$desk_id[1],
-                             issue = paste(i, "got same job in different org"),
+                             issue = paste("got same job in different org", external_hire_text),
                              old_job = temp_job_name,
                              new_job = deskjob_table$job_name[deskjob_table$desk_id == temp_deskhistory_table$desk_id[1]]))
       next
@@ -370,6 +469,7 @@ while (sort(deskhistory_table_most_recent$desk_id_end_date, TRUE)[length(deskhis
     
   }
   
+  print("made it 14")
   
   # If none of above conditions are met, give promotion, keeping same desk_id.
   temp_deskhistory_table <- create_deskhistory_row(

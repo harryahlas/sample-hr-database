@@ -1,0 +1,22 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1550206559316.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "1E1C8560",
+    "lastKnownWriteTime" : 1550206890,
+    "last_content_update" : 1550206890088,
+    "path" : "C:/Development/github/sample-hr-database/04_initialize_employee_desk_history.R",
+    "project_path" : "04_initialize_employee_desk_history.R",
+    "properties" : {
+        "cursorPosition" : "45,0",
+        "scrollLine" : "35"
+    },
+    "relative_order" : 4,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

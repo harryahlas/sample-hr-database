@@ -1,0 +1,10 @@
+job_name, single_lob,avg_salary,rank,pct_of_lob,cannot_change_org
+Administrative Assistant,,50000,1,,0
+Salesperson,Sales,75000,1,1,1
+Product Manager,,90000,2,,0
+Project Manager,,100000,2,,0
+Consultant,,115000,2,,0
+Developer,Technology,150000,1,.8,0
+Attorney,Legal,150000,9,.6,0
+Paralegal,Legal,80000,2,.3,0
+Analyst,,140000,2,,0

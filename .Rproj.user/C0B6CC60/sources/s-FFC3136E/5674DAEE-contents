@@ -70,3 +70,40 @@ get_temp_same_level <- function (f_temp_depth = temp_depth,
     arrange(days_since_last_opening)
   return(output_table)
 }
+
+
+# find_external_hire ------------------------------------------------------
+# This function finds a random employee number for a new employee.  
+# Will be in certain states needed
+
+find_external_hire <- function(f_desk_id = temp_desk_id,
+                               f_employeeinfo_table = employeeinfo_table,
+                               f_deskhistory_table = deskhistory_table,
+                               f_desk_id_start_date = temp_end_date + 1,
+                               #f_job_name = temp_job_name,
+                               f_hierarchy_table_with_state = hierarchy_table_with_state,
+                               f_cities = cities) {
+  
+  # Check to see if this desk_id is locked to a state and get state initials.  
+  # If not associated with state then will return NA
+  desk_id_state <- f_hierarchy_table_with_state %>% 
+    filter(desk_id == f_desk_id) %>% 
+    left_join(cities, by = c("state_present" = "State full")) %>% 
+    select(state = `State short`) %>% 
+    distinct() %>% 
+    as.character()
+  
+  # Flag if desk_id is associated with state
+  desk_id_state_check <- !is.na(desk_id_state)
+  
+  # If it is a salesjob then pick random person in same state
+  # Else pick random person from any state. 
+  eligible_employee <- f_employeeinfo_table %>% 
+    anti_join(f_deskhistory_table) %>% #Only pick employees who are not on deskhistory
+    filter(if (desk_id_state_check == TRUE)  state == desk_id_state
+           else TRUE) %>% 
+    sample_n(1)
+  
+  return(eligible_employee$employee_num)  
+  
+}
