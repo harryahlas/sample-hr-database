@@ -1,24 +1,24 @@
 {
     "collab_server" : "",
     "contents" : "",
-    "created" : 1549848836113.000,
+    "created" : 1550287586148.000,
     "dirty" : false,
     "encoding" : "UTF-8",
     "folds" : "",
     "hash" : "0",
-    "id" : "5674DAEE",
+    "id" : "979FC1B5",
     "lastKnownWriteTime" : 1550211845,
-    "last_content_update" : 1550211845362,
+    "last_content_update" : 1550211845,
     "path" : "C:/Development/github/sample-hr-database/01_functions.R",
     "project_path" : "01_functions.R",
     "properties" : {
-        "cursorPosition" : "78,18",
+        "cursorPosition" : "102,54",
         "docOutlineVisible" : "1",
-        "scrollLine" : "74",
+        "scrollLine" : "91",
         "tempName" : "Untitled1"
     },
-    "relative_order" : 2,
-    "source_on_save" : true,
+    "relative_order" : 1,
+    "source_on_save" : false,
     "source_window" : "",
     "type" : "r_source"
 }

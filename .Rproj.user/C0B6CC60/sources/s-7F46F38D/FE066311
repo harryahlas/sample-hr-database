@@ -1,0 +1,29 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1550298579915.000,
+    "dirty" : false,
+    "encoding" : "",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "FE066311",
+    "lastKnownWriteTime" : 27303570963497060,
+    "last_content_update" : 1550298579915,
+    "path" : null,
+    "project_path" : null,
+    "properties" : {
+        "cacheKey" : "99292730",
+        "caption" : "oldnewhires2002",
+        "contentUrl" : "grid_resource/gridviewer.html?env=&obj=oldnewhires2002&cache_key=99292730",
+        "displayedObservations" : 9,
+        "environment" : "",
+        "object" : "oldnewhires2002",
+        "preview" : 0,
+        "totalObservations" : 9,
+        "variables" : 5
+    },
+    "relative_order" : 5,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_dataframe"
+}

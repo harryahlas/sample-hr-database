@@ -1,3 +1,8 @@
+
+####RERUN AGAIN, I THINK THE ERROR COULD BE THAT 
+##THERE ARE NO TMS IN STATES WHEN TRYING TO FIND A NEW HIRE IN A CERTAIN STATE
+
+
 #install.packages("RMariaDB")
 library(RMariaDB)
 library(tidyverse)
@@ -323,15 +328,17 @@ print("made it 1")
     # Create new hire to fill open position 50% of time
     external_hire_text <- "" # for error log
     if (sample(1:2,1 ) == 1) {
+      print("made it 5b")
       external_hire_employee_number <- find_external_hire()
       external_hire_text <- "and position filled by external hire"
       temp_deskhistory_table_append <- create_deskhistory_row(
         f_temp_new_desk_id = temp_desk_id,
         f_temp_employee_num = external_hire_employee_number)
+      print("made it 5c")
       temp_deskhistory_table <- temp_deskhistory_table %>% 
         bind_rows(temp_deskhistory_table_append)
       print("made it 6")
-    }
+    } else {print("failed 6")}
     
     
     # Add new row to deskhistory_table
@@ -388,7 +395,7 @@ print("made it 1")
         f_temp_employee_num = external_hire_employee_number)
       temp_deskhistory_table <- temp_deskhistory_table %>% 
         bind_rows(temp_deskhistory_table_append)
-    }
+    } else {print("failed 8 or 9")}
 
     # Add new row to deskhistory_table
     deskhistory_table <- bind_rows(deskhistory_table, temp_deskhistory_table)
