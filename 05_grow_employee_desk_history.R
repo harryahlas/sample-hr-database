@@ -552,3 +552,7 @@ oldnewhires2002 <- newhires2002 %>%
   count(job_name) %>% 
   mutate(pct_jobs_new_hire = n/sum(n)) %>% 
   left_join(count(deskjob_table, job_name) %>% arrange(desc(n)) %>% mutate(pct = n/sum(n)) %>% rename(overalljobcount = n))
+
+# Save - maybe move elsewhere?
+save(deskhistory_table, file = "data/deskhistory_table.rda")
+save(deskjob_table,  file = "data/deskjob_table.rda")
