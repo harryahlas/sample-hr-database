@@ -1,0 +1,29 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1550382783214.000,
+    "dirty" : false,
+    "encoding" : "",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "B41B38B5",
+    "lastKnownWriteTime" : 7308604914264011873,
+    "last_content_update" : 1550382783214,
+    "path" : null,
+    "project_path" : null,
+    "properties" : {
+        "cacheKey" : "232CD5D3",
+        "caption" : "hcto_summary",
+        "contentUrl" : "grid_resource/gridviewer.html?env=&obj=hcto_summary&cache_key=232CD5D3",
+        "displayedObservations" : "11",
+        "environment" : "",
+        "object" : "hcto_summary",
+        "preview" : "0",
+        "totalObservations" : "11",
+        "variables" : "6"
+    },
+    "relative_order" : 6,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_dataframe"
+}

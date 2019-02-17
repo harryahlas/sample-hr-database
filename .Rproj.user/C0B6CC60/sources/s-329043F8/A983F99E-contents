@@ -47,8 +47,3 @@ disclaimer_info <-   data.frame(Information =
 wb <- createWorkbook()
 addWorksheet(wb, report_name)
 addWorksheet(wb, "Data Disclaimer")
-writeDataTable(wb, 1, hcto_summary)
-writeDataTable(wb, 2, disclaimer_info)
-addStyle(wb, 2, style = createStyle(wrapText = TRUE), rows = 1:7, cols = 1)
-setColWidths(wb, 2, 1, widths = 50)
-saveWorkbook(wb, paste0(report_name, as_of_date, ".xlsx"), TRUE)

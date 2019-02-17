@@ -1,0 +1,29 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1550446422109.000,
+    "dirty" : false,
+    "encoding" : "",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "564B29AE",
+    "lastKnownWriteTime" : 3419473789575321445,
+    "last_content_update" : 1550446422109,
+    "path" : null,
+    "project_path" : null,
+    "properties" : {
+        "cacheKey" : "D847C435",
+        "caption" : "hierarchy_spread",
+        "contentUrl" : "grid_resource/gridviewer.html?env=&obj=hierarchy_spread&cache_key=D847C435",
+        "displayedObservations" : 1085,
+        "environment" : "",
+        "object" : "hierarchy_spread",
+        "preview" : 0,
+        "totalObservations" : 1085,
+        "variables" : 14
+    },
+    "relative_order" : 8,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_dataframe"
+}

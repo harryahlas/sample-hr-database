@@ -1,0 +1,20 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1550445976404.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "3854150329",
+    "id" : "2AA1B1D3",
+    "lastKnownWriteTime" : 1550445165,
+    "last_content_update" : 1550445165,
+    "path" : "C:/Development/github/sample-hr-database/analysis/automated_report_generation.R",
+    "project_path" : "analysis/automated_report_generation.R",
+    "properties" : {
+    },
+    "relative_order" : 7,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

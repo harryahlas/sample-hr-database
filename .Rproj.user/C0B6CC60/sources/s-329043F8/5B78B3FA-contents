@@ -1,49 +1,48 @@
-#install.packages("openxlsx")
-require(openxlsx)
+library(tidyverse)
+library(scales)
+library(openxlsx)
 
-write.xlsx(jobs, "jobs.xlsx")
-#jobs_apache <- 
- 
+as_of_date <- Sys.Date()
+report_name <- "PA73405 - Attrition by Job 2009"
 
-## data.frame to write
-df <- data.frame("Date" = Sys.Date()-0:4,
-                 "Logical" = c(TRUE, FALSE, TRUE, TRUE, FALSE),
-                 "Currency" = paste("$",-2:2),
-                 "Accounting" = -2:2,
-                 "hLink" = "https://CRAN.R-project.org/",
-                 "Percentage" = seq(-1, 1, length.out=5),
-                 "TinyNumber" = runif(5) / 1E9, stringsAsFactors = FALSE)
-class(df$Currency) <- "currency"
-class(df$Accounting) <- "accounting"
-class(df$hLink) <- "hyperlink"
-class(df$Percentage) <- "percentage"
-class(df$TinyNumber) <- "scientific"
-## Formatting can be applied simply through the write functions
-## global options can be set to further simplify things
-options("openxlsx.borderStyle" = "thin")
-options("openxlsx.borderColour" = "#4F81BD")
-## create a workbook and add a worksheet
+deskhistory_table <- read_csv("https://raw.githubusercontent.com/harryahlas/sample-hr-database/master/data/deskhistory_table.csv")
+deskjob_table <- read_csv("https://raw.githubusercontent.com/harryahlas/sample-hr-database/master/data/deskjob_table.csv")
+
+
+knitr::kable(deskjob_table[sample(nrow(deskjob_table),5),])
+
+hcto_summary <- deskhistory_table %>% 
+  left_join(deskjob_table) %>% 
+  filter(desk_id_start_date <= as.Date("2009-12-31"),
+         desk_id_end_date <= as.Date("2009-01-01")) %>% 
+  arrange(desc(desk_id_end_date)) %>% 
+  group_by(employee_num) %>% 
+  filter(row_number() == 1) %>% 
+  ungroup() %>% 
+  mutate(year = "2009",
+         termination_flag = if_else(termination_flag == 1, "Terminated", "DidNotTerminate")) %>% 
+  count(job_name, termination_flag) %>% 
+  spread(termination_flag, n, fill = 0) %>% 
+  mutate(Headcount =  Terminated + DidNotTerminate,
+         TerminationRate = percent(Terminated / Headcount)) %>% 
+  arrange(desc(Terminated / Headcount))
+
+
+knitr::kable(hcto_summary)
+
+disclaimer_info <- data.frame(Information = 
+                                c("Source: https://github.com/harryahlas/sample-hr-database/tree/master/data",
+                                  paste("Data as of", as_of_date, "."),
+                                  "Data includes all employees rolling up to CEO Tricia Avallone who were active at any point from Jan 1, 2009 through December 31, 2009.",
+                                  "If the employee had multiple jobs during 2009, only the most recent job is counted.",
+                                  "Data is confidential and should be shared on a need to know basis only.",
+                                  "Do not distribute externally.")) 
+
 wb <- createWorkbook()
-addWorksheet(wb, "writeData auto-formatting")
-writeData(wb, 1, df, startRow = 2, startCol = 2)
-writeData(wb, 1, df, startRow = 9, startCol = 2, borders = "surrounding")
-writeData(wb, 1, df, startRow = 16, startCol = 2, borders = "rows")
-writeData(wb, 1, df, startRow = 23, startCol = 2, borders ="columns")
-writeData(wb, 1, df, startRow = 30, startCol = 2, borders ="all")
-## headerStyles
-hs1 <- createStyle(fgFill = "#4F81BD", halign = "CENTER", textDecoration = "Bold",
-                   border = "Bottom", fontColour = "white")
-writeData(wb, 1, df, startRow = 16, startCol = 10, headerStyle = hs1,
-          borders = "rows", borderStyle = "medium")
-## to change the display text for a hyperlink column just write over those cells
-writeData(wb, sheet = 1, x = paste("Hyperlink", 1:5), startRow = 17, startCol = 14)
-1
-## writing as an Excel Table
-addWorksheet(wb, "writeDataTable")
-writeDataTable(wb, 2, df, startRow = 2, startCol = 2)
-writeDataTable(wb, 2, df, startRow = 9, startCol = 2, tableStyle = "TableStyleLight9")
-writeDataTable(wb, 2, df, startRow = 16, startCol = 2, tableStyle = "TableStyleLight2")
-writeDataTable(wb, 2, df, startRow = 23, startCol = 2, tableStyle = "TableStyleMedium21")
-openXL(wb) ## opens a temp version
-
-saveWorkbook(wb, "conditionalFormattingExample.xlsx", TRUE)
+addWorksheet(wb, report_name)
+addWorksheet(wb, "Data Disclaimer")
+writeDataTable(wb, 1, hcto_summary)
+writeDataTable(wb, 2, disclaimer_info)
+addStyle(wb, 2, style = createStyle(wrapText = TRUE), rows = 1:7, cols = 1)
+setColWidths(wb, 2, 1, widths = 50)
+saveWorkbook(wb, paste0(report_name, as_of_date, ".xlsx"), TRUE)
