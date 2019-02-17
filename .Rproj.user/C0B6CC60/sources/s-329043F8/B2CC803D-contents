@@ -1,0 +1,14 @@
+load("data/deskhistory_table.rda")
+load("data/deskjob_table.rda")
+
+write_csv(deskhistory_table, "data/deskhistory_table.csv")
+write_csv(deskjob_table, "data/deskjob_table.csv")
+
+library(RCurl)
+library(tidyverse)
+deskhistory_table_url <- getURL("https://github.com/harryahlas/sample-hr-database/tree/master/data/deskhistory_table.rda")
+deskjob_table_url <- getURL("https://github.com/harryahlas/sample-hr-database/tree/master/data/deskjob_table.rda")
+
+load(deskhistory_table_url)
+load(deskjob_table_url)
+
