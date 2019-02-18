@@ -5,14 +5,14 @@
     "dirty" : false,
     "encoding" : "UTF-8",
     "folds" : "",
-    "hash" : "0",
+    "hash" : "3419761253",
     "id" : "32088628",
-    "lastKnownWriteTime" : 1550446530,
-    "last_content_update" : 1550446530071,
+    "lastKnownWriteTime" : 1550447597,
+    "last_content_update" : 1550447597011,
     "path" : "C:/Development/github/sample-hr-database/04_initialize_employee_desk_history.R",
     "project_path" : "04_initialize_employee_desk_history.R",
     "properties" : {
-        "cursorPosition" : "110,56",
+        "cursorPosition" : "113,0",
         "docOutlineVisible" : "1",
         "scrollLine" : "101"
     },

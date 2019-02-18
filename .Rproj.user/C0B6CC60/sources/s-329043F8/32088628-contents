@@ -108,7 +108,7 @@ hierarchy_spread <- hierarchy_table_with_state %>%
             select(single_lob, job_name, pct_of_lob),
             by = c("lvl01_org" = "single_lob"))# select(-proportion) 
 
-save(hierarchy_spread, file = "data/hierarchy_spread.csv")
+write_csv(hierarchy_spread, "data/hierarchy_spread.csv")
 
 
 # Populate first round of jobs in hierarchy -------------------------------
