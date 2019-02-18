@@ -15,8 +15,21 @@ knitr::kable(deskhistory_table[sample(nrow(deskhistory_table),5),])
 knitr::kable(deskjob_table[sample(nrow(deskjob_table),5),])
 glimpse(hierarchy_spread)
 
+
+# New - add level 2 employees since hierarchy_spread only counts level 04
+hierarchy_spread_lvl02 <- hierarchy_spread %>% 
+  select(lvl01_desk_id, lvl01_org, desk_id = lvl02_desk_id) %>% 
+  distinct()
+  
+hierarchy_spread_lvl03 <- hierarchy_spread %>% 
+  select(lvl01_desk_id, lvl01_org, desk_id = lvl03_desk_id) %>% 
+  distinct()
+
+hierarchy_spread_all <- hierarchy_spread %>% 
+  bind_rows(hierarchy_spread_lvl02, hierarchy_spread_lvl03)
+
 # New - LOB list
-LOB_list <- hierarchy_spread %>% 
+LOB_list <- hierarchy_spread_all %>% 
   select(lvl01_org, lvl01_desk_id) %>% 
   distinct()
 
@@ -28,9 +41,10 @@ LOB_list <- hierarchy_spread %>%
 
 # New - add hierarchy information to deskhistory table
 deskhistory_table_hierarchy <- deskhistory_table %>% 
-  left_join(hierarchy_spread %>% select(lvl01_desk_id,
+  left_join(hierarchy_spread_all %>% select(lvl01_desk_id,
                                         lvl01_org,
                                         desk_id) %>% distinct(), by = "desk_id")
+
 
 # New - Start loop 
 for (i in (1:length(LOB_list$lvl01_org))) {
