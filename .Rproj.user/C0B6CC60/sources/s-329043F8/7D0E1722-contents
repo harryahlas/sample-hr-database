@@ -1,0 +1,16 @@
+
+
+deskhistory_table %>% filter(desk_id == 987)
+
+deskhistory_table %>% filter(employee_num == 41778)
+
+max(deskhistory_table$desk_id_start_date)
+
+
+bob <- deskhistory_table %>% filter(desk_id < 41)
+
+sam <- deskhistory_table %>% 
+  filter(desk_id < 41) %>% 
+  group_by(desk_id) %>% 
+  summarize(maxend = max(desk_id_end_date)) %>% 
+  left_join(deskjob_table)

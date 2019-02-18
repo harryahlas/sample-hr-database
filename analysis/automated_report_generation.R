@@ -37,7 +37,6 @@ LOB_list <- hierarchy_spread_all %>%
 ### NOTE: NEED TO UPDATE LEADERS ON DESKHISTORY, THEY ARE ALL GONE
 
 ### ALSO NEED TO RESEARCH WHY DESK IDS 986+ HAVE BOTH ATTORNEY AND PARALEGAL
-###!!!! RELATED TO THIS: SALES REPORT ONLY HAS SALESPEOPLE - REGIONAL MANAGERS ARE NOT INCLUDED, NEED TO ADD THEM
 
 # New - add hierarchy information to deskhistory table
 deskhistory_table_hierarchy <- deskhistory_table %>% 

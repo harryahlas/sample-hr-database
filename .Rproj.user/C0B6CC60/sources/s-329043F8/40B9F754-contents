@@ -48,6 +48,8 @@ hierarchy_with_depth <- dbGetQuery(HRSAMPLE, hierarchy_with_depth.sql)
 # Error log for debugging
 error_log <- data.frame(employee_num = integer(), desk_id = integer(), issue = character())
 
+# Update CEO so that there is no churn there.
+deskhistory_table$desk_id_end_date[deskhistory_table$desk_id == 1] <- as.Date("2999-01-01")
 
 # Create deskhistory_table_most_recent. This selects the most recent row for each employee.
 # So each desk_id has only 1 row. Think of this as the current layout of the organization.
@@ -62,8 +64,7 @@ i = 1
 loopnumber = 0
 
 # The upcoming while loop will update records that have a desk_id_end_date up to this date
-run_through_date <- as.Date("2019-01-01")
-
+run_through_date <- as.Date("2010-01-01")
 
 # while loop --------------------------------------------------------------
 
@@ -150,7 +151,25 @@ print("made it 1")
     } else {
       error_log <- error_log %>% 
         bind_rows(data.frame(loopnumber = loopnumber, employee_num = temp_employee_num, desk_id = temp_desk_id, issue = paste("Job opening not available at that level (", temp_depth, ")")))
-      i = i +1 # increase row number to look at because job did not change
+      
+      
+      
+      ########START EDIT
+      # If none of above conditions are met, give promotion, keeping same desk_id.
+      temp_deskhistory_table <- create_deskhistory_row(
+        f_temp_new_desk_id = temp_desk_id,
+        f_temp_promotion_flag = 1)
+      
+      deskhistory_table <- bind_rows(deskhistory_table, temp_deskhistory_table)
+      
+      
+      #i = i +1 # increase row number to look at because job did not change
+      ########END EDIT
+      
+      
+      
+      
+      
       
     }
     next
@@ -206,7 +225,26 @@ print("made it 1")
     } else {
       error_log <- error_log %>% 
         bind_rows(data.frame(loopnumber = loopnumber, employee_num = temp_employee_num, desk_id = temp_desk_id, issue = paste("Job opening not available at that level (", temp_depth, ")")))
-      i = i +1 # increase row number to look at because job did not change
+      
+      
+      
+      ########START EDIT
+      # If none of above conditions are met, give promotion, keeping same desk_id.
+      temp_deskhistory_table <- create_deskhistory_row(
+        f_temp_new_desk_id = temp_desk_id,
+        f_temp_promotion_flag = 1)
+      
+      deskhistory_table <- bind_rows(deskhistory_table, temp_deskhistory_table)
+      
+      
+      #i = i +1 # increase row number to look at because job did not change
+      ########END EDIT
+      
+      
+      
+      
+      
+      
       
     }
     next
@@ -262,7 +300,26 @@ print("made it 1")
     } else {
       error_log <- error_log %>% 
         bind_rows(data.frame(loopnumber = loopnumber, employee_num = temp_employee_num, desk_id = temp_desk_id, issue = paste("Job opening not available at that level (", temp_depth, ")")))
-      i = i +1 # increase row number to look at because job did not change
+      
+      
+      
+      ########START EDIT
+      # If none of above conditions are met, give promotion, keeping same desk_id.
+      temp_deskhistory_table <- create_deskhistory_row(
+        f_temp_new_desk_id = temp_desk_id,
+        f_temp_promotion_flag = 1)
+      
+      deskhistory_table <- bind_rows(deskhistory_table, temp_deskhistory_table)
+      
+      
+      #i = i +1 # increase row number to look at because job did not change
+      ########END EDIT
+      
+      
+      
+      
+      
+      
       
     }
     next

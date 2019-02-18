@@ -1,0 +1,29 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1550461218396.000,
+    "dirty" : false,
+    "encoding" : "",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "A6B5FE7E",
+    "lastKnownWriteTime" : 3419473789575321445,
+    "last_content_update" : 1550461218396,
+    "path" : null,
+    "project_path" : null,
+    "properties" : {
+        "cacheKey" : "D84F97F",
+        "caption" : "sam",
+        "contentUrl" : "grid_resource/gridviewer.html?env=&obj=sam&cache_key=D84F97F",
+        "displayedObservations" : 40,
+        "environment" : "",
+        "object" : "sam",
+        "preview" : 0,
+        "totalObservations" : 40,
+        "variables" : 3
+    },
+    "relative_order" : 6,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_dataframe"
+}

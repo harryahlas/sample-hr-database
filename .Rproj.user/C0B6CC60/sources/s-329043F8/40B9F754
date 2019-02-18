@@ -7,14 +7,14 @@
     "folds" : "",
     "hash" : "0",
     "id" : "40B9F754",
-    "lastKnownWriteTime" : 1550379896,
-    "last_content_update" : 1550379896790,
+    "lastKnownWriteTime" : 1550461560,
+    "last_content_update" : 1550461560298,
     "path" : "C:/Development/github/sample-hr-database/05_grow_employee_desk_history.R",
     "project_path" : "05_grow_employee_desk_history.R",
     "properties" : {
-        "cursorPosition" : "555,25",
+        "cursorPosition" : "302,6",
         "docOutlineVisible" : "1",
-        "scrollLine" : "538"
+        "scrollLine" : "299"
     },
     "relative_order" : 2,
     "source_on_save" : false,

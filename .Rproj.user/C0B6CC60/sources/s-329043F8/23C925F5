@@ -5,15 +5,15 @@
     "dirty" : false,
     "encoding" : "UTF-8",
     "folds" : "",
-    "hash" : "3440869149",
+    "hash" : "2543047389",
     "id" : "23C925F5",
-    "lastKnownWriteTime" : 1550455694,
-    "last_content_update" : 1550455694700,
+    "lastKnownWriteTime" : 1550458677,
+    "last_content_update" : 1550458677685,
     "path" : "C:/Development/github/sample-hr-database/analysis/automated_report_generation.R",
     "project_path" : "analysis/automated_report_generation.R",
     "properties" : {
-        "cursorPosition" : "80,40",
-        "scrollLine" : "77"
+        "cursorPosition" : "39,0",
+        "scrollLine" : "32"
     },
     "relative_order" : 8,
     "source_on_save" : false,
