@@ -8,7 +8,7 @@ blog_files <- list.files(getwd(),
 # do not change this file or image files
 blog_files <- blog_files[blog_files != "scripts/updateURLs.R"]
 blog_files <- blog_files[grepl(blog_files,pattern = "/images/") != TRUE]
-
+blog_files <- blog_files[grepl(blog_files,pattern = "jpg|png") != TRUE]
 
 # Make files for server ---------------------------------------------------
 

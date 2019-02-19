@@ -5,7 +5,7 @@
     "dirty" : false,
     "encoding" : "UTF-8",
     "folds" : "",
-    "hash" : "2543047389",
+    "hash" : "0",
     "id" : "23C925F5",
     "lastKnownWriteTime" : 1550458677,
     "last_content_update" : 1550458677685,
@@ -13,7 +13,7 @@
     "project_path" : "analysis/automated_report_generation.R",
     "properties" : {
         "cursorPosition" : "39,0",
-        "scrollLine" : "32"
+        "scrollLine" : "0"
     },
     "relative_order" : 8,
     "source_on_save" : false,

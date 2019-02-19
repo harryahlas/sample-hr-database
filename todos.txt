@@ -1,0 +1,52 @@
+update org structure
+add operations
+operations team A, B
+virtual 
+
+
+lvl01_org,job_name,depth
+Operations,Chief Operations Officer,1
+Operations,Purchasing Manager,3
+Operations,Operations Supervisor,3
+Operations,Customer Care Manager,3
+Operations,Customer Care Caller,4
+Operations,Customer Care Associate,4
+Operations,Production Engineer,4
+Operations,Production Specialist,4
+
+Compliance,Chief Compliance Officer,1
+Compliance,Compliance Official,2
+Compliance,Compliance Officer,4
+Compliance,Compliance Officer,3
+Compliance,Compliance Manager,3
+Compliance,Risk Associate,4
+Compliance,Auditor,4
+
+Finance,Chief Financial Officer,1
+Finance,Budget Analyst,4
+Finance,Finance Manager,3
+Finance,Accounting Officer,3
+
+Sales,Sales Manager,3
+Sales,Relationship Manager,4
+Sales,Sales Associate,4
+Sales,Salesperson,4
+Sales,Financial Consultant,4
+
+Technology,Information Architect,3
+Technology,Information Security Officer,3
+Technology,Information Security Specialist,4
+Technology,Developer,4
+
+Strategy,Chief Administration Officer,2
+Strategy,Strategy Manager,3
+Strategy,Strategy Consultant,4
+
+Human Resources,Personnel Leader,1
+Human Resources,Business Partner Leader,3
+Human Resources,Consultant,4
+Human Resources,Business Partner,4
+Legal,Chief Legal Officer,1
+Legal,Counsel,2
+Legal,Attorney,3
+Legal,Paralegal,4

@@ -1,6 +1,6 @@
 
 
-deskhistory_table %>% filter(desk_id == 987)
+deskhistory_table %>% filter(desk_id == 2)
 
 deskhistory_table %>% filter(employee_num == 41778)
 

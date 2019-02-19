@@ -12,15 +12,15 @@
     "path" : null,
     "project_path" : null,
     "properties" : {
-        "cacheKey" : "D84F97F",
+        "cacheKey" : "1441AF97",
         "caption" : "sam",
-        "contentUrl" : "grid_resource/gridviewer.html?env=&obj=sam&cache_key=D84F97F",
-        "displayedObservations" : 40,
+        "contentUrl" : "grid_resource/gridviewer.html?env=&obj=sam&cache_key=1441AF97",
+        "displayedObservations" : "40",
         "environment" : "",
         "object" : "sam",
-        "preview" : 0,
-        "totalObservations" : 40,
-        "variables" : 3
+        "preview" : "0",
+        "totalObservations" : "40",
+        "variables" : "3"
     },
     "relative_order" : 6,
     "source_on_save" : false,

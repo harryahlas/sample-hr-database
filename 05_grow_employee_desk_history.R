@@ -1,4 +1,3 @@
-#install.packages("RMariaDB")
 library(RMariaDB)
 library(tidyverse)
 library(lubridate)
@@ -91,13 +90,15 @@ print("made it 1")
   temp_end_date <- deskhistory_table_most_recent$desk_id_end_date[i]
   temp_job_name <- deskjob_table$job_name[deskjob_table$desk_id == temp_desk_id]
   
+
+  ##########removing 2/17
   # If the employee's current job shows termination then move to the next employee.
   # The desk_id will open up for someone else.
-  if (deskhistory_table_most_recent$termination_flag[i] == 1) {
-    error_log <- error_log %>% 
-      bind_rows(data.frame(loopnumber = loopnumber, employee_num = temp_employee_num, desk_id = temp_desk_id, issue = paste("Job opening not filled because it was a termination")))
-    i = i +1 # increase row number to look at
-    next}
+  # if (deskhistory_table_most_recent$termination_flag[i] == 1) {
+  #   error_log <- error_log %>% 
+  #     bind_rows(data.frame(loopnumber = loopnumber, employee_num = temp_employee_num, desk_id = temp_desk_id, issue = paste("Job opening not filled because it was a termination")))
+  #   i = i +1 # increase row number to look at
+  #   next}
   
   ####NEED TO UPDATE LEADERS BELOW
   # if it is depth 0-3 then skip for now, leave plug
@@ -326,13 +327,14 @@ print("made it 1")
   }
 
   # Skip if CEO
-  if (temp_depth == 0) { 
-    
-    error_log <- error_log %>% 
-      bind_rows(data.frame(loopnumber = loopnumber, employee_num = temp_employee_num, desk_id = temp_desk_id, issue = paste("CEO, not changing")))
-    i = i +1 # increase row number to look at (CAN BE REMOVED WHEN THIS PIECE IS FIXED)
-    next
-  }
+  # 2/17 removing below since CEO is nonexpiring
+  # if (temp_depth == 0) { 
+  #   
+  #   error_log <- error_log %>% 
+  #     bind_rows(data.frame(loopnumber = loopnumber, employee_num = temp_employee_num, desk_id = temp_desk_id, issue = paste("CEO, not changing")))
+  #   i = i +1 # increase row number to look at (CAN BE REMOVED WHEN THIS PIECE IS FIXED)
+  #   next
+  # }
   print("made it 2")
   
   # Future plug that looks at salary and terms based on that
