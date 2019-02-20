@@ -9,11 +9,13 @@ report_name <- "PA73405 - Attrition by Job 2009"
 # Import data
 deskhistory_table <- read_csv("https://raw.githubusercontent.com/harryahlas/sample-hr-database/master/data/deskhistory_table.csv")
 deskjob_table <- read_csv("https://raw.githubusercontent.com/harryahlas/sample-hr-database/master/data/deskjob_table.csv")
-hierarchy_spread <- read_csv("data/hierarchy_spread.csv") # New
+hierarchy_spread <- read_csv("https://raw.githubusercontent.com/harryahlas/sample-hr-database/master/data/hierarchy_spread.csv") # New
 
 knitr::kable(deskhistory_table[sample(nrow(deskhistory_table),5),])
 knitr::kable(deskjob_table[sample(nrow(deskjob_table),5),])
-glimpse(hierarchy_spread)
+glimpse(hierarchy_spread, width = 70)
+
+hierarchy_spread %>% count(lvl01_org) %>% arrange(desc(n))
 
 
 # New - add level 2 employees since hierarchy_spread only counts level 04
@@ -28,13 +30,14 @@ hierarchy_spread_lvl03 <- hierarchy_spread %>%
 hierarchy_spread_all <- hierarchy_spread %>% 
   bind_rows(hierarchy_spread_lvl02, hierarchy_spread_lvl03)
 
+glimpse(hierarchy_spread_all,width = 70)
+
 # New - LOB list
 LOB_list <- hierarchy_spread_all %>% 
   select(lvl01_org, lvl01_desk_id) %>% 
   distinct()
 
-
-### NOTE: NEED TO UPDATE LEADERS ON DESKHISTORY, THEY ARE ALL GONE
+LOB_list
 
 ### ALSO NEED TO RESEARCH WHY DESK IDS 986+ HAVE BOTH ATTORNEY AND PARALEGAL
 
@@ -44,6 +47,8 @@ deskhistory_table_hierarchy <- deskhistory_table %>%
                                         lvl01_org,
                                         desk_id) %>% distinct(), by = "desk_id")
 
+
+glimpse(deskhistory_table_hierarchy[sample(1:nrow(deskhistory_table_hierarchy)),], width = 70)
 
 # New - Start loop 
 for (i in (1:length(LOB_list$lvl01_org))) {
@@ -87,5 +92,5 @@ for (i in (1:length(LOB_list$lvl01_org))) {
   writeDataTable(wb, 2, disclaimer_info)
   addStyle(wb, 2, style = createStyle(wrapText = TRUE), rows = 1:7, cols = 1)
   setColWidths(wb, 2, 1, widths = 50)
-  saveWorkbook(wb, paste0("output/", report_name, " - ", org_name, " - ", as_of_date, ".xlsx"), TRUE)
+  saveWorkbook(wb, paste0("output/", report_name, " - ", org_name, " - ", as_of_date, ".xlsx"), TRUE) # New
 }

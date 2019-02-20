@@ -1,3 +1,7 @@
+
+
+On next TM rerun:	
+	Reduce number of legal TMs
 update org structure
 add operations
 operations team A, B

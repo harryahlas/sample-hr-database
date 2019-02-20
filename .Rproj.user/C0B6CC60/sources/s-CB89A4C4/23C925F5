@@ -7,13 +7,13 @@
     "folds" : "",
     "hash" : "0",
     "id" : "23C925F5",
-    "lastKnownWriteTime" : 1550458677,
-    "last_content_update" : 1550458677685,
+    "lastKnownWriteTime" : 1550634658,
+    "last_content_update" : 1550634658920,
     "path" : "C:/Development/github/sample-hr-database/analysis/automated_report_generation.R",
     "project_path" : "analysis/automated_report_generation.R",
     "properties" : {
-        "cursorPosition" : "39,0",
-        "scrollLine" : "0"
+        "cursorPosition" : "42,0",
+        "scrollLine" : "29"
     },
     "relative_order" : 8,
     "source_on_save" : false,
