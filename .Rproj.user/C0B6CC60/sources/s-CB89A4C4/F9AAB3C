@@ -1,0 +1,29 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1550814642025.000,
+    "dirty" : false,
+    "encoding" : "",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "F9AAB3C",
+    "lastKnownWriteTime" : 2484628534807494656,
+    "last_content_update" : 1550814642025,
+    "path" : null,
+    "project_path" : null,
+    "properties" : {
+        "cacheKey" : "9A7B3CFD",
+        "caption" : "promotions_temp",
+        "contentUrl" : "grid_resource/gridviewer.html?env=&obj=promotions_temp&cache_key=9A7B3CFD",
+        "displayedObservations" : 1,
+        "environment" : "",
+        "object" : "promotions_temp",
+        "preview" : 0,
+        "totalObservations" : 1,
+        "variables" : 1
+    },
+    "relative_order" : 5,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_dataframe"
+}

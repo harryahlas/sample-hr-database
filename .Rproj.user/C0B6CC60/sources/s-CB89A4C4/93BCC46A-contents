@@ -26,9 +26,14 @@ for(blog_file in blog_files) {
 # Reap --------------------------------------------------------------------
 # (enter pw first)
 # Note: prior to reap, make sure new folders are created
+
 for (blog_file in blog_files_all) {
   print(blog_file)
-  ftpUpload(blog_file, paste0("sftp://edemise:",pw,"@boron.he.net/home/edemise/public_html/blog/", blog_file))
+  ftpUpload(blog_file, 
+            paste0("sftp://edemise:",pw,"@boron.he.net/home/edemise/public_html/blog/",
+                   blog_file),
+            .opts = list(ftp.create.missing.dirs=TRUE)
+  )
 }
 
 # Make files local --------------------------------------------------------

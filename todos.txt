@@ -2,6 +2,7 @@
 
 On next TM rerun:	
 	Reduce number of legal TMs
+		simply update this: data/departments.csv
 update org structure
 add operations
 operations team A, B

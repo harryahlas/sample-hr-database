@@ -67,11 +67,9 @@ save(hierarchy_table_with_state, file = "data/hierarchy_table_with_state.rda")
 # Pull list of employees who started prior to start date
 employeeinfo_table <- dbGetQuery(HRSAMPLE, "SELECT * FROM employeeinfo")
 
-#need to create this as import, used in 06
 # First day of hierarchy, same as max(employeeinfo_table$hire_date)
 hierarchy_start_date <- as.Date("1999/01/01")
 
-#need to create this as import, used in 06
 # Most recent date that a new job could be had
 max_date <- as.Date("2019/01/01")
 

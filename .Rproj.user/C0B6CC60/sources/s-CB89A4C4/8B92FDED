@@ -1,0 +1,22 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1550810040222.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "4085285480",
+    "id" : "8B92FDED",
+    "lastKnownWriteTime" : 1550819687,
+    "last_content_update" : 1550819687588,
+    "path" : "C:/Development/github/sample-hr-database/06_create_performance_reviews.R",
+    "project_path" : "06_create_performance_reviews.R",
+    "properties" : {
+        "cursorPosition" : "94,50",
+        "scrollLine" : "91"
+    },
+    "relative_order" : 8,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}
