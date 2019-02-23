@@ -8,7 +8,14 @@ library(tidyverse)
 
 
 # Create business lines ---------------------------------------------------
-lob <- read_csv("data/lob.csv")
+lob <- read_csv("lob,proportion,avg_report_to_count
+                Finance,.03,5
+                Human Resources,.025,7
+                Sales,.73,10
+                Marketing,.02,3
+                Legal,.015,3
+                Technology,.10,7
+                Strategy,.08,3")
 
 sum(lob$proportion)# should equal 1
 

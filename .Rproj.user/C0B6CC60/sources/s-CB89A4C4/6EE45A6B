@@ -1,0 +1,23 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1550890596218.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "6EE45A6B",
+    "lastKnownWriteTime" : 1550470562,
+    "last_content_update" : 1550470562,
+    "path" : "C:/Development/github/sample-hr-database/05_grow_employee_desk_history.R",
+    "project_path" : "05_grow_employee_desk_history.R",
+    "properties" : {
+        "cursorPosition" : "558,57",
+        "docOutlineVisible" : "0",
+        "scrollLine" : "558"
+    },
+    "relative_order" : 9,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

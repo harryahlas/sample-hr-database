@@ -29,6 +29,52 @@ max_date <- as.Date("2019/01/01")
 #NOTE:::!!!update this to database
 deskhistory_table <- read_csv("data/deskhistory_table.csv")
 
+# Create business lines from 01
+lob <- read_csv("data/lob.csv")
+
+# Import jobs
+jobs <- read_csv("data/jobs.csv")
+
+# Create hierarchy and join to lob for report to count  from 01
+hierarchy <- dbGetQuery(HRSAMPLE, "SELECT *  FROM hierarchy")
+
+
+# Rollup
+hierarchy_spread <- hierarchy %>% 
+  mutate(lvl00_desk_id = 0,
+         lvl00_org = "CEO") %>% 
+  select(lvl00_desk_id,
+         lvl00_org,
+         everything()) %>% 
+  filter(parent_id == 1) %>% 
+  rename(lvl01_desk_id = desk_id,
+         lvl01_org = org) %>% 
+  select(-parent_id) %>% 
+  left_join(hierarchy_table_with_state, by = c("lvl01_desk_id" = "parent_id")) %>% 
+  rename(lvl02_desk_id = desk_id,
+         lvl02_org = org) %>% 
+  left_join(hierarchy_table_with_state, by = c("lvl02_desk_id" = "parent_id")) %>% 
+  rename(lvl03_desk_id = desk_id,
+         lvl03_org = org) %>% 
+  left_join(hierarchy, by = c("lvl03_desk_id" = "parent_id"))  
+
+# New - add level 1-3 employees since hierarchy_spread only counts level 04
+hierarchy_spread_lvl01 <- hierarchy_spread %>% 
+  select(lvl00_desk_id, lvl00_org, desk_id = lvl01_desk_id) %>% 
+  distinct()
+
+hierarchy_spread_lvl02 <- hierarchy_spread %>% 
+  select(lvl01_desk_id, lvl01_org, desk_id = lvl02_desk_id) %>% 
+  distinct()
+
+hierarchy_spread_lvl03 <- hierarchy_spread %>% 
+  select(lvl01_desk_id, lvl01_org, desk_id = lvl03_desk_id) %>% 
+  distinct()
+
+### Note this hierarchy_spread_all is different than from 04. Includes everyone except CEO
+hierarchy_spread_all <- hierarchy_spread %>% 
+  bind_rows(hierarchy_spread_lvl01, hierarchy_spread_lvl02, hierarchy_spread_lvl03)
+
 
 # Create performance review table, employee_num, year, perf_review
 # import perf_review_distributions
@@ -87,12 +133,33 @@ for (i in 1:nrow(employee_list)) {
   if (review_year_start > review_year_end) next
   
   review_years <- seq(review_year_start, review_year_end, 1)
-  review_year_list_append <- tibble(employee_num = rep(employee_list$employee_num[i], length(review_years)),
-                                                       review_year = review_years)
+  review_year_list_append <- tibble(employee_numx = rep(employee_list$employee_num[i], length(review_years)),
+                                                       review_year = review_years,
+                                    review_date = as.Date(paste0(review_year + 1, "-03-31"))) %>% 
+    fuzzy_left_join(deskhistory_table, by = c(
+      "employee_numx" = "employee_num",
+      "review_date" = "desk_id_start_date",
+      "review_date" = "desk_id_end_date"
+    ),
+    match_fun = list(`==`, `>=`, `<=`)) %>% 
+    select(-employee_numx) %>% 
+    left_join(hierarchy_spread_all %>% select(desk_id, lvl01_org)) %>% 
+    left_join(performance_review_ratios, by = c("lvl01_org" = "LOB"))
   
+  ##################3next figure above
+  
+  # Get their current LOB for that date (april 1)
+  # use that info above to assign ratios/default
+  # if they have a promotion within 1 year after then double their chance for 4 or 5
+  # .013 chance that they get no review at all no matter what
+  sample(c(1,2,3,4,5), 100, prob=c(.01,.05,.64,.2,.1), replace=TRUE) 
+  
+  #make sure review is no less than minimum
+  
+  
+
   review_year_list <- bind_rows(review_year_list, review_year_list_append)
 
-  #### NEXT: SEE BLUE CODE BELOW, GET PERF REVIEWS
   print(i)
 }
 
@@ -114,15 +181,7 @@ validation <- checktable %>%
 
 # Start in Feb 2000. if they were in the company from 10/1/1999-3/31/2000 then they are eligible for a review
 
-
-
-# Get their current LOB for that date (april 1)
-# use that info above to assign ratios/default
-# if they have a promotion within 1 year after then double their chance for 4 or 5
-# .013 chance that they get no review at all no matter what
-sample(c(1,2,3,4,5), 100, prob=c(.01,.05,.64,.2,.1), replace=TRUE) 
-
-#make sure review is no less than minimum
+review_year_list_append
 
 
 # add laters:

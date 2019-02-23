@@ -1,0 +1,29 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1550897746737.000,
+    "dirty" : false,
+    "encoding" : "",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "F54737FE",
+    "lastKnownWriteTime" : 27303570963497060,
+    "last_content_update" : 1550897746737,
+    "path" : null,
+    "project_path" : null,
+    "properties" : {
+        "cacheKey" : "ECEB34FB",
+        "caption" : "performance_review_ratios",
+        "contentUrl" : "grid_resource/gridviewer.html?env=&obj=performance_review_ratios&cache_key=ECEB34FB",
+        "displayedObservations" : 3,
+        "environment" : "",
+        "object" : "performance_review_ratios",
+        "preview" : 0,
+        "totalObservations" : 3,
+        "variables" : 6
+    },
+    "relative_order" : 11,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_dataframe"
+}
