@@ -13,10 +13,6 @@ dbExecute(HRSAMPLE, "CREATE TABLE performancereview (
           FOREIGN KEY (employee_num) REFERENCES employeeinfo (employee_num)  ON DELETE CASCADE ON UPDATE CASCADE
 );")
 
-
-# Minimum review value
-min_review_value <- 1
-
 #need to create this as import, used in 06
 # First day of hierarchy, same as max(employeeinfo_table$hire_date)
 hierarchy_start_date <- as.Date("1999/01/01")
@@ -75,16 +71,21 @@ hierarchy_spread_lvl03 <- hierarchy_spread %>%
 hierarchy_spread_all <- hierarchy_spread %>% 
   bind_rows(hierarchy_spread_lvl01, hierarchy_spread_lvl02, hierarchy_spread_lvl03)
 
+# Get highest seat of lvl01s. Anyone below this number will not get a review here
+desk_id_no_review_max = max(hierarchy_spread_all$lvl01_desk_id, na.rm = TRUE)
 
 # Create performance review table, employee_num, year, perf_review
 # import perf_review_distributions
 performance_review_ratios <- read_csv("data/performance_review_ratios.csv")
 
-# Get list of all employees in deskhistory
+# Get list of all employees in deskhistory except CEO (desk_id 1)
 employee_list <- deskhistory_table %>% 
+  filter(desk_id > desk_id_no_review_max) %>% 
   select(employee_num) %>% 
   distinct()
 
+# Random chance that employee does not get a review for some reason
+odds_of_no_review <- .013
 
 review_year_list <- tibble()
 
@@ -94,10 +95,14 @@ i = 1
 i = 80
 #### start loop
 for (i in 1:nrow(employee_list)) {
+
+  # Minimum review value reset
+  min_review_value <- 1
+  
   # Pull employee's entire desk history
   deskhistory_table_temp <- deskhistory_table %>% 
     filter(employee_num == employee_list$employee_num[i])
-  
+
   # Identify full years employee was active
   
   
@@ -125,17 +130,20 @@ for (i in 1:nrow(employee_list)) {
   review_year_start <- case_when(company_start_month < 10 ~ company_start_year, 
                                  (company_start_month >= 10) & (company_end_year > (company_start_year + 1)) ~   company_start_year + 1,
                                  TRUE ~ 0)
-  
+  #####IF REVIEWS ARE MISSING MAYBE BECAUSE CHANGED LINE BELOW
   review_year_end <- case_when(company_end_month > 3 ~ company_end_year - 1, 
-                               company_end_month <= 3 ~ max(company_end_year - 2, review_year_start),
+                               #company_end_month <= 3 ~ max(company_end_year - 2, review_year_start),
+                               company_end_month <= 3 ~ company_end_year - 2,
                                TRUE ~ 0)
-  
+  if (review_year_start == 0 | review_year_end == 0) next
   if (review_year_start > review_year_end) next
   
   review_years <- seq(review_year_start, review_year_end, 1)
+
+  # Calculate reviews
   review_year_list_append <- tibble(employee_numx = rep(employee_list$employee_num[i], length(review_years)),
                                                        review_year = review_years,
-                                    review_date = as.Date(paste0(review_year + 1, "-03-31"))) %>% 
+                                    review_date = as.Date(paste0(review_year + 1, "-03-01"))) %>% 
     fuzzy_left_join(deskhistory_table, by = c(
       "employee_numx" = "employee_num",
       "review_date" = "desk_id_start_date",
@@ -144,25 +152,29 @@ for (i in 1:nrow(employee_list)) {
     match_fun = list(`==`, `>=`, `<=`)) %>% 
     select(-employee_numx) %>% 
     left_join(hierarchy_spread_all %>% select(desk_id, lvl01_org)) %>% 
-    left_join(performance_review_ratios, by = c("lvl01_org" = "LOB"))
-  
-  ##################3next figure above
-  
-  # Get their current LOB for that date (april 1)
-  # use that info above to assign ratios/default
-  # if they have a promotion within 1 year after then double their chance for 4 or 5
-  # .013 chance that they get no review at all no matter what
-  sample(c(1,2,3,4,5), 100, prob=c(.01,.05,.64,.2,.1), replace=TRUE) 
-  
-  #make sure review is no less than minimum
-  
-  
+    left_join(performance_review_ratios, by = c("lvl01_org" = "LOB")) %>% 
+    arrange(review_year) %>% 
+    mutate(next_year_promotion_flag = lead(promotion_flag)) %>% #did they have promotion the next year?
+    mutate(perf_review_score_4 = if_else(promotion_flag ==1, perf_review_score_4 * 2, perf_review_score_4),
+           perf_review_score_5 = if_else(promotion_flag ==1, perf_review_score_5 * 2, perf_review_score_5)) %>% #if so then double their chances of getting a 4 or 5 
+    rowwise() %>% 
+    # Calculate performance review
+    mutate(perf_review_score = max(sample(c(1,2,3,4,5,NA), 1, 
+                                          prob= c(perf_review_score_1,
+                                                  perf_review_score_2,
+                                                  perf_review_score_3,
+                                                  perf_review_score_4,
+                                                  perf_review_score_5,
+                                                  odds_of_no_review),
+                                          replace=TRUE),
+                                   min_review_value)) 
 
   review_year_list <- bind_rows(review_year_list, review_year_list_append)
 
   print(i)
 }
 
+save(review_year_list, file = "data/review_year_list.rda")
 
 # Check TM
 checktable <- deskhistory_table %>% 
@@ -179,9 +191,6 @@ validation <- checktable %>%
   left_join(reviewcheck)
 
 
-# Start in Feb 2000. if they were in the company from 10/1/1999-3/31/2000 then they are eligible for a review
-
-review_year_list_append
 
 
 # add laters:

@@ -5,15 +5,15 @@
     "dirty" : false,
     "encoding" : "UTF-8",
     "folds" : "",
-    "hash" : "1460455824",
+    "hash" : "4291044656",
     "id" : "8B92FDED",
-    "lastKnownWriteTime" : 1550898045,
-    "last_content_update" : 1550898045471,
+    "lastKnownWriteTime" : 1550997246,
+    "last_content_update" : 1550997246255,
     "path" : "C:/Development/github/sample-hr-database/06_create_performance_reviews.R",
     "project_path" : "06_create_performance_reviews.R",
     "properties" : {
-        "cursorPosition" : "159,0",
-        "scrollLine" : "146"
+        "cursorPosition" : "195,0",
+        "scrollLine" : "187"
     },
     "relative_order" : 8,
     "source_on_save" : false,

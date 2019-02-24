@@ -18,6 +18,9 @@ add TMs that left, have them rejoin later
 
 build function for hierarchy spread?
 
+see add laters on perf reviews
+increase number of 2 review scores
+
 lvl01_org,job_name,depth
 Operations,Chief Operations Officer,1
 Operations,Purchasing Manager,3
