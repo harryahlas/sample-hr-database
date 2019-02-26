@@ -12,17 +12,17 @@
     "path" : null,
     "project_path" : null,
     "properties" : {
-        "cacheKey" : "2A62BF82",
+        "cacheKey" : "D95902E6",
         "caption" : "deskhistory_table_temp",
-        "contentUrl" : "grid_resource/gridviewer.html?env=&obj=deskhistory_table_temp&cache_key=2A62BF82",
-        "displayedObservations" : 1,
+        "contentUrl" : "grid_resource/gridviewer.html?env=&obj=deskhistory_table_temp&cache_key=D95902E6",
+        "displayedObservations" : "1",
         "environment" : "",
         "object" : "deskhistory_table_temp",
-        "preview" : 0,
-        "totalObservations" : 1,
-        "variables" : 6
+        "preview" : "0",
+        "totalObservations" : "1",
+        "variables" : "6"
     },
-    "relative_order" : 5,
+    "relative_order" : 10,
     "source_on_save" : false,
     "source_window" : "",
     "type" : "r_dataframe"

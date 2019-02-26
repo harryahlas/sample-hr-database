@@ -1,6 +1,8 @@
 library(RMariaDB)
 library(tidyverse)
 library(lubridate)
+source("01_functions.R")
+
 
 HRSAMPLE <- dbConnect(RMariaDB::MariaDB(), user='newuser', password='newuser', dbname='hrsample', host='localhost')
 
@@ -10,6 +12,14 @@ dbExecute(HRSAMPLE, "CREATE TABLE performancereview (
           employee_num INT (11),
           year INT (4),
           perf_review INT (1),
+          FOREIGN KEY (employee_num) REFERENCES employeeinfo (employee_num)  ON DELETE CASCADE ON UPDATE CASCADE
+);")
+
+# Build salaryhistory table -----------------------------------------------
+dbExecute(HRSAMPLE, "CREATE TABLE salaryhistory (
+          employee_num INT (11),
+          salary_effective_date DATE,
+          salary DECIMAL (13,2),
           FOREIGN KEY (employee_num) REFERENCES employeeinfo (employee_num)  ON DELETE CASCADE ON UPDATE CASCADE
 );")
 
@@ -24,6 +34,9 @@ max_date <- as.Date("2019/01/01")
 # Import deskhistory
 #NOTE:::!!!update this to database
 deskhistory_table <- read_csv("data/deskhistory_table.csv")
+
+# Import desk_job table
+deskjob_table <- dbGetQuery(HRSAMPLE, "SELECT *  FROM deskjob")
 
 # Create business lines from 01
 lob <- read_csv("data/lob.csv")
@@ -84,24 +97,37 @@ employee_list <- deskhistory_table %>%
   select(employee_num) %>% 
   distinct()
 
+# Economic trend information
+prime_rate <- read_csv("data/prime_rate.csv")
+
 # Random chance that employee does not get a review for some reason
 odds_of_no_review <- .013
 
 review_year_list <- tibble()
+salary_list <- tibble()
+
+# Promotion/new desk_id salary increase min/max
+promo_new_desk_salary_increase_min <- .04
+promo_new_desk_salary_increase_max <- .175
+standard_salary_increase_min <- .01
+standard_salary_increase_max <- .04
 
 i = 100 #no promotion
 i = 120 #promotion
 i = 1
 i = 80
+i = 910 #(emp 5737, lots)
 #### start loop
 for (i in 1:nrow(employee_list)) {
-
+#  for (i in 792:798) {
+    
+  employee_num_temp <- employee_list$employee_num[i]
   # Minimum review value reset
   min_review_value <- 1
   
   # Pull employee's entire desk history
   deskhistory_table_temp <- deskhistory_table %>% 
-    filter(employee_num == employee_list$employee_num[i])
+    filter(employee_num == employee_num_temp)
 
   # Identify full years employee was active
   
@@ -141,7 +167,7 @@ for (i in 1:nrow(employee_list)) {
   review_years <- seq(review_year_start, review_year_end, 1)
 
   # Calculate reviews
-  review_year_list_append <- tibble(employee_numx = rep(employee_list$employee_num[i], length(review_years)),
+  review_year_list_append <- tibble(employee_numx = rep(employee_num_temp, length(review_years)),
                                                        review_year = review_years,
                                     review_date = as.Date(paste0(review_year + 1, "-03-01"))) %>% 
     fuzzy_left_join(deskhistory_table, by = c(
@@ -171,10 +197,83 @@ for (i in 1:nrow(employee_list)) {
 
   review_year_list <- bind_rows(review_year_list, review_year_list_append)
 
+  
+  # Create salary increases for promotions and job changes
+  salary_increases_promo_new_desk <- deskhistory_table_temp %>% 
+    # Remove increase for start dates at beginning of data
+    rowwise() %>% 
+    mutate(salary_increase = case_when(
+      desk_id_start_date == hierarchy_start_date ~ 0,
+      ### NEW added below line and needs testing
+      desk_id_start_date == min(desk_id_start_date) ~ 0,
+      TRUE ~ sample(seq(promo_new_desk_salary_increase_min,promo_new_desk_salary_increase_max,.005),1))) %>% 
+    ungroup() %>% 
+    mutate(new_desk_id = lag(desk_id) != desk_id) %>% # if it is a new desk_id d b/w oct 1 - april 30 then add year to list so no march 1 increas
+    mutate(merit_increase_remove_year = case_when(
+      (promotion_flag == 1 | new_desk_id == TRUE ) & month(desk_id_start_date) <= 4 ~ year(desk_id_start_date) - 1, # no merit increase if recently got promotion
+      (promotion_flag == 1 | new_desk_id == TRUE ) & month(desk_id_start_date) >= 10 ~ year(desk_id_start_date)  # or if got new deskid at end of last year
+    ),
+    salary_increase_date = desk_id_start_date) %>% 
+    filter(salary_increase > 0)
+             
+  # create years for no increase 
+  # if there was a promotion between Jan 1 and Apr 30 then add year to list so no march 1 increase
+  # if it is a new desk id b/w oct 1 - april 30 then add year to list so no march 1 increase
+  
+  # Create salary increases for years without promotions and job changes
+  # tie this to prime rate and maybe LOB, should be 1-7%
+  ####ERROR HERE
+  salary_increases_standard <- tibble(review_year = review_years) %>% 
+    anti_join(salary_increases_promo_new_desk, by = c("review_year" = "merit_increase_remove_year")) 
+  
+  if(nrow(salary_increases_standard) == 0) next # needed to avoid error in next section
+  ##############3I THINK NEED TO ADD STARTING SALARY ROW IF NEXT IS HIT HERE
+  
+  salary_increases_standard <- salary_increases_standard%>% 
+    left_join(prime_rate, by = c("review_year" = "year")) %>% 
+    left_join(review_year_list_append %>% select(review_year, perf_review_score)) %>% 
+    rowwise() %>% 
+    mutate(employee_num = employee_num_temp,
+           prime_rate_add = max((prime_rate_est - .03) / 2, 0),
+           perf_review_add = case_when(perf_review_score == 5 ~ .03,
+                                       perf_review_score == 4 ~ .015,
+                                       TRUE ~ 0),
+           no_merit_multiplier = if_else(perf_review_score < 3, 0, 1)) %>% 
+    mutate(salary_increase = (sample(seq(standard_salary_increase_min, standard_salary_increase_max,.001),1) 
+                              + prime_rate_add 
+                              + perf_review_add) 
+                              * no_merit_multiplier,
+           salary_increase_date = as.Date(paste0(review_year + 1, "-03-01")))
+  
+  ### enhancemnt: if possible make it higher if they got 4 or 5
+  
+  # Starting salary plug for later function
+  starting_salary_table <-  create_starting_salary(employee_num_temp)
+  starting_salary <- starting_salary_table$salary[1] 
+  
+  # Bind starting salary, promotions/new desk, and standard increases
+  salary_list_append <- bind_rows(starting_salary_table, 
+                                  salary_increases_promo_new_desk %>% 
+                                    select(employee_num, salary_increase_date, salary_increase),
+                                  salary_increases_standard %>% 
+                                    select(employee_num, salary_increase_date, salary_increase)) %>% 
+    arrange(salary_increase_date) %>% 
+    mutate(salary = starting_salary * cumprod(1 + salary_increase))
+                                        
+  
+  salary_list <- bind_rows(salary_list, salary_list_append)
+  
   print(i)
 }
 
 save(review_year_list, file = "data/review_year_list.rda")
+save(salary_list, file = "data/salary_list.rda")
+
+temp_salary_calc_table <- salary_list %>% 
+  arrange(employee_num, salary_increase) %>% 
+  mutate(salary = 0) %>% 
+  mutate(salary = case_when(lag(employee_num) != employee_num ~ 50000,
+                            TRUE ~ lag(salary) * (1 + salary_increase)))
 
 # Check TM
 checktable <- deskhistory_table %>% 

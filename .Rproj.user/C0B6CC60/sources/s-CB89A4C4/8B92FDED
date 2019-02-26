@@ -5,17 +5,17 @@
     "dirty" : false,
     "encoding" : "UTF-8",
     "folds" : "",
-    "hash" : "4291044656",
+    "hash" : "0",
     "id" : "8B92FDED",
-    "lastKnownWriteTime" : 1550997246,
-    "last_content_update" : 1550997246255,
+    "lastKnownWriteTime" : 1551160977,
+    "last_content_update" : 1551160977689,
     "path" : "C:/Development/github/sample-hr-database/06_create_performance_reviews.R",
     "project_path" : "06_create_performance_reviews.R",
     "properties" : {
-        "cursorPosition" : "195,0",
-        "scrollLine" : "187"
+        "cursorPosition" : "268,0",
+        "scrollLine" : "257"
     },
-    "relative_order" : 8,
+    "relative_order" : 3,
     "source_on_save" : false,
     "source_window" : "",
     "type" : "r_source"

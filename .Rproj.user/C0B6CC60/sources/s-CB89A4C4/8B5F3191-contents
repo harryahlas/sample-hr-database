@@ -107,3 +107,20 @@ find_external_hire <- function(f_desk_id = temp_desk_id,
   return(eligible_employee$employee_num)  
   
 }
+
+
+
+# create_starting_salary --------------------------------------------------
+# This function looks up an employee's first deskhistory row and assigns a starting salary
+# Output is row that can be appended to salary_list
+
+create_starting_salary <- function (employee_num_temp) {
+  deskhistory_table %>% 
+    filter(employee_num == employee_num_temp) %>% 
+    arrange(desk_id_start_date) %>% 
+    filter(row_number() == 1) %>% 
+    left_join(deskjob_table) %>% 
+    left_join(jobs) %>% 
+    rowwise() %>% 
+    mutate(starting_salary = round(avg_starting_salary * sample(seq(.9, 1.1, .001), 1)), 0)
+}
