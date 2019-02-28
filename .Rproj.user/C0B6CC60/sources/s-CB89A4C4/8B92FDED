@@ -5,15 +5,16 @@
     "dirty" : false,
     "encoding" : "UTF-8",
     "folds" : "",
-    "hash" : "0",
+    "hash" : "4192728689",
     "id" : "8B92FDED",
-    "lastKnownWriteTime" : 1551160977,
-    "last_content_update" : 1551160977689,
-    "path" : "C:/Development/github/sample-hr-database/06_create_performance_reviews.R",
-    "project_path" : "06_create_performance_reviews.R",
+    "lastKnownWriteTime" : 1551333691,
+    "last_content_update" : 1551333691751,
+    "path" : "C:/Development/github/sample-hr-database/06_create_performance_reviews_salaries.R",
+    "project_path" : "06_create_performance_reviews_salaries.R",
     "properties" : {
-        "cursorPosition" : "268,0",
-        "scrollLine" : "257"
+        "cursorPosition" : "304,0",
+        "docOutlineVisible" : "1",
+        "scrollLine" : "295"
     },
     "relative_order" : 3,
     "source_on_save" : false,

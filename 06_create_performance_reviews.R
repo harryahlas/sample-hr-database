@@ -20,6 +20,8 @@ dbExecute(HRSAMPLE, "CREATE TABLE salaryhistory (
           employee_num INT (11),
           salary_effective_date DATE,
           salary DECIMAL (13,2),
+          salary_increase DECIMAL,
+          starting_salary_flag VARCHAR (1),
           FOREIGN KEY (employee_num) REFERENCES employeeinfo (employee_num)  ON DELETE CASCADE ON UPDATE CASCADE
 );")
 
@@ -32,8 +34,7 @@ hierarchy_start_date <- as.Date("1999/01/01")
 max_date <- as.Date("2019/01/01")
 
 # Import deskhistory
-#NOTE:::!!!update this to database
-deskhistory_table <- read_csv("data/deskhistory_table.csv")
+deskhistory_table <- dbGetQuery(HRSAMPLE, "SELECT *  FROM deskhistory")
 
 # Import desk_job table
 deskjob_table <- dbGetQuery(HRSAMPLE, "SELECT *  FROM deskjob")
@@ -104,7 +105,7 @@ prime_rate <- read_csv("data/prime_rate.csv")
 odds_of_no_review <- .013
 
 review_year_list <- tibble()
-salary_list <- tibble()
+salaryhistory_table <- tibble()
 
 # Promotion/new desk_id salary increase min/max
 promo_new_desk_salary_increase_min <- .04
@@ -112,15 +113,16 @@ promo_new_desk_salary_increase_max <- .175
 standard_salary_increase_min <- .01
 standard_salary_increase_max <- .04
 
+# for troubleshooting
 i = 100 #no promotion
 i = 120 #promotion
-i = 1
-i = 80
 i = 910 #(emp 5737, lots)
-#### start loop
+
+
+# Start loop --------------------------------------------------------------
+
 for (i in 1:nrow(employee_list)) {
-#  for (i in 792:798) {
-    
+
   employee_num_temp <- employee_list$employee_num[i]
   # Minimum review value reset
   min_review_value <- 1
@@ -227,8 +229,7 @@ for (i in 1:nrow(employee_list)) {
     anti_join(salary_increases_promo_new_desk, by = c("review_year" = "merit_increase_remove_year")) 
   
   if(nrow(salary_increases_standard) == 0) next # needed to avoid error in next section
-  ##############3I THINK NEED TO ADD STARTING SALARY ROW IF NEXT IS HIT HERE
-  
+
   salary_increases_standard <- salary_increases_standard%>% 
     left_join(prime_rate, by = c("review_year" = "year")) %>% 
     left_join(review_year_list_append %>% select(review_year, perf_review_score)) %>% 
@@ -252,7 +253,7 @@ for (i in 1:nrow(employee_list)) {
   starting_salary <- starting_salary_table$salary[1] 
   
   # Bind starting salary, promotions/new desk, and standard increases
-  salary_list_append <- bind_rows(starting_salary_table, 
+  salaryhistory_table_append <- bind_rows(starting_salary_table, 
                                   salary_increases_promo_new_desk %>% 
                                     select(employee_num, salary_increase_date, salary_increase),
                                   salary_increases_standard %>% 
@@ -261,15 +262,80 @@ for (i in 1:nrow(employee_list)) {
     mutate(salary = starting_salary * cumprod(1 + salary_increase))
                                         
   
-  salary_list <- bind_rows(salary_list, salary_list_append)
+  salaryhistory_table <- bind_rows(salaryhistory_table, salaryhistory_table_append)
   
   print(i)
 }
 
 save(review_year_list, file = "data/review_year_list.rda")
-save(salary_list, file = "data/salary_list.rda")
+save(salaryhistory_table, file = "data/salaryhistory_table.rda")
 
-temp_salary_calc_table <- salary_list %>% 
+
+
+
+# Populate performancereview ----------------------------------------------
+
+# Function to insert rows to performancereview
+create_insert_performancereview <- function(employee_num,
+                                      review_year,
+                                      perf_review,
+                                      database = HRSAMPLE) {
+  insert_performancereview_sql <- paste0(
+    "INSERT INTO performancereview (employee_num, year, perf_review) VALUES('",
+    employee_num, "','",
+    review_year, "','",
+    perf_review, "');")
+  print(insert_performancereview_sql)
+  dbExecute(database, insert_performancereview_sql)
+} 
+
+# Populate table 
+for (i in (1:nrow(review_year_list))) {
+  if (is.na(review_year_list$perf_review_score[i] == TRUE)) next
+
+  create_insert_performancereview(review_year_list$employee_num[i],
+                                  review_year_list$review_year[i],
+                                  review_year_list$perf_review_score[i])
+}
+
+
+
+
+# Populate salaryhistory --------------------------------------------------
+
+# Function to insert rows to salaryhistory
+create_insert_salaryhistory <- function(employee_num,
+                                            salary_increase_date,
+                                            salary,
+                                        salary_increase,
+                                        starting_salary_flag,
+                                            database = HRSAMPLE) {
+  insert_salaryhistory_sql <- paste0(
+    "INSERT INTO salaryhistory (employee_num, salary_effective_date, salary, salary_increase, starting_salary_flag) VALUES('",
+    employee_num, "','",
+    salary_increase_date, "','",
+    salary, "','",
+    salary_increase, "','",
+    starting_salary_flag, "');")
+  print(insert_salaryhistory_sql)
+  dbExecute(database, insert_salaryhistory_sql)
+} 
+
+# Populate table ######ficcusbelow
+for (i in (1:nrow(review_year_list))) {
+  if (is.na(review_year_list$perf_review_score[i] == TRUE)) next
+  
+  create_insert_performancereview(review_year_list$employee_num[i],
+                                  review_year_list$review_year[i],
+                                  review_year_list$perf_review_score[i])
+}
+
+
+
+
+
+
+temp_salary_calc_table <- salaryhistory_table %>% 
   arrange(employee_num, salary_increase) %>% 
   mutate(salary = 0) %>% 
   mutate(salary = case_when(lag(employee_num) != employee_num ~ 50000,
@@ -288,6 +354,7 @@ reviewcheck <- review_year_list %>%
 
 validation <- checktable %>% 
   left_join(reviewcheck)
+
 
 
 
