@@ -1,0 +1,22 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1550539408040.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "93BCC46A",
+    "lastKnownWriteTime" : 1550646525,
+    "last_content_update" : 1550646525839,
+    "path" : "C:/Development/github/blog/scripts/updateURLs.R",
+    "project_path" : null,
+    "properties" : {
+        "cursorPosition" : "28,0",
+        "scrollLine" : "0"
+    },
+    "relative_order" : 1,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

@@ -1,0 +1,22 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1551486261676.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "1413755334",
+    "id" : "12C24670",
+    "lastKnownWriteTime" : 1551511788,
+    "last_content_update" : 1551511788966,
+    "path" : "C:/Development/github/sample-hr-database/analysis/multi_variable_data_retrieval.R",
+    "project_path" : "analysis/multi_variable_data_retrieval.R",
+    "properties" : {
+        "cursorPosition" : "44,10",
+        "scrollLine" : "28"
+    },
+    "relative_order" : 2,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

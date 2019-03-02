@@ -1,0 +1,88 @@
+library(RMariaDB)
+library(tidyverse)
+library(openxlsx)
+library(readxl)
+
+
+# Import data -------------------------------------------------------------
+input_data <- read_xlsx("data/Johnson litigation research.xlsx")
+
+# Remove column that will be replaced and change date format
+input_data <- input_data %>% 
+  select(-`Job Name`) %>% 
+  mutate(`Date of incident or notification` = as.Date(`Date of incident or notification`))
+
+
+# Connect to database -----------------------------------------------------
+HRSAMPLE <- dbConnect(MariaDB(), 
+                      user='newuser', 
+                      password='newuser', 
+                      dbname='hrsample', 
+                      host='localhost')
+dbListTables(HRSAMPLE)
+
+
+# Run test query ----------------------------------------------------------
+test_sql <- read_file("scripts/mcdr_test.sql")
+test_df <- dbGetQuery(HRSAMPLE, test_sql)
+test_df
+
+
+# Retrieve single row using placeholders ----------------------------------
+# Import sql script with placeholders
+mvdr_sql_placeholder <- read_file("scripts/mcdr.sql")
+
+# Replace placeholders with sample employee_num and date
+mvdr_sql <- mvdr_sql_placeholder %>% 
+  gsub(pattern = '%EMP_ID%',
+       replacement = input_data$`Employee Number`[2],
+       x = .) %>% 
+  gsub(pattern = '%DATE_ID%',
+       replacement = input_data$`Date of incident or notification`[2],
+       x = .)
+
+# Retrieve data
+df_one_row <- dbGetQuery(HRSAMPLE, mvdr_sql)
+
+
+# Retrieve all data using placeholder -------------------------------------
+
+# Create empty tibble
+df <- tibble()
+
+for (i in 1:nrow(input_data)) {
+
+  # Replace placeholders with employee_num and date
+  mvdr_sql <- mvdr_sql_placeholder %>% 
+    gsub(pattern = '%EMP_ID%',
+         replacement = input_data$`Employee Number`[i],
+         x = .) %>% 
+    gsub(pattern = '%DATE_ID%',
+         replacement = input_data$`Date of incident or notification`[i],
+         x = .)
+  
+  # Retrieve data
+  df_temp <- dbGetQuery(HRSAMPLE, mvdr_sql)
+  
+  # Append data
+  df <- bind_rows(df, df_temp)
+}
+
+
+# Join retrieved data to input data ---------------------------------------
+output <- input_data %>% 
+  left_join(df %>% select(-desk_id),
+            by = c("Date of incident or notification", "Employee Number" = "employee_num")) %>% 
+  replace_na(list(job_name = "not with company at this time")) %>% 
+  rename(`Job Name` = job_name) 
+
+
+# Note: not including a disclaimer tab here though normally would
+
+# Export ------------------------------------------------------------------
+wb <- createWorkbook()
+addWorksheet(wb, "HR data needed with output")
+writeDataTable(wb, 1, output)
+saveWorkbook(wb, "output/Johnson litigation research with job_name.xlsx", TRUE)
+
+

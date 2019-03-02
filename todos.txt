@@ -8,9 +8,11 @@ add operations
 operations team A, B
 virtual 
 
-add performance reviews, 5 point scale
 add bad managers
-add salaries
+
+add dates.csv import instead of hard coded dates
+
+update beginning with baby names m/f install.packages("babynames")
 
 update state distribution, more tms in CA etc
 
