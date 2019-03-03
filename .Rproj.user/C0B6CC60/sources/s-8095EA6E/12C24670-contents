@@ -2,11 +2,14 @@ library(RMariaDB)
 library(tidyverse)
 library(openxlsx)
 library(readxl)
-
-input_data2 <- read_xlsx("https://raw.githubusercontent.com/harryahlas/sample-hr-database/master/data/Johnson litigation research.xlsx")
+library(httr)
 
 # Import data -------------------------------------------------------------
-input_data <- read_xlsx("data/Johnson litigation research.xlsx")
+temp_file <- tempfile(fileext = ".xlsx")
+req <- GET("https://raw.githubusercontent.com/harryahlas/sample-hr-database/master/data/JohnsonLitigationResearch.xlsx", 
+          # write result to disk
+           write_disk(path = temp_file))
+input_data <- read_excel(temp_file)
 
 # Remove column that will be replaced and change date format
 input_data <- input_data %>% 
