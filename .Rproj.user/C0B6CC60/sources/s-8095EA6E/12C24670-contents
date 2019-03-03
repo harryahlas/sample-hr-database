@@ -3,6 +3,7 @@ library(tidyverse)
 library(openxlsx)
 library(readxl)
 
+input_data2 <- read_xlsx("https://raw.githubusercontent.com/harryahlas/sample-hr-database/master/data/Johnson litigation research.xlsx")
 
 # Import data -------------------------------------------------------------
 input_data <- read_xlsx("data/Johnson litigation research.xlsx")
