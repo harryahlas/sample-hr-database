@@ -61,10 +61,10 @@ for (i in 1:nrow(input_data)) {
          replacement = input_data$`Date of incident or notification`[i],
          x = .)
   
-  # Retrieve data
+  # Retrieve data to temporary table
   df_temp <- dbGetQuery(HRSAMPLE, mvdr_sql)
   
-  # Append data
+  # Append data to previous retrievals
   df <- bind_rows(df, df_temp)
 }
 
