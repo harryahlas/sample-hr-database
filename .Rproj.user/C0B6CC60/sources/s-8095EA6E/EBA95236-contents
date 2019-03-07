@@ -1,0 +1,75 @@
+library(RMariaDB)
+library(tidyverse)
+library(openxlsx)
+library(readxl)
+library(httr)
+
+temp_file <- tempfile(fileext = ".xlsx")
+req <- GET("https://raw.githubusercontent.com/harryahlas/sample-hr-database/master/data/JohnsonLitigationResearch.xlsx", 
+           # write result to disk
+           write_disk(path = temp_file))
+input_data <- read_excel(temp_file)
+
+
+input_data <- input_data %>% 
+  select(-`Job Name`) %>% 
+  mutate(`Date of incident or notification` = 
+           as.Date(`Date of incident or notification`))
+
+HRSAMPLE <- dbConnect(MariaDB(), 
+                      user='newuser', 
+                      password='newuser', 
+                      dbname='hrsample', 
+                      host='localhost')
+
+dbListTables(HRSAMPLE)
+
+
+test_sql <- read_file("https://raw.githubusercontent.com/harryahlas/sample-hr-database/master/scripts/mcdr_test.sql")
+test_df <- dbGetQuery(HRSAMPLE, test_sql)
+test_df
+
+mvdr_sql_placeholder <- read_file("https://raw.githubusercontent.com/harryahlas/sample-hr-database/master/scripts/mcdr.sql")
+
+mvdr_sql <- mvdr_sql_placeholder %>% 
+  gsub(pattern = '%EMP_ID%',
+       replacement = input_data$`Employee Number`[2],
+       x = .) %>% 
+  gsub(pattern = '%DATE_ID%',
+       replacement = input_data$`Date of incident or notification`[2],
+       x = .)
+
+df_one_row <- dbGetQuery(HRSAMPLE, mvdr_sql)
+
+df_one_row
+
+
+df <- tibble()
+
+for (i in 1:nrow(input_data)) {
+  # Replace placeholders with employee_num and date
+  mvdr_sql <- mvdr_sql_placeholder %>% 
+    gsub(pattern = '%EMP_ID%',
+         replacement = input_data$`Employee Number`[i],
+         x = .) %>% 
+    gsub(pattern = '%DATE_ID%',
+         replacement = input_data$`Date of incident or notification`[i],
+         x = .)
+  
+  # Retrieve data to temporary table
+  df_temp <- dbGetQuery(HRSAMPLE, mvdr_sql)
+  df <- bind_rows(df, df_temp)
+}
+
+
+output <- input_data %>% 
+  left_join(df %>% select(-desk_id),
+            by = c("Date of incident or notification", 
+                   "Employee Number" = "employee_num")) %>% 
+  replace_na(list(job_name = "not with company at this time")) %>% 
+  rename(`Job Name` = job_name)
+
+wb <- createWorkbook()
+addWorksheet(wb, "HR data needed with output")
+writeDataTable(wb, 1, output)
+saveWorkbook(wb, "output/Johnson litigation research with job_name.xlsx", TRUE)

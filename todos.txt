@@ -1,4 +1,5 @@
-
+Create data package here: C:\Development\toss\HRSAMPLE
+	maybe use github for this?
 
 On next TM rerun:	
 	Reduce number of legal TMs
