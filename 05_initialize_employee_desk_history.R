@@ -1,6 +1,7 @@
 library(RMariaDB)
 library(tidyverse)
 library(stringr)
+source("00_variables.R")
 
 HRSAMPLE <- dbConnect(RMariaDB::MariaDB(), user='newuser', password='newuser', dbname='hrsample', host='localhost')
 dbListTables(HRSAMPLE)
@@ -69,11 +70,11 @@ employeeinfo_table <- dbGetQuery(HRSAMPLE, "SELECT * FROM employeeinfo")
 
 #need to create this as import, used in 06
 # First day of hierarchy, same as max(employeeinfo_table$hire_date)
-hierarchy_start_date <- as.Date("1999/01/01")
+hierarchy_start_date <- first_date_of_hierarchy
 
 #need to create this as import, used in 06
 # Most recent date that a new job could be had
-max_date <- as.Date("2019/01/01")
+max_date <- end_date_of_hierarchy
 
 deskhistory_table = tibble(employee_num = as.integer(""))
 desk_ids_for_removal = data.frame()
@@ -246,34 +247,21 @@ deskhistory_table %>%
 
 # Upload data -------------------------------------------------------------
 
-# Try to put this in 01 functions. It is used in 05 as well.
-# Function to insert rows to deskhistory
-create_insert_deskhistory <- function(employee_num,
-                                      desk_id,
-                                      desk_id_start_date,
-                                      desk_id_end_date,
-                                      termination_flag,
-                                      # promotion_flag = 0,# NEED TO ADD THIS BELOW, SEE 05
-                                       database = HRSAMPLE) {
-  insert_deskhistory_sql <- paste0(
-    "INSERT INTO deskhistory (employee_num, desk_id, desk_id_start_date, desk_id_end_date, termination_flag, promotion_flag) VALUES('",
-    employee_num, "','",
-    desk_id, "','",
-    desk_id_start_date, "','",
-    desk_id_end_date, "','",
-    termination_flag, "', '0');")
-  print(insert_deskhistory_sql)
-  dbExecute(database, insert_deskhistory_sql)
-} 
+deskhistory_sql <- paste(
+  "INSERT INTO deskhistory (employee_num, desk_id, desk_id_start_date, desk_id_end_date, termination_flag, promotion_flag) VALUES ",
+  paste0(
+    "('",
+    deskhistory_table$employee_num, "','",
+    deskhistory_table$desk_id, "','",
+    deskhistory_table$start_date, "','",
+    deskhistory_table$end_date, "','",
+    deskhistory_table$termination_flag, "', '0')",
+    collapse = ", "),
+  ";"
+)
 
-# Populate table 
-for (i in (1:nrow(deskhistory_table))) {
-  create_insert_deskhistory(deskhistory_table$employee_num[i],
-                            deskhistory_table$desk_id[i],
-                            deskhistory_table$start_date[i],
-                            deskhistory_table$end_date[i],
-                            deskhistory_table$termination_flag[i])
-}
+dbExecute(HRSAMPLE, deskhistory_sql)
+
 
 
 
@@ -291,23 +279,23 @@ dbExecute(HRSAMPLE, "CREATE TABLE deskjob (
 );")
 
 
-# Function to insert rows to deskjob
-create_insert_deskjob <- function(desk_id,
-                                  job_name,
-                                  database = HRSAMPLE) {
-  insert_deskjob_sql <- paste0(
-    "INSERT INTO deskjob (desk_id, job_name) VALUES('",
-    desk_id, "','",
-    job_name, "');")
-  print(insert_deskjob_sql)
-  dbExecute(database, insert_deskjob_sql)
-} 
 
-# Populate table 
-for (i in (1:nrow(deskhistory_table))) {
-  create_insert_deskjob(deskhistory_table$desk_id[i],
-                            deskhistory_table$job_name[i])
-}
+# Upload data -------------------------------------------------------------
+
+deskjob_sql <- paste(
+  "INSERT INTO deskjob (desk_id, job_name) VALUES ",
+  paste0(
+    "('",
+    deskhistory_table$desk_id, "','",
+    deskhistory_table$job_name, "')",
+    collapse = ", "),
+  ";"
+)
+
+dbExecute(HRSAMPLE, deskjob_sql)
+
+
+
 
 
 

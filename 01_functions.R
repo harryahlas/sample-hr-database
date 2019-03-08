@@ -1,3 +1,14 @@
+# create_date -------------------------------------------------------------
+# Used in 01
+# Function to generate random date between 2 dates
+
+#may not be needed
+
+#create_date <- function(start_date, end_date, number_of_dates = 1) {
+#  sample(seq(start_date, end_date, by="day"), number_of_dates)
+#}
+
+
 # create_deskhistory_row --------------------------------------------------
 # Used in 05
 # Creates row to be input into deskhistory table

@@ -1,6 +1,7 @@
 library(RMariaDB)
 library(tidyverse)
 library(lubridate)
+source("00_variables.R")
 source("01_functions.R")
 
 # Import jobs
@@ -10,7 +11,7 @@ jobs_that_can_change_org <- jobs %>%
   select(job_name)
 
 # Essentially the as of date.  Highest possible date to quit job, needs to be an imported variable
-max_date <- as.Date('2019/01/01')
+max_date <- end_date_of_hierarchy
 
 # Connect to database stored on localhost
 HRSAMPLE <- dbConnect(RMariaDB::MariaDB(), user='newuser', password='newuser', dbname='hrsample', host='localhost')
@@ -63,7 +64,7 @@ i = 1
 loopnumber = 0
 
 # The upcoming while loop will update records that have a desk_id_end_date up to this date
-run_through_date <- as.Date("2010-01-01")
+run_through_date <- as.Date("2018-12-31")
 
 # while loop --------------------------------------------------------------
 
@@ -555,47 +556,31 @@ print("made it 1")
   print(paste0(loopnumber, "loopnumber.  Date: ", sort(deskhistory_table_most_recent$desk_id_end_date, TRUE)[length(deskhistory_table_most_recent$desk_id_end_date)- i] ))
 }
 
-# Populate deskhistory table ----------------------------------------------
+# Upload data -------------------------------------------------------------
 
 # First, clear old data from deskhistory
 dbExecute(HRSAMPLE, "DELETE FROM deskhistory")
 
 
-# Try to put this in 01 functions. It is used in 04 as well.  
-# Promotion flag piece may need some work because it is different on each use.
-# Function to insert rows to deskhistory
-create_insert_deskhistory <- function(employee_num,
-                                      desk_id,
-                                      desk_id_start_date,
-                                      desk_id_end_date,
-                                      termination_flag,
-                                      promotion_flag = 0,
-                                      database = HRSAMPLE) {
-  insert_deskhistory_sql <- paste0(
-    "INSERT INTO deskhistory (employee_num, desk_id, desk_id_start_date, desk_id_end_date, termination_flag, promotion_flag) VALUES('",
-    employee_num, "','",
-    desk_id, "','",
-    desk_id_start_date, "','",
-    desk_id_end_date, "','",
-    termination_flag, "','",
-    promotion_flag, "');")
-  print(insert_deskhistory_sql)
-  dbExecute(database, insert_deskhistory_sql)
-} 
+# Populate deskhistory
+deskhistory_sql <- paste(
+  "INSERT INTO deskhistory (employee_num, desk_id, desk_id_start_date, desk_id_end_date, termination_flag, promotion_flag) VALUES ",
+  paste0(
+    "('",
+    deskhistory_table$employee_num, "','",
+    deskhistory_table$desk_id, "','",
+    deskhistory_table$start_date, "','",
+    deskhistory_table$end_date, "','",
+    deskhistory_table$termination_flag, "', '0')",
+    collapse = ", "),
+  ";"
+)
 
-# Populate table 
-for (i in (1:nrow(deskhistory_table))) {
-  create_insert_deskhistory(deskhistory_table$employee_num[i],
-                            deskhistory_table$desk_id[i],
-                            deskhistory_table$desk_id_start_date[i],
-                            deskhistory_table$desk_id_end_date[i],
-                            deskhistory_table$termination_flag[i],
-                            deskhistory_table$promotion_flag[i])
-}
+dbExecute(HRSAMPLE, deskhistory_sql)
 
 
 # Save data for alternate use ---------------------------------------------
-
+# Note: this may be removeable
 save(deskhistory_table, file = "data/deskhistory.rda")
 save(deskhistory_table_most_recent, file = "data/deskhistory_table_most_recent.rda")
 

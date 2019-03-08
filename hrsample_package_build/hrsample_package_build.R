@@ -1,23 +1,21 @@
+# Source: https://grasshoppermouse.github.io/2017/10/18/put-your-data-in-an-r-package/
 
+# Run below in console and open project
+devtools::create("C:\\Development\\github\\hrsample")
 
 # Set up the data-raw directory
 devtools::use_data_raw()
 
-
 # Create a data processing script in the data-raw directory.
-# You can use any name you want.
 file.create("data-raw/process.R")
 
 # This script in the R directory will contain the documentation.
-# You can use any name you want.
 file.create("R/data.R")
 
 # Initialize git repository (optional)
 devtools::use_git()
 
-
-
-# Create data
+# Source data created from https://github.com/harryahlas
 library(RMariaDB)
 library(tidyverse)
 
@@ -66,13 +64,13 @@ devtools::use_data(employeeinfo_table,
 # http://r-pkgs.had.co.nz/description.html.
 # You won’t need Imports or Suggests.
 
-install.packages("sinew")
-sinew::makeOxygen(employeeinfo_table, add_fields = "source", ) %>% write(file="R/data.r",append=TRUE)
-sinew::makeOxygen(deskhistory_table, add_fields = "source", ) %>% write(file="R/data.r",append=TRUE)
-sinew::makeOxygen(deskjob_table, add_fields = "source", ) %>% write(file="R/data.r",append=TRUE)
-sinew::makeOxygen(hierarchy_table, add_fields = "source", ) %>% write(file="R/data.r",append=TRUE)
-sinew::makeOxygen(performancereview_table, add_fields = "source", ) %>% write(file="R/data.r",append=TRUE)
-sinew::makeOxygen(salaryhistory_table, add_fields = "source", ) %>% write(file="R/data.r",append=TRUE)
+#install.packages("sinew")
+sinew::makeOxygen(employeeinfo_table, add_fields = "source" ) %>% write(file="R/data.r",append=TRUE)
+sinew::makeOxygen(deskhistory_table, add_fields = "source" ) %>% write(file="R/data.r",append=TRUE)
+sinew::makeOxygen(deskjob_table, add_fields = "source" ) %>% write(file="R/data.r",append=TRUE)
+sinew::makeOxygen(hierarchy_table, add_fields = "source" ) %>% write(file="R/data.r",append=TRUE)
+sinew::makeOxygen(performancereview_table, add_fields = "source" ) %>% write(file="R/data.r",append=TRUE)
+sinew::makeOxygen(salaryhistory_table, add_fields = "source" ) %>% write(file="R/data.r",append=TRUE)
 
 
 # Make sure Build tab is there and Build...ROxygen is checked, configured with build etc

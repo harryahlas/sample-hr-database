@@ -1,5 +1,9 @@
 # sample-hr-database
 
-Open during construction.
+FICTITIONAL Sample Human Resources database for a FICTITIONAL company.
 
-This is a sample human resources database with multiple tables built using R and MySQL.
+Useable but anticipate major changes with time.
+
+For instance, employees cannot get rehired. I plan to fix that eventually.
+
+Built using R and MySQL.
