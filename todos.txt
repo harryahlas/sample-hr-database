@@ -1,9 +1,8 @@
-use babynames package for names
-add variables to variables import
-Improved sql upload code
-Removed original hiredate
+WHY ARE THERE SO MANY SALARY INCREASES IN 2018?
 
 need to add original hire date back in somewhere? maybe
+
+add EER diagram to r package with function to print
 
 note on readme that employees cannot get rehired yet
 
@@ -18,7 +17,14 @@ add operations
 operations team A, B
 virtual 
 
-add bad managers
+On 07 perf reviews/salaries
+	# add laters:
+	# if they
+	# Try to leave plug for bad manager
+	#go back and somewhat randomly pick some bad lvl 4 managers.  They should have higher turnover rates. give their TMs a better chance of getting 1 or 2
+	#bad managers 
+	### Need to add a check that TMs that left company and came back did not get a review during that period
+
 
 add dates.csv import instead of hard coded dates
 

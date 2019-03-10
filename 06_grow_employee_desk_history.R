@@ -569,9 +569,10 @@ deskhistory_sql <- paste(
     "('",
     deskhistory_table$employee_num, "','",
     deskhistory_table$desk_id, "','",
-    deskhistory_table$start_date, "','",
-    deskhistory_table$end_date, "','",
-    deskhistory_table$termination_flag, "', '0')",
+    deskhistory_table$desk_id_start_date, "','",
+    deskhistory_table$desk_id_end_date, "','",
+    deskhistory_table$termination_flag, "','",
+    deskhistory_table$promotion_flag, "')",
     collapse = ", "),
   ";"
 )

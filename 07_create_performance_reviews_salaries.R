@@ -2,17 +2,17 @@ library(RMariaDB)
 library(tidyverse)
 library(lubridate)
 library(fuzzyjoin)
+source("00_variables.R")
 source("01_functions.R")
 
-
+# Connect to database -----------------------------------------------------
 HRSAMPLE <- dbConnect(RMariaDB::MariaDB(), user='newuser', password='newuser', dbname='hrsample', host='localhost')
-
 
 # Build performancereview table -------------------------------------------
 dbExecute(HRSAMPLE, "CREATE TABLE performancereview (
           employee_num INT (11),
           year INT (4),
-          perf_review INT (1),
+          perf_review_score INT (1),
           FOREIGN KEY (employee_num) REFERENCES employeeinfo (employee_num)  ON DELETE CASCADE ON UPDATE CASCADE
 );")
 
@@ -21,18 +21,18 @@ dbExecute(HRSAMPLE, "CREATE TABLE salaryhistory (
           employee_num INT (11),
           salary_effective_date DATE,
           salary DECIMAL (13,2),
-          salary_increase DECIMAL,
+          salary_increase DECIMAL (4,3),
           starting_salary_flag VARCHAR (1),
           FOREIGN KEY (employee_num) REFERENCES employeeinfo (employee_num)  ON DELETE CASCADE ON UPDATE CASCADE
 );")
 
 #need to create this as import, used in 06
 # First day of hierarchy, same as max(employeeinfo_table$hire_date)
-hierarchy_start_date <- as.Date("1999/01/01")
+hierarchy_start_date <- first_date_of_hierarchy
 
 #need to create this as import, used in 06
 # Most recent date that a new job could be had
-max_date <- as.Date("2019/01/01")
+max_date <- end_date_of_hierarchy
 
 # Import deskhistory
 deskhistory_table <- dbGetQuery(HRSAMPLE, "SELECT *  FROM deskhistory")
@@ -117,8 +117,9 @@ standard_salary_increase_max <- .04
 
 # Start loop --------------------------------------------------------------
 
-for (i in 1:nrow(employee_list)) {
-
+#for (i in 1:nrow(employee_list)) {
+for (i in 1:30) {
+  
   employee_num_temp <- employee_list$employee_num[i]
   # Minimum review value reset
   min_review_value <- 1
@@ -266,75 +267,76 @@ for (i in 1:nrow(employee_list)) {
   print(i)
 }
 
+# Remove rows without performance review scores from performance review table
+review_year_list <- review_year_list %>% 
+  filter(!is.na(perf_review_score))
+
+
+# Replace NAs on salaryhistory starting_salary_flag with N 
+salaryhistory_table <- salaryhistory_table %>% 
+  mutate(starting_salary_flag = if_else(is.na(starting_salary_flag),
+                                        "N",
+                                        starting_salary_flag))
+
+# TEST ABOVE BEFORE MOVING ON
+         
+# Backup
 save(review_year_list, file = "data/review_year_list.rda")
 save(salaryhistory_table, file = "data/salaryhistory_table.rda")
 
 
 
-
 # Populate performancereview ----------------------------------------------
 
-# Function to insert rows to performancereview
-create_insert_performancereview <- function(employee_num,
-                                      review_year,
-                                      perf_review,
-                                      database = HRSAMPLE) {
-  insert_performancereview_sql <- paste0(
-    "INSERT INTO performancereview (employee_num, year, perf_review) VALUES('",
-    employee_num, "','",
-    review_year, "','",
-    perf_review, "');")
-  print(insert_performancereview_sql)
-  dbExecute(database, insert_performancereview_sql)
-} 
+# First, clear old data from performancereview
+dbExecute(HRSAMPLE, "DELETE FROM performancereview")
 
-# Populate table 
-for (i in (1:nrow(review_year_list))) {
-  if (is.na(review_year_list$perf_review_score[i] == TRUE)) next
+# Populate performancereview
+review_year_list_sql <- paste(
+  "INSERT INTO performancereview (employee_num, year, perf_review_score) VALUES ",
+  paste0(
+    "('",
+    review_year_list$employee_num, "','",
+    review_year_list$review_year, "','",
+    review_year_list$perf_review_score, "')",
+    collapse = ", "),
+  ";"
+)
 
-  create_insert_performancereview(review_year_list$employee_num[i],
-                                  review_year_list$review_year[i],
-                                  review_year_list$perf_review_score[i])
-}
+dbExecute(HRSAMPLE, review_year_list_sql)
 
 
-# Populate salaryhistory --------------------------------------------------
+# Populate salaryhistory ----------------------------------------------
 
-# Function to insert rows to salaryhistory
-create_insert_salaryhistory <- function(employee_num,
-                                        salary_increase_date,
-                                        salary,
-                                        salary_increase,
-                                        starting_salary_flag,
-                                        database = HRSAMPLE) {
-  insert_salaryhistory_sql <- paste0(
-    "INSERT INTO salaryhistory (employee_num, salary_effective_date, salary, salary_increase, starting_salary_flag) VALUES('",
-    employee_num, "','",
-    salary_increase_date, "','",
-    salary, "','",
-    salary_increase, "','",
-    starting_salary_flag, "');")
-  print(insert_salaryhistory_sql)
-  dbExecute(database, insert_salaryhistory_sql)
-} 
+# First, clear old data from salaryhistory
+dbExecute(HRSAMPLE, "DELETE FROM salaryhistory")
 
-# Populate table ######ficcusbelow
-for (i in (1:nrow(salaryhistory_table))) {
+# Populate salaryhistory
+salaryhistory_sql <- paste(
+  "INSERT INTO salaryhistory (employee_num, salary_effective_date, salary, salary_increase, starting_salary_flag) VALUES ",
+  paste0(
+    "('",
+    salaryhistory_table$employee_num, "','",
+    salaryhistory_table$salary_increase_date, "','",
+    salaryhistory_table$salary, "','",
+    salaryhistory_table$salary_increase, "','",
+    salaryhistory_table$starting_salary_flag, "')",
+    collapse = ", "),
+  ";"
+)
 
-  salaryhistory_table$starting_salary_flag[i] <- if_else(is.na(salaryhistory_table$starting_salary_flag[i]),
-                                                         "N",
-                                                         salaryhistory_table$starting_salary_flag[i])
-
-  create_insert_salaryhistory(salaryhistory_table$employee_num[i],
-                              salaryhistory_table$salary_increase_date[i],
-                              salaryhistory_table$salary[i],
-                              salaryhistory_table$salary_increase[i],
-                              salaryhistory_table$starting_salary_flag[i])
-}
+dbExecute(HRSAMPLE, salaryhistory_sql)
 
 
 
 
+
+
+
+
+
+
+#analysis/validations
 
 temp_salary_calc_table <- salaryhistory_table %>% 
   arrange(employee_num, salary_increase) %>% 
@@ -358,17 +360,8 @@ validation <- checktable %>%
 
 
 
-
-
-# add laters:
-# if they
-# Try to leave plug for bad manager
-#go back and somewhat randomly pick some bad lvl 4 managers.  They should have higher turnover rates. give their TMs a better chance of getting 1 or 2
-#bad managers 
-
 ### Need to add a check that TMs that left company and came back did not get a review during that period
 
-#update performancereview table
 
 deskhistory_table %>% 
   group_by(employee_num) %>% 
