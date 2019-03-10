@@ -1,6 +1,10 @@
 library(RMariaDB)
 library(hrsample)
 library(tidyverse)
+library(scales)
+
+default_color <- rgb(155/255, 186/255, 204/255)
+
 
 # below borrowed from 07
 # Connect to database -----------------------------------------------------
@@ -47,30 +51,6 @@ hierarchy_spread_all <- hierarchy_spread %>%
   bind_rows(hierarchy_spread_lvl01, hierarchy_spread_lvl02, hierarchy_spread_lvl03)
 
 
-
-# Merit Increases ---------------------------------------------------------
-
-default_color <- rgb(155/255, 186/255, 204/255)
-
-merit_increases <- salaryhistory_table %>%
-  mutate(`Salary Increase Year` = lubridate::year(salary_effective_date)) %>%
-  filter(salary_increase > 0,
-         `Salary Increase Year` >= 2012,
-         `Salary Increase Year` <= 2017) %>%
-  ggplot(aes(x = salary_increase)) +
-  geom_histogram(bins = 15, fill = default_color) +
-  scale_x_continuous(labels = scales::percent) +
-  facet_wrap(~`Salary Increase Year`) +
-  labs(x = "% Increase",
-       y = "Count of Merit Increases",
-       title = "Merit Increases by Year") +
-  theme_minimal() +
-  theme(panel.grid.major = element_blank(), 
-        panel.grid.minor = element_blank())
-
-ggsave(merit_increases, filename =  "images/merit_increases.png", device = "png")
-
-
 # Headcount ---------------------------------------------------------------
 # Note this appears to be more desk count than headcount
 employee_distribution <- deskhistory_table %>% 
@@ -91,3 +71,53 @@ employee_distribution <- deskhistory_table %>%
 
 ggsave(employee_distribution, filename =  "images/employee_distribution.png", device = "png")
 
+
+
+# Merit Increases ---------------------------------------------------------
+
+
+merit_increases <- salaryhistory_table %>%
+  mutate(`Salary Increase Year` = lubridate::year(salary_effective_date)) %>%
+  filter(salary_increase > 0,
+         `Salary Increase Year` >= 2012,
+         `Salary Increase Year` <= 2017) %>%
+  ggplot(aes(x = salary_increase)) +
+  geom_histogram(bins = 15, fill = default_color) +
+  scale_x_continuous(labels = percent) +
+  facet_wrap(~`Salary Increase Year`) +
+  labs(x = "% Increase",
+       y = "Count of Merit Increases",
+       title = "Merit Increases by Year") +
+  theme_minimal() +
+  theme(panel.grid.major = element_blank(), 
+        panel.grid.minor = element_blank())
+
+ggsave(merit_increases, filename =  "images/merit_increases.png", device = "png")
+
+
+
+#salary_distribution <- 
+salary_distribution <- deskhistory_table %>% 
+  filter(desk_id_end_date == as.Date("2999-01-01")) %>% 
+  left_join(salaryhistory_table) %>% 
+  group_by(employee_num, desk_id) %>% 
+  summarise(current_salary = max(salary)) %>% arrange(desc(employee_num)) %>% 
+  left_join(deskjob_table) %>% 
+  ungroup() %>% 
+  group_by(job_name) %>% 
+  summarize(avg_salary = mean(current_salary, na.rm = TRUE),
+            job_count = n()) %>% 
+  filter(!grepl(pattern = "Leader|CEO", x = job_name )) %>% 
+  ggplot(aes(x = fct_reorder(job_name, -avg_salary), y = avg_salary)) +
+  geom_col(fill = default_color, width = .8) +
+  scale_y_continuous(labels = scales::dollar) +
+  labs(title = "Average Salary by Common Jobs") +
+  theme_minimal() +
+  theme(panel.grid.major = element_blank(), 
+        panel.grid.minor = element_blank(),
+        axis.title.y=element_blank(),
+        axis.title.x=element_blank(),
+        axis.text.x = element_text(angle = 45, hjust = 1)
+  )
+
+ggsave(salary_distribution, filename =  "images/salary_distribution.png", device = "png")
