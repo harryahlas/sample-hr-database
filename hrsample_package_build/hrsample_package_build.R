@@ -32,12 +32,12 @@ performancereview_table <- dbGetQuery(HRSAMPLE, "SELECT *  FROM performancerevie
 salaryhistory_table     <- dbGetQuery(HRSAMPLE, "SELECT *  FROM salaryhistory")
 
 # Put your data files into the data-raw folder
-save(employeeinfo_table,       file = "C:\\Development\\github\\hrsample\\data-raw/employeeinfo_table.rda")
-save(deskhistory_table,        file = "C:\\Development\\github\\hrsample\\data-raw/deskhistory_table.rda")
-save(deskjob_table,            file = "C:\\Development\\github\\hrsample\\data-raw/deskjob_table.rda")
-save(hierarchy_table,          file = "C:\\Development\\github\\hrsample\\data-raw/hierarchy_table.rda")
-save(performancereview_table,  file = "C:\\Development\\github\\hrsample\\data-raw/performancereview_table.rda")
-save(salaryhistory_table,      file = "C:\\Development\\github\\hrsample\\data-raw/salaryhistory_table.rda")
+save(employeeinfo_table,       file = "data-raw/employeeinfo_table.rda")
+save(deskhistory_table,        file = "data-raw/deskhistory_table.rda")
+save(deskjob_table,            file = "data-raw/deskjob_table.rda")
+save(hierarchy_table,          file = "data-raw/hierarchy_table.rda")
+save(performancereview_table,  file = "data-raw/performancereview_table.rda")
+save(salaryhistory_table,      file = "data-raw/salaryhistory_table.rda")
 
 
 # update Process.R

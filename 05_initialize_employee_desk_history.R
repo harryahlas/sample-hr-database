@@ -87,6 +87,8 @@ hierarchy_with_depth.sql <- read_file("scripts/hierarchy_with_depth.sql")
 hierarchy_with_depth <- dbGetQuery(HRSAMPLE, hierarchy_with_depth.sql)
 
 # Rollup
+# Note: hierachy_spread here will have multiple rows for some desk_ids.  This is ok here.
+# Will choose 1 of these "special" instances later.
 hierarchy_spread <- hierarchy_table_with_state %>% 
   mutate(lvl00_desk_id = 0,
          lvl00_org = "CEO") %>% 
@@ -201,7 +203,8 @@ for (i in (1:nrow(hierarchy_table_with_state))) {
     
     temp_job <- case_when(temp_job != "other" ~ temp_job,
                           temp_job == "other" ~ jobs %>% 
-                            filter(is.na(pct_of_lob)) %>% 
+                            filter(is.na(pct_of_lob),
+                                   is.na(leadership_role)) %>% 
                             select(job_name) %>% 
                             sample_n(1) %>% # Randomly select another job
                             as.character())

@@ -117,9 +117,8 @@ standard_salary_increase_max <- .04
 
 # Start loop --------------------------------------------------------------
 
-#for (i in 1:nrow(employee_list)) {
-for (i in 1:30) {
-  
+for (i in 1:nrow(employee_list)) {
+
   employee_num_temp <- employee_list$employee_num[i]
   # Minimum review value reset
   min_review_value <- 1
@@ -278,8 +277,6 @@ salaryhistory_table <- salaryhistory_table %>%
                                         "N",
                                         starting_salary_flag))
 
-# TEST ABOVE BEFORE MOVING ON
-         
 # Backup
 save(review_year_list, file = "data/review_year_list.rda")
 save(salaryhistory_table, file = "data/salaryhistory_table.rda")
