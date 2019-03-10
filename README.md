@@ -21,6 +21,9 @@ Images below, including an EER diagram, give you an idea of what is in the datab
 ![Headcount information](images/employee_distribution.png)
 
 
+![Job information](images/job_distribution.png)
+
+
 ![Annual information about raises](images/merit_increases.png)
 
 
