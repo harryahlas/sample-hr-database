@@ -8,12 +8,23 @@ The results of this work can be found in two sources:
 
 This data is useable but anticipate changes over time.  There are many issues that can be improved upon.  For instance, employees cannot get rehired. There are an unusually high number of raises in 2018 due to a coding issue. I plan to fix  these and others eventually.
 
+Built using R and MySQL.
+
 Exercises related to this data can be found at my blog:
 http://harry.ahlas.com
 
-Reach me at twitter https://twitter.com/harry_ahlas
+Images below, including an EER diagram, give you an idea of what is in the database.
 
-Built using R and MySQL.
+![EER diagram](images/HRSAMPLE_EER.png)
 
-Here is an EER diagram:
-![Image description](images/HRSAMPLE_EER.png)
+
+![Headcount information](images/employee_distribution.png)
+
+
+![Annual information about raises](images/merit_increases.png)
+
+
+![Salary information](images/salary_distribution.png)
+
+For questions/comments reach me at twitter https://twitter.com/harry_ahlas
+
