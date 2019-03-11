@@ -121,3 +121,30 @@ salary_distribution <- deskhistory_table %>%
   )
 
 ggsave(salary_distribution, filename =  "images/salary_distribution.png", device = "png")
+
+
+
+
+
+# Job Distribution --------------------------------------------------------
+
+job_distribution <- deskhistory_table %>% 
+  filter(desk_id_end_date == as.Date("2999-01-01")) %>% 
+  right_join(deskjob_table) %>%
+  count(job_name) %>% 
+  arrange(n) %>% 
+  ggplot(aes(x = fct_reorder(job_name, n), y = n)) +
+  geom_col(fill = default_color, width = .8) +
+  labs(title = "Current Job Distribution") +
+  theme_minimal() +
+  theme(panel.grid.major = element_blank(), 
+        panel.grid.minor = element_blank(),
+        axis.title.y=element_blank(),
+        axis.title.x=element_blank(),
+        axis.text.x = element_text(angle = 45, hjust = 1) 
+  )+
+  coord_flip()
+ 
+ ggsave(job_distribution, filename =  "images/job_distribution.png", device = "png")
+ 
+  
