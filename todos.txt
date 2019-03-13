@@ -1,4 +1,11 @@
-WHY ARE THERE SO MANY SALARY INCREASES IN 2018?
+For the 24th release: 
+	make sure names/values match what is in post
+	UPDATE DATA DISCLAIMER (AND OTHERS) TO USE HRSAMPLE PACKAGE
+	send tweet
+	update graphs on website 
+	update graphs on package 
+
+
 
 combine dates and variables scripts
 
@@ -6,10 +13,7 @@ need to add original hire date back in somewhere? maybe
 
 add EER diagram to r package with function to print
 
-note on readme that employees cannot get rehired yet
-
-Create data package here: C:\Development\toss\HRSAMPLE
-	maybe use github for this?
+instead of fuzzyjoin in salaryhistory try doing it in mysql to make it faster
 
 On next TM rerun:	
 	Reduce number of legal TMs

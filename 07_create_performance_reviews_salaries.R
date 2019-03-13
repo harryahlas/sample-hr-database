@@ -9,6 +9,7 @@ source("01_functions.R")
 HRSAMPLE <- dbConnect(RMariaDB::MariaDB(), user='newuser', password='newuser', dbname='hrsample', host='localhost')
 
 # Build performancereview table -------------------------------------------
+#dbExecute(HRSAMPLE, "DELETE FROM performancereview")
 dbExecute(HRSAMPLE, "CREATE TABLE performancereview (
           employee_num INT (11),
           year INT (4),
@@ -17,6 +18,7 @@ dbExecute(HRSAMPLE, "CREATE TABLE performancereview (
 );")
 
 # Build salaryhistory table -----------------------------------------------
+#dbExecute(HRSAMPLE, "DELETE FROM salaryhistory")
 dbExecute(HRSAMPLE, "CREATE TABLE salaryhistory (
           employee_num INT (11),
           salary_effective_date DATE,
@@ -109,9 +111,9 @@ salaryhistory_table <- tibble()
 
 # Promotion/new desk_id salary increase min/max
 promo_new_desk_salary_increase_min <- .04
-promo_new_desk_salary_increase_max <- .175
+promo_new_desk_salary_increase_max <- .15
 standard_salary_increase_min <- .01
-standard_salary_increase_max <- .04
+standard_salary_increase_max <- .03
 
 
 

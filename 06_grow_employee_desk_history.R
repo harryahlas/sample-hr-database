@@ -49,7 +49,7 @@ hierarchy_with_depth <- dbGetQuery(HRSAMPLE, hierarchy_with_depth.sql)
 error_log <- data.frame(employee_num = integer(), desk_id = integer(), issue = character())
 
 # Update CEO so that there is no churn there.
-deskhistory_table$desk_id_end_date[deskhistory_table$desk_id == 1] <- as.Date("2999-01-01")
+deskhistory_table$desk_id_end_date[deskhistory_table$desk_id == 1] <- end_date_of_hierarchy
 
 # Create deskhistory_table_most_recent. This selects the most recent row for each employee.
 # So each desk_id has only 1 row. Think of this as the current layout of the organization.
@@ -92,14 +92,13 @@ print("made it 1")
   temp_job_name <- deskjob_table$job_name[deskjob_table$desk_id == temp_desk_id]
   
 
-  ##########removing 2/17
   # If the employee's current job shows termination then move to the next employee.
   # The desk_id will open up for someone else.
-  # if (deskhistory_table_most_recent$termination_flag[i] == 1) {
-  #   error_log <- error_log %>% 
-  #     bind_rows(data.frame(loopnumber = loopnumber, employee_num = temp_employee_num, desk_id = temp_desk_id, issue = paste("Job opening not filled because it was a termination")))
-  #   i = i +1 # increase row number to look at
-  #   next}
+  if (deskhistory_table_most_recent$termination_flag[i] == 1) {
+    error_log <- error_log %>%
+      bind_rows(data.frame(loopnumber = loopnumber, employee_num = temp_employee_num, desk_id = temp_desk_id, issue = paste("Job opening not filled because it was a termination")))
+    i = i +1 # increase row number to look at
+    next}
   
   ####NEED TO UPDATE LEADERS BELOW
   # if it is depth 0-3 then skip for now, leave plug
@@ -555,6 +554,7 @@ print("made it 1")
   
   print(paste0(loopnumber, "loopnumber.  Date: ", sort(deskhistory_table_most_recent$desk_id_end_date, TRUE)[length(deskhistory_table_most_recent$desk_id_end_date)- i] ))
 }
+
 
 # Upload data -------------------------------------------------------------
 
