@@ -1,6 +1,6 @@
 # sample-hr-database
 
-FICTITIONAL Sample Human Resources database for a FICTITIONAL company.  Names, locations, etc are contrived and determined randomly when possible.
+FICTITIOUS Sample Human Resources database for a FICTITIOUS company.  Names, locations, etc are contrived and determined randomly when possible.
 
 The results of this work can be found in two sources:
 - R package "hrsample" which can be found here: https://github.com/harryahlas/hrsample
