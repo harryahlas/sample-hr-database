@@ -2,6 +2,7 @@ library(RMariaDB)
 library(hrsample)
 library(tidyverse)
 library(scales)
+library(lubridate)
 
 default_color <- rgb(155/255, 186/255, 204/255)
 
@@ -149,3 +150,22 @@ job_distribution <- deskhistory_table %>%
  ggsave(job_distribution, filename =  "images/job_distribution.png", device = "png")
  
   
+
+# Promotions --------------------------------------------------------------
+#count of promotions by year
+deskhistory_table %>% 
+   left_join(hierarchy_spread_all) %>% 
+   mutate(year = year(desk_id_start_date)) %>% 
+   count(year, lvl01_org, promotion_flag) %>% 
+   filter(promotion_flag == 1) %>% 
+   ggplot(aes(x = year, y = n)) +
+   geom_col(fill = default_color) +
+   facet_wrap(~lvl01_org) +
+   labs(y = "Count of Promotions",
+        title = "Promotions by Business Line") +
+   theme_minimal() +
+   theme(panel.grid.major = element_blank(), 
+         panel.grid.minor = element_blank(),
+         axis.text.x      = element_blank()) 
+ 
+ 

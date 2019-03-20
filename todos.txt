@@ -1,19 +1,63 @@
 For the 24th release: 
 	make sure names/values match what is in post
 	UPDATE DATA DISCLAIMER (AND OTHERS) TO USE HRSAMPLE PACKAGE
-	send tweet
-	update graphs on website 
-	update graphs on package 
+	send tweet...add images
 
+Per hw, add function that will create databases
+	1. see if he responds after a few days
+	2. reread, reevaluate
+	3. suggestion would be to have code that automatically installs mysql, not sure if need to have just an error message or if need to install mariadb
+	4. look at nosql and others
 
+Bad manager plug 1
+	On 07 perf reviews/salaries
+	go back and somewhat randomly pick some bad lvl 4 managers.  They should have higher turnover rates. give their TMs a better chance of getting 1 or 2
+	1. add poor performer flag to initial team member set.  (so if they are hired then they would have lower reviews/bad manager flag)
+
+Improve poor performers
+	in step 1 above, incorporate that poor performer flag
+	
+	
+Look for errors - see analysis/validations.R
+	1. COMPLETE - TMs terminating then rehiring - get an idea of that.  If no rehires then we should add a few
+	2. Need to add a check that TMs that left company and came back did not get a review during that period
+	3. Graph review score vs tenure
+		a. COMPLETE -review in 2008 < 3 then higher chance of turnover in 2009?
+		b. NEXT - THIS SEEMS WRONG, REVIEW THIS IN analysis/validations.R turnover rate for tms with 1-2 vs 3, 4,5
+	4. Check turnover, movement, and promotions for levels 1-3
+	5. check job by states
+	6. Check promotions - see if people are getting promotions after a 1 or 2 review
 
 combine dates and variables scripts
+
+Have term rates fluctuate by year
+Have term rates fluctuate by LOB (maybe this fits with poor performer flag)
+
+Add termination types:
+	Voluntary Resignation: Resignation refers to a termination decided upon by an employee, who for any reason determines they want to end their employment agreement with a given organization.
+		Job abandonment:Technically considered voluntary resignation, job abandonment occurs when an employee does not show up for scheduled working hours for a number of consecutive days. In most states, 3 consecutive days of unexcused absences is considered job abandonment.
+	End of Temporary Employment: maybe don't worry about this...When a fixed term of temporary employment ends, the contracted temp leaves their role unless they are asked to join the organization permanently.
+	Retirement: Employees retire from employment when they reach an age at which they are ready to elave the workforce permanently.
+	Involuntary termination:Involuntary termination can include layoffs, closure of business, or individual termination as a result of unsatisfactory performance. (source: https://www.bambee.com/termination/)
+
+
+
+Add rehires.  When picking TMs, take a look and maybe 1/20? set rehire rate globally, take that % when picking TM.  Set min 1 year since term.
+
 
 need to add original hire date back in somewhere? maybe
 
 add EER diagram to r package with function to print
 
 instead of fuzzyjoin in salaryhistory try doing it in mysql to make it faster
+
+increase turnover rate
+increase turnover rate if they got a bad review? how to do that?
+remove TMs that are not being used
+remove poor performer flag from dataset
+remove termination flag from deskhistory if date is 2999
+
+allow position numbers and rollups to change, lobs etc
 
 On next TM rerun:	
 	Reduce number of legal TMs
@@ -23,15 +67,10 @@ add operations
 operations team A, B
 virtual 
 
-On 07 perf reviews/salaries
-	# add laters:
-	# if they
-	# Try to leave plug for bad manager
-	#go back and somewhat randomly pick some bad lvl 4 managers.  They should have higher turnover rates. give their TMs a better chance of getting 1 or 2
-	#bad managers 
-	### Need to add a check that TMs that left company and came back did not get a review during that period
 
 
+Nice to have: get employee numbers in order (not critical)
+	
 add dates.csv import instead of hard coded dates
 
 
