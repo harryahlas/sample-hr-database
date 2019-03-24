@@ -1,8 +1,18 @@
+try https://www.adminer.org/ for he.net mgmt
+
+sql server instructions https://www.r-bloggers.com/setting-up-an-odbc-connection-with-ms-sql-server-on-windows/
+harryahlas
+
 For the 24th release: 
 	make sure names/values match what is in post
 	UPDATE DATA DISCLAIMER (AND OTHERS) TO USE HRSAMPLE PACKAGE
 	send tweet...add images
 
+At some point communicate functions to create SQL databases	
+	
+Next run quick changes:	
+	Increase turnover rate
+	
 Per hw, add function that will create databases
 	1. see if he responds after a few days
 	2. reread, reevaluate
@@ -10,6 +20,7 @@ Per hw, add function that will create databases
 	4. look at nosql and others
 
 Bad manager plug 1
+	FIRST need to edit create_deskhistory_row() in 01 functions.  Add an argument that can increase the termination ratio and add that in w/bad mgr, bad employee etc.
 	On 07 perf reviews/salaries
 	go back and somewhat randomly pick some bad lvl 4 managers.  They should have higher turnover rates. give their TMs a better chance of getting 1 or 2
 	1. add poor performer flag to initial team member set.  (so if they are hired then they would have lower reviews/bad manager flag)
@@ -23,13 +34,19 @@ Look for errors - see analysis/validations.R
 	2. Need to add a check that TMs that left company and came back did not get a review during that period
 	3. Graph review score vs tenure
 		a. COMPLETE -review in 2008 < 3 then higher chance of turnover in 2009?
-		b. NEXT - THIS SEEMS WRONG, REVIEW THIS IN analysis/validations.R turnover rate for tms with 1-2 vs 3, 4,5
-	4. Check turnover, movement, and promotions for levels 1-3
+		b. THINK ABOUT THIS LATER - THIS SEEMS OK BUT REVIEW AGAIN, REVIEW THIS IN analysis/validations.R turnover rate for tms with 1-2 vs 3, 4,5
+		c. TENURE LOOKS GOOD FOR MINIMUM REVIEW SCORES. Tenure for b above
+	4. COMPLETE - Check turnover, movement, and promotions for levels 1-3, maybe deskids 1:30 or so
+		a. MOVEMENT NEEDS TO BE FIXED, ADDED TASK BELOW
+		b. TURNOVER SEEMS OK
+		c. PROMOTION RATES SEEM OK
 	5. check job by states
 	6. Check promotions - see if people are getting promotions after a 1 or 2 review
 
 combine dates and variables scripts
 
+Add ability to every once in a while hire someone up a level.  There is currently no level movement (3->2 etc)
+Randomly add desk_ids after term.  and add new ones randomly. (if team has less than 12 tms say)
 Have term rates fluctuate by year
 Have term rates fluctuate by LOB (maybe this fits with poor performer flag)
 
