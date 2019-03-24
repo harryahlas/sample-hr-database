@@ -131,6 +131,54 @@ deskhistory_table %>%
   geom_col(position = "fill") +
   labs(title = "% of employees who received\na Promotion at some point by level")
 
-# 5. check job by states
+# 5. Only 692 TMs right now
+deskhistory_table %>% 
+  filter(desk_id_end_date >= as.Date("2019-01-01")) %>% 
+  nrow()
 
-# 6. Check promotions - see if people are getting promotions after a 1 or 2 review
+# 6. check job by states
+state_ratios <- deskhistory_table %>% 
+  filter(desk_id_end_date >= as.Date("2019-01-01")) %>% 
+  left_join(employeeinfo_table) %>% 
+  count(state) %>% 
+  left_join(employeeinfo_table %>% 
+              count(state) %>% 
+              rename(state_ratio = n)) %>% 
+  mutate(pct_state = n / state_ratio)  %>% 
+  arrange(desc(pct_state)) 
+
+
+# 7. Check promotions - see if people are getting promotions after a 1 or 2 review
+deskhistory_promotions <- deskhistory_table %>% 
+  mutate(endyear = year(desk_id_end_date),
+         promotionyear = ifelse(promotion_flag == 1, endyear, NA)) %>% 
+  filter(!is.na(promotionyear))
+
+perf_promotions <- performancereview_table %>% 
+  mutate(promotionyearcheck = year + 1) %>% 
+  left_join(deskhistory_promotions, by = c("employee_num", "promotionyearcheck" = "promotionyear"))
+
+perf_promotions %>% 
+  mutate(poor_perf_review_flag = if_else(perf_review_score %in% c(1,2), "1 or 2", "3 or better")) %>% 
+  count(promotion_flag,  poor_perf_review_flag) %>% 
+  ggplot(aes(x = as.factor(poor_perf_review_flag), y = n, fill = promotion_flag)) +
+  geom_col(position = "fill") +
+  labs(title = "% of employees that promoted the year \nfollowing review score below",
+       subtitle = "Maybe should be lower for 1 or 2 scores")
+
+perf_promotions %>% 
+  count(promotion_flag,  perf_review_score) %>% 
+  ggplot(aes(x = as.factor(perf_review_score), y = n, fill = promotion_flag)) +
+  geom_col(position = "fill") +
+  labs(title = "% of employees that promoted the year \nfollowing review score below",
+       subtitle = "Maybe should be lower for 1 or 2 scores")
+
+# 8. Termination rate is low
+deskhistory_table %>% 
+  filter(desk_id_start_date <= as.Date("2018-01-01"),
+         desk_id_end_date >= as.Date("2017-01-01")) %>% 
+  mutate(termination = if_else(termination_flag == 1 & (year(desk_id_end_date) == 2017 ), "term2017", "notterm2017")) %>% 
+  count(termination) %>% 
+  spread(key = termination, value = n) %>% 
+  mutate(pct = term2017 / (term2017 + notterm2017))
+  

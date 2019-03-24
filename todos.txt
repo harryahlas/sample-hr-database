@@ -32,7 +32,7 @@ Improve poor performers
 Look for errors - see analysis/validations.R
 	1. COMPLETE - TMs terminating then rehiring - get an idea of that.  If no rehires then we should add a few
 	2. Need to add a check that TMs that left company and came back did not get a review during that period
-	3. Graph review score vs tenure
+	3. MOSTLY COMPLETE - Graph review score vs tenure
 		a. COMPLETE -review in 2008 < 3 then higher chance of turnover in 2009?
 		b. THINK ABOUT THIS LATER - THIS SEEMS OK BUT REVIEW AGAIN, REVIEW THIS IN analysis/validations.R turnover rate for tms with 1-2 vs 3, 4,5
 		c. TENURE LOOKS GOOD FOR MINIMUM REVIEW SCORES. Tenure for b above
@@ -40,8 +40,11 @@ Look for errors - see analysis/validations.R
 		a. MOVEMENT NEEDS TO BE FIXED, ADDED TASK BELOW
 		b. TURNOVER SEEMS OK
 		c. PROMOTION RATES SEEM OK
-	5. check job by states
-	6. Check promotions - see if people are getting promotions after a 1 or 2 review
+	5. Only 692 active TMs?  what happened? Why empty seats?  New hires?? 
+		a. NEED TO UNDERSTAND WHY, WHERE THIS HAPPENS.  HYPOTHESIS: PEOPLE TERMINATE AND NO ONE FILLS
+	6. COMPLETE - check job by states
+	7. COMPLETE - Check promotions - see if people are getting promotions after a 1 or 2 review
+	8. COMPLETE - Term rate is low, ~3%
 
 combine dates and variables scripts
 
