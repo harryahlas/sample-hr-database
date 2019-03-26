@@ -1,3 +1,4 @@
+WHO ARE THE 23 TMS WITH MULTIPLE LEVELS? SEE 105 IN VALIDATIONS
 try https://www.adminer.org/ for he.net mgmt
 
 sql server instructions https://www.r-bloggers.com/setting-up-an-odbc-connection-with-ms-sql-server-on-windows/
@@ -11,22 +12,42 @@ For the 24th release:
 At some point communicate functions to create SQL databases	
 	
 Next run quick changes:	
-	Increase turnover rate
+	Validate turnover rate increase should be up to 10% now
+	Check to make sure few people with 1 or 2 reviews are getting promotions (should already be in validations file)
+	update all graphics after upload to git
 	
-Per hw, add function that will create databases
+COMPLETE - Per hw, add function that will create databases
 	1. see if he responds after a few days
 	2. reread, reevaluate
 	3. suggestion would be to have code that automatically installs mysql, not sure if need to have just an error message or if need to install mariadb
 	4. look at nosql and others
 
-Bad manager plug 1
-	FIRST need to edit create_deskhistory_row() in 01 functions.  Add an argument that can increase the termination ratio and add that in w/bad mgr, bad employee etc.
-	On 07 perf reviews/salaries
-	go back and somewhat randomly pick some bad lvl 4 managers.  They should have higher turnover rates. give their TMs a better chance of getting 1 or 2
-	1. add poor performer flag to initial team member set.  (so if they are hired then they would have lower reviews/bad manager flag)
+Bad manager/bad employee plug
+	1. COMPLETE - FIRST need to edit create_deskhistory_row() in 01 functions.  Add an argument that can increase the termination ratio and add that in w/bad mgr, bad employee etc.
+	2. COMPLETE - Create bad employee ratio at 10% on variables file
+	3. COMPLETE - On create TMs add bad_employee_flag
+	4. On create_deskhistory_row() add shortened tenure and increased chance of term if mgr is bad employee or just increased chance of term if TM is bad employee. do this inside function.
+		a. Look up manager at start of tenure.
+		b. If manager is bad employee or if TM is bad employee switch scale=1000/3.777666 to scale=500/3.777666 (shortens job tenure)
+		c. If manager is bad employee then - increase chance of termination by 2
+			- multiply f_temp_termination_probability in create_deskhistory_row to * c(2,1))
+		c. If job is high turnover then - increase chance of termination by 2 again
+			- multiply f_temp_termination_probability in create_deskhistory_row to * c(2,1))
+		b. if TM is bad employee then change f_temp_termination_probability in create_deskhistory_row to c(.9,.1)
+			- increase chance of termination
+		d. add high_turnover_flag to process
+			COMPLETE - Add high_turnover_flag to jobs input
+			- add job name input into create_deskhistory_row 
+			- If job is high turnover then double the turnover chances c(2,1) * c(2,1)
+	5. Increase chances of poor review
+		a. on 07 add poor_review_plug = 1.  If bad_employee_flag then turn to 2.
+		b. on 07, around row 188 add poor_review plug to 1 and 2 ratio.
+			
+	Set while loop to go shorter
 
-Improve poor performers
-	in step 1 above, incorporate that poor performer flag
+	Remove from employee_info:
+		bad_employee_flag
+		TMs who are not in deskhistory (except maybe CEO, not sure if he is there)
 	
 	
 Look for errors - see analysis/validations.R
@@ -41,17 +62,20 @@ Look for errors - see analysis/validations.R
 		b. TURNOVER SEEMS OK
 		c. PROMOTION RATES SEEM OK
 	5. Only 692 active TMs?  what happened? Why empty seats?  New hires?? 
-		a. NEED TO UNDERSTAND WHY, WHERE THIS HAPPENS.  HYPOTHESIS: PEOPLE TERMINATE AND NO ONE FILLS
+		a. NEED TO UNDERSTAND WHY, WHERE THIS HAPPENS.  
+			HYPOTHESIS: PEOPLE TERMINATE AND NO ONE FILLS
+			HYPOTHESIS: Rowskipping is causing this on loop (i + 1)?
 	6. COMPLETE - check job by states
 	7. COMPLETE - Check promotions - see if people are getting promotions after a 1 or 2 review
 	8. COMPLETE - Term rate is low, ~3%
 
-combine dates and variables scripts
+COMPLETE - combine dates and variables scripts
 
 Add ability to every once in a while hire someone up a level.  There is currently no level movement (3->2 etc)
 Randomly add desk_ids after term.  and add new ones randomly. (if team has less than 12 tms say)
 Have term rates fluctuate by year
 Have term rates fluctuate by LOB (maybe this fits with poor performer flag)
+Clean up 06 grow desk history
 
 Add termination types:
 	Voluntary Resignation: Resignation refers to a termination decided upon by an employee, who for any reason determines they want to end their employment agreement with a given organization.

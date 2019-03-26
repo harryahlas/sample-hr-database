@@ -1,8 +1,8 @@
 library(RMariaDB)
 library(tidyverse)
 library(babynames)
-source("00_variables.R")
 source("01_functions.R")
+source("02_variables.R")
 
 HRSAMPLE <- dbConnect(RMariaDB::MariaDB(), user='newuser', password='newuser', dbname='hrsample', host='localhost')
 dbListTables(HRSAMPLE)
@@ -15,7 +15,8 @@ dbExecute(HRSAMPLE, "CREATE TABLE employeeinfo (
                     first_name VARCHAR (255),
                     last_name VARCHAR (255),
                     city VARCHAR (255),
-                    state  VARCHAR (255) )
+                    state  VARCHAR (255),
+                    bad_employee_flag INT (1))
                     ;")
 
 
@@ -52,7 +53,8 @@ for (i in (1:number_of_employees)) {
     first_name = sample(firstnames$first_name, 1),
     last_name = sample(surnames$last_name, 1),
     city = cities$City[city_row],
-    state = cities$`State short`[city_row]
+    state = cities$`State short`[city_row],
+    bad_employee_flag = sample(c(1,0), 1, bad_employee_ratio, replace = TRUE)
   )
   
   employee_info <- bind_rows(employee_info, employee_info_add)
@@ -61,13 +63,14 @@ for (i in (1:number_of_employees)) {
 
 # Populate table
 employeeinfo_sql <- paste(
-  "INSERT INTO employeeinfo (first_name, last_name, city, state) VALUES ",
+  "INSERT INTO employeeinfo (first_name, last_name, city, state, bad_employee_flag) VALUES ",
   paste0(
     "('",
     employee_info$first_name, "','",
     employee_info$last_name, "','",
     employee_info$city, "','",
-    employee_info$state, "')",
+    employee_info$state, "','",
+    employee_info$bad_employee_flag, "')",
     collapse = ", "),
   ";"
 )
@@ -79,3 +82,4 @@ dbExecute(HRSAMPLE, employeeinfo_sql)
 # View table
 df <- dbGetQuery(HRSAMPLE, "SELECT *  FROM employeeinfo")
 df %>% count(state) 
+df %>% count(bad_employee_flag) 

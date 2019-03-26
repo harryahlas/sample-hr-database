@@ -2,8 +2,8 @@ library(RMariaDB)
 library(tidyverse)
 library(lubridate)
 library(fuzzyjoin)
-source("00_variables.R")
 source("01_functions.R")
+source("02_variables.R")
 
 # Connect to database -----------------------------------------------------
 HRSAMPLE <- dbConnect(RMariaDB::MariaDB(), user='newuser', password='newuser', dbname='hrsample', host='localhost')

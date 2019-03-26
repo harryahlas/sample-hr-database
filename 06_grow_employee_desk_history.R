@@ -1,8 +1,8 @@
 library(RMariaDB)
 library(tidyverse)
 library(lubridate)
-source("00_variables.R")
 source("01_functions.R")
+source("02_variables.R")
 
 # Import jobs
 jobs <- read_csv("data/jobs.csv")
@@ -16,10 +16,6 @@ max_date <- end_date_of_hierarchy
 # Connect to database stored on localhost
 HRSAMPLE <- dbConnect(RMariaDB::MariaDB(), user='newuser', password='newuser', dbname='hrsample', host='localhost')
 dbListTables(HRSAMPLE)
-
-# duplicate deskhistory for testing
-# temporary - replace deskhistory2 with deskhistory later and delete this command
-#dbExecute(HRSAMPLE, "create table deskhistory2 select * from deskhistory;")
 
 # Retrieve employeeinfo table.  This is used to find new hires.
 employeeinfo_table <- dbGetQuery(HRSAMPLE, "SELECT *  FROM employeeinfo")
@@ -64,7 +60,7 @@ i = 1
 loopnumber = 0
 
 # The upcoming while loop will update records that have a desk_id_end_date up to this date
-run_through_date <- as.Date("2018-12-31")
+run_through_date <- end_date_of_hierarchy#as.Date("2018-12-31")
 
 # while loop --------------------------------------------------------------
 

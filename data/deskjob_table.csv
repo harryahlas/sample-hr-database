@@ -179,169 +179,169 @@ desk_id,job_name
 178,Regional Leader
 179,Consultant
 180,Analyst
-181,Administrative Assistant
-182,Product Manager
+181,Product Manager
+182,Project Manager
 183,Project Manager
-184,Project Manager
+184,Consultant
 185,Analyst
-186,Administrative Assistant
-187,Project Manager
+186,Product Manager
+187,Consultant
 188,Consultant
-189,Administrative Assistant
+189,Product Manager
 190,Project Manager
 191,Analyst
 192,Consultant
-193,Administrative Assistant
-194,Product Manager
+193,Product Manager
+194,Project Manager
 195,Analyst
 196,Analyst
 197,Analyst
-198,Consultant
-199,Product Manager
-200,Project Manager
-201,Consultant
+198,Analyst
+199,Project Manager
+200,Consultant
+201,Analyst
 202,Analyst
-203,Administrative Assistant
-204,Product Manager
+203,Product Manager
+204,Project Manager
 205,Project Manager
-206,Product Manager
+206,Project Manager
 207,Project Manager
-208,Administrative Assistant
+208,Product Manager
 209,Analyst
-210,Administrative Assistant
+210,Product Manager
 211,Consultant
-212,Administrative Assistant
-213,Project Manager
+212,Product Manager
+213,Consultant
 214,Analyst
-215,Project Manager
+215,Consultant
 216,Consultant
-217,Project Manager
-218,Project Manager
-219,Product Manager
+217,Consultant
+218,Consultant
+219,Project Manager
 220,Consultant
-221,Product Manager
+221,Project Manager
 222,Consultant
-223,Product Manager
+223,Project Manager
 224,Consultant
 225,Consultant
-226,Administrative Assistant
+226,Product Manager
 227,Analyst
 228,Consultant
 229,Analyst
-230,Product Manager
-231,Administrative Assistant
-232,Product Manager
-233,Administrative Assistant
-234,Product Manager
+230,Project Manager
+231,Product Manager
+232,Project Manager
+233,Product Manager
+234,Project Manager
 235,Consultant
 236,Project Manager
 237,Consultant
 238,Consultant
-239,Project Manager
+239,Consultant
 240,Product Manager
 241,Consultant
 242,Analyst
 243,Consultant
 244,Consultant
 245,Consultant
-246,Administrative Assistant
-247,Administrative Assistant
+246,Product Manager
+247,Product Manager
 248,Consultant
 249,Consultant
-250,Administrative Assistant
+250,Product Manager
 251,Consultant
-252,Product Manager
+252,Project Manager
 253,Project Manager
-254,Project Manager
-255,Administrative Assistant
+254,Consultant
+255,Product Manager
 256,Consultant
-257,Project Manager
-258,Administrative Assistant
+257,Consultant
+258,Product Manager
 259,Analyst
 260,Consultant
 261,Consultant
 262,Consultant
-263,Project Manager
-264,Administrative Assistant
+263,Consultant
+264,Product Manager
 265,Analyst
-266,Project Manager
+266,Consultant
 267,Consultant
-268,Consultant
+268,Analyst
 269,Consultant
-270,Administrative Assistant
+270,Product Manager
 271,Project Manager
-272,Administrative Assistant
-273,Project Manager
-274,Administrative Assistant
-275,Project Manager
-276,Administrative Assistant
+272,Product Manager
+273,Consultant
+274,Product Manager
+275,Consultant
+276,Product Manager
 277,Product Manager
-278,Product Manager
+278,Project Manager
 279,Project Manager
-280,Product Manager
-281,Administrative Assistant
+280,Project Manager
+281,Product Manager
 282,Analyst
 283,Product Manager
 284,Product Manager
 285,Analyst
-286,Project Manager
+286,Consultant
 287,Consultant
-288,Product Manager
+288,Project Manager
 289,Product Manager
-290,Administrative Assistant
+290,Product Manager
 291,Project Manager
 292,Consultant
 293,Consultant
 294,Analyst
-295,Product Manager
+295,Project Manager
 296,Analyst
 297,Analyst
-298,Product Manager
-299,Administrative Assistant
-300,Consultant
+298,Project Manager
+299,Product Manager
+300,Analyst
 301,Project Manager
 302,Analyst
 303,Consultant
 304,Analyst
 305,Consultant
-306,Administrative Assistant
-307,Administrative Assistant
+306,Product Manager
+307,Product Manager
 308,Project Manager
 309,Consultant
 310,Analyst
-311,Project Manager
+311,Consultant
 312,Analyst
-313,Product Manager
-314,Project Manager
-315,Project Manager
-316,Administrative Assistant
-317,Administrative Assistant
+313,Project Manager
+314,Consultant
+315,Consultant
+316,Product Manager
+317,Product Manager
 318,Consultant
-319,Product Manager
-320,Consultant
-321,Product Manager
-322,Administrative Assistant
-323,Product Manager
-324,Administrative Assistant
+319,Project Manager
+320,Analyst
+321,Project Manager
+322,Product Manager
+323,Project Manager
+324,Product Manager
 325,Product Manager
 326,Analyst
 327,Project Manager
-328,Product Manager
-329,Product Manager
-330,Administrative Assistant
-331,Product Manager
+328,Project Manager
+329,Project Manager
+330,Product Manager
+331,Project Manager
 332,Project Manager
-333,Product Manager
+333,Project Manager
 334,Product Manager
-335,Administrative Assistant
-336,Project Manager
-337,Product Manager
+335,Product Manager
+336,Consultant
+337,Project Manager
 338,Analyst
-339,Administrative Assistant
+339,Product Manager
 340,Consultant
-341,Administrative Assistant
-342,Product Manager
-343,Consultant
+341,Product Manager
+342,Salesperson
+343,Salesperson
 344,Salesperson
 345,Salesperson
 346,Salesperson
@@ -892,183 +892,183 @@ desk_id,job_name
 891,Salesperson
 892,Salesperson
 893,Salesperson
-894,Salesperson
-895,Salesperson
-896,Salesperson
-897,Salesperson
-898,Salesperson
-899,Salesperson
-900,Salesperson
-901,Salesperson
-902,Salesperson
-903,Salesperson
-904,Salesperson
-905,Salesperson
-906,Salesperson
-907,Salesperson
-908,Salesperson
-909,Salesperson
-910,Salesperson
-911,Salesperson
-912,Salesperson
-913,Salesperson
-914,Salesperson
-915,Salesperson
-916,Salesperson
-917,Salesperson
-918,Salesperson
-919,Salesperson
-920,Salesperson
-921,Salesperson
-922,Salesperson
+894,Analyst
+895,Project Manager
+896,Analyst
+897,Consultant
+898,Product Manager
+899,Project Manager
+900,Product Manager
+901,Project Manager
+902,Product Manager
+903,Consultant
+904,Product Manager
+905,Product Manager
+906,Product Manager
+907,Consultant
+908,Product Manager
+909,Project Manager
+910,Project Manager
+911,Product Manager
+912,Product Manager
+913,Product Manager
+914,Product Manager
+915,Project Manager
+916,Project Manager
+917,Product Manager
+918,Consultant
+919,Product Manager
+920,Analyst
+921,Consultant
+922,Project Manager
 923,Product Manager
 924,Consultant
-925,Product Manager
+925,Analyst
 926,Analyst
-927,Project Manager
+927,Consultant
 928,Analyst
-929,Project Manager
-930,Consultant
-931,Administrative Assistant
-932,Administrative Assistant
-933,Analyst
-934,Administrative Assistant
-935,Project Manager
-936,Administrative Assistant
-937,Project Manager
-938,Project Manager
-939,Administrative Assistant
+929,Analyst
+930,Product Manager
+931,Analyst
+932,Analyst
+933,Product Manager
+934,Project Manager
+935,Consultant
+936,Consultant
+937,Consultant
+938,Analyst
+939,Consultant
 940,Product Manager
-941,Administrative Assistant
+941,Project Manager
 942,Product Manager
-943,Administrative Assistant
+943,Consultant
 944,Consultant
-945,Project Manager
-946,Product Manager
-947,Consultant
-948,Consultant
-949,Consultant
-950,Project Manager
-951,Consultant
-952,Administrative Assistant
-953,Analyst
-954,Administrative Assistant
-955,Product Manager
-956,Consultant
-957,Analyst
-958,Product Manager
-959,Analyst
-960,Project Manager
-961,Product Manager
-962,Analyst
-963,Administrative Assistant
-964,Project Manager
-965,Product Manager
-966,Consultant
-967,Product Manager
-968,Consultant
-969,Administrative Assistant
-970,Product Manager
-971,Administrative Assistant
-972,Analyst
-973,Consultant
-974,Product Manager
-975,Project Manager
-976,Administrative Assistant
+945,Product Manager
+946,Project Manager
+947,Product Manager
+948,Project Manager
+949,Product Manager
+950,Analyst
+951,Project Manager
+952,Attorney
+953,Attorney
+954,Attorney
+955,Attorney
+956,Paralegal
+957,Attorney
+958,Attorney
+959,Attorney
+960,Attorney
+961,Paralegal
+962,Attorney
+963,Paralegal
+964,Attorney
+965,Paralegal
+966,Attorney
+967,Attorney
+968,Attorney
+969,Attorney
+970,Paralegal
+971,Attorney
+972,Attorney
+973,Attorney
+974,Attorney
+975,Paralegal
+976,Paralegal
 977,Analyst
-978,Consultant
-979,Analyst
-980,Administrative Assistant
-981,Project Manager
-982,Analyst
-983,Consultant
-984,Consultant
+978,Attorney
+979,Attorney
+980,Attorney
+981,Attorney
+982,Attorney
+983,Attorney
+984,Attorney
 985,Consultant
-986,Attorney
+986,Paralegal
 987,Attorney
 988,Attorney
-989,Paralegal
-990,Project Manager
+989,Attorney
+990,Paralegal
 991,Attorney
-992,Paralegal
+992,Consultant
 993,Attorney
-994,Product Manager
-995,Consultant
-996,Paralegal
-997,Paralegal
-998,Attorney
+994,Paralegal
+995,Attorney
+996,Project Manager
+997,Analyst
+998,Paralegal
 999,Paralegal
 1000,Attorney
-1001,Attorney
+1001,Paralegal
 1002,Attorney
-1003,Paralegal
-1004,Paralegal
-1005,Attorney
+1003,Attorney
+1004,Attorney
+1005,Paralegal
 1006,Paralegal
 1007,Attorney
-1008,Attorney
+1008,Paralegal
 1009,Attorney
-1010,Paralegal
+1010,Attorney
 1011,Attorney
 1012,Paralegal
-1013,Paralegal
+1013,Attorney
 1014,Paralegal
 1015,Paralegal
-1016,Paralegal
-1017,Paralegal
-1018,Attorney
-1019,Paralegal
-1020,Attorney
-1021,Attorney
-1022,Paralegal
-1023,Attorney
-1024,Paralegal
-1025,Attorney
-1026,Attorney
-1027,Paralegal
-1028,Attorney
-1029,Attorney
-1030,Paralegal
-1031,Attorney
-1032,Attorney
-1033,Paralegal
-1034,Paralegal
-1035,Attorney
-1036,Attorney
-1037,Analyst
-1038,Project Manager
-1039,Developer
-1040,Developer
+1016,Developer
+1017,Developer
+1018,Consultant
+1019,Developer
+1020,Developer
+1021,Developer
+1022,Developer
+1023,Developer
+1024,Project Manager
+1025,Developer
+1026,Developer
+1027,Developer
+1028,Developer
+1029,Developer
+1030,Developer
+1031,Developer
+1032,Developer
+1033,Developer
+1034,Developer
+1035,Product Manager
+1036,Developer
+1037,Developer
+1038,Developer
+1039,Analyst
+1040,Consultant
 1041,Developer
 1042,Developer
-1043,Administrative Assistant
+1043,Developer
 1044,Developer
-1045,Developer
+1045,Product Manager
 1046,Developer
 1047,Developer
 1048,Developer
 1049,Developer
-1050,Administrative Assistant
-1051,Analyst
-1052,Developer
-1053,Developer
-1054,Project Manager
+1050,Developer
+1051,Developer
+1052,Product Manager
+1053,Analyst
+1054,Developer
 1055,Developer
-1056,Developer
+1056,Consultant
 1057,Developer
 1058,Developer
 1059,Developer
-1060,Project Manager
+1060,Developer
 1061,Developer
-1062,Developer
+1062,Consultant
 1063,Developer
 1064,Developer
 1065,Developer
 1066,Developer
 1067,Developer
-1068,Product Manager
+1068,Developer
 1069,Developer
-1070,Developer
+1070,Product Manager
 1071,Developer
 1072,Developer
 1073,Developer
@@ -1076,37 +1076,37 @@ desk_id,job_name
 1075,Developer
 1076,Developer
 1077,Developer
-1078,Administrative Assistant
-1079,Analyst
-1080,Developer
-1081,Developer
+1078,Developer
+1079,Developer
+1080,Product Manager
+1081,Analyst
 1082,Developer
 1083,Developer
 1084,Developer
-1085,Product Manager
+1085,Developer
 1086,Developer
-1087,Developer
-1088,Analyst
+1087,Project Manager
+1088,Developer
 1089,Developer
-1090,Developer
+1090,Analyst
 1091,Developer
-1092,Analyst
-1093,Analyst
-1094,Product Manager
+1092,Developer
+1093,Developer
+1094,Analyst
 1095,Analyst
-1096,Developer
-1097,Product Manager
+1096,Project Manager
+1097,Analyst
 1098,Developer
-1099,Developer
+1099,Project Manager
 1100,Developer
 1101,Developer
 1102,Developer
 1103,Developer
 1104,Developer
 1105,Developer
-1106,Consultant
+1106,Developer
 1107,Developer
-1108,Developer
+1108,Consultant
 1109,Developer
 1110,Developer
 1111,Developer
@@ -1118,96 +1118,80 @@ desk_id,job_name
 1117,Developer
 1118,Developer
 1119,Developer
-1120,Project Manager
+1120,Developer
 1121,Developer
-1122,Administrative Assistant
+1122,Consultant
 1123,Developer
-1124,Developer
+1124,Product Manager
 1125,Developer
 1126,Developer
 1127,Developer
-1128,Administrative Assistant
+1128,Developer
 1129,Developer
 1130,Product Manager
-1131,Project Manager
-1132,Analyst
-1133,Developer
-1134,Developer
+1131,Developer
+1132,Product Manager
+1133,Project Manager
+1134,Analyst
 1135,Developer
 1136,Developer
 1137,Developer
 1138,Developer
-1139,Consultant
+1139,Developer
 1140,Developer
-1141,Developer
-1142,Analyst
+1141,Consultant
+1142,Developer
 1143,Developer
-1144,Developer
+1144,Analyst
 1145,Developer
-1146,Project Manager
+1146,Developer
 1147,Developer
-1148,Developer
+1148,Analyst
 1149,Product Manager
-1150,Project Manager
-1151,Developer
-1152,Developer
-1153,Developer
-1154,Product Manager
+1150,Consultant
+1151,Product Manager
+1152,Product Manager
+1153,Consultant
+1154,Project Manager
 1155,Project Manager
 1156,Product Manager
-1157,Developer
-1158,Developer
-1159,Developer
-1160,Developer
-1161,Developer
-1162,Administrative Assistant
-1163,Analyst
-1164,Consultant
-1165,Project Manager
-1166,Analyst
-1167,Product Manager
+1157,Consultant
+1158,Product Manager
+1159,Analyst
+1160,Analyst
+1161,Project Manager
+1162,Analyst
+1163,Product Manager
+1164,Product Manager
+1165,Product Manager
+1166,Project Manager
+1167,Project Manager
 1168,Consultant
 1169,Project Manager
-1170,Administrative Assistant
+1170,Analyst
 1171,Analyst
-1172,Consultant
+1172,Project Manager
 1173,Consultant
-1174,Analyst
-1175,Consultant
-1176,Project Manager
-1177,Analyst
-1178,Analyst
-1179,Product Manager
-1180,Analyst
-1181,Analyst
-1182,Administrative Assistant
-1183,Administrative Assistant
-1184,Analyst
-1185,Product Manager
-1186,Product Manager
-1187,Project Manager
-1188,Consultant
-1189,Product Manager
+1174,Project Manager
+1175,Product Manager
+1176,Analyst
+1177,Consultant
+1178,Consultant
+1179,Analyst
+1180,Consultant
+1181,Consultant
+1182,Analyst
+1183,Analyst
+1184,Project Manager
+1185,Analyst
+1186,Analyst
+1187,Product Manager
+1188,Product Manager
+1189,Analyst
 1190,Product Manager
 1191,Project Manager
-1192,Product Manager
-1193,Analyst
-1194,Analyst
-1195,Administrative Assistant
-1196,Analyst
-1197,Analyst
-1198,Project Manager
-1199,Analyst
-1200,Consultant
-1201,Administrative Assistant
-1202,Consultant
-1203,Administrative Assistant
-1204,Administrative Assistant
-1205,Product Manager
-1206,Product Manager
-1207,Analyst
-1208,Product Manager
-1209,Product Manager
-1210,Analyst
-1211,Consultant
-1212,Administrative Assistant
+1192,Consultant
+1193,Consultant
+1194,Product Manager
+1195,Project Manager
+1196,Consultant

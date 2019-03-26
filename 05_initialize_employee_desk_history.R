@@ -1,7 +1,7 @@
 library(RMariaDB)
 library(tidyverse)
 library(stringr)
-source("00_variables.R")
+source("02_variables.R")
 
 HRSAMPLE <- dbConnect(RMariaDB::MariaDB(), user='newuser', password='newuser', dbname='hrsample', host='localhost')
 dbListTables(HRSAMPLE)
@@ -28,18 +28,6 @@ starting_employee_count$starting_employee_count
 
 # Import jobs
 jobs <- read_csv("data/jobs.csv")
-
-
-# Reimport business lines -------------------------------------------------
-# Note this is duplicative of process 01 so should be converted to csv
-# lob <- read_csv("lob,proportion,avg_report_to_count
-#                 Finance,.03,5
-#                 Human Resources,.025,7
-#                 Sales,.73,10
-#                 Marketing,.02,3
-#                 Legal,.015,3
-#                 Technology,.10,7
-#                 Strategy,.08,3")
 
 
 # Reimport city/state info

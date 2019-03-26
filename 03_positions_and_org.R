@@ -12,40 +12,6 @@ lob <- read_csv("data/lob.csv")
 
 sum(lob$proportion)# should equal 1
 
-
-# Alternate database ------------------------------------------------------
-
-#http://www.sqltutorial.org/sql-sample-database/
-
-HRSAMPLE <- dbConnect(RMariaDB::MariaDB(), user='newuser', password='newuser', dbname='hrsample', host='localhost')
-dbListTables(HRSAMPLE)
-
-dbExecute(HRSAMPLE, "CREATE TABLE regions (
-          region_id INT (11) AUTO_INCREMENT PRIMARY KEY,
-          region_name VARCHAR (25) DEFAULT NULL
-);")
-
-#add row to table
-dbWriteTable(HRSAMPLE, "regions", data.frame(region_name = 'el salvador'), append = TRUE)
-
-rows_to_add <- tibble(region_name = c('usa','norway'))
-dbWriteTable(HRSAMPLE, "regions", rows_to_add, append = TRUE)
-
-hrsample_database_setup.sql <- read_file("scripts/hrsample_database_setup.sql")
-dbExecute(HRSAMPLE, hrsample_database_setup.sql)
-
-dbExecute(HRSAMPLE, "INSERT INTO regions VALUES(3,'greece')")
-
-dbSendStatement(HRSAMPLE, hrsample_database_setup.sql)
-
-dbDisconnect(HRSAMPLE)
-
-df <- dbGetQuery(HRSAMPLE, "SELECT * FROM employees")
-
-
-
-
-
 # Create desk_ids and hierarchy -------------------------------------------
 # http://www.mysqltutorial.org/mysql-adjacency-list-tree/
 
