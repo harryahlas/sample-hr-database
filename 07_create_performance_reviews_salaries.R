@@ -9,7 +9,9 @@ source("02_variables.R")
 HRSAMPLE <- dbConnect(RMariaDB::MariaDB(), user='newuser', password='newuser', dbname='hrsample', host='localhost')
 
 # Build performancereview table -------------------------------------------
-#dbExecute(HRSAMPLE, "DELETE FROM performancereview")
+dbExecute(HRSAMPLE, "SET FOREIGN_KEY_CHECKS = 0;") 
+dbExecute(HRSAMPLE, "DROP TABLE IF EXISTS performancereview;") 
+dbExecute(HRSAMPLE, "SET FOREIGN_KEY_CHECKS=1;")
 dbExecute(HRSAMPLE, "CREATE TABLE performancereview (
           employee_num INT (11),
           year INT (4),
@@ -18,7 +20,9 @@ dbExecute(HRSAMPLE, "CREATE TABLE performancereview (
 );")
 
 # Build salaryhistory table -----------------------------------------------
-#dbExecute(HRSAMPLE, "DELETE FROM salaryhistory")
+dbExecute(HRSAMPLE, "SET FOREIGN_KEY_CHECKS = 0;") 
+dbExecute(HRSAMPLE, "DROP TABLE IF EXISTS salaryhistory;") 
+dbExecute(HRSAMPLE, "SET FOREIGN_KEY_CHECKS=1;")
 dbExecute(HRSAMPLE, "CREATE TABLE salaryhistory (
           employee_num INT (11),
           salary_effective_date DATE,
@@ -288,7 +292,7 @@ save(salaryhistory_table, file = "data/salaryhistory_table.rda")
 # Populate performancereview ----------------------------------------------
 
 # First, clear old data from performancereview
-dbExecute(HRSAMPLE, "DELETE FROM performancereview")
+#dbExecute(HRSAMPLE, "DELETE FROM performancereview")
 
 # Populate performancereview
 review_year_list_sql <- paste(
@@ -308,7 +312,7 @@ dbExecute(HRSAMPLE, review_year_list_sql)
 # Populate salaryhistory ----------------------------------------------
 
 # First, clear old data from salaryhistory
-dbExecute(HRSAMPLE, "DELETE FROM salaryhistory")
+#dbExecute(HRSAMPLE, "DELETE FROM salaryhistory")
 
 # Populate salaryhistory
 salaryhistory_sql <- paste(

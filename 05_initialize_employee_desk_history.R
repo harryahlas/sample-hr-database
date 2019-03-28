@@ -8,7 +8,9 @@ dbListTables(HRSAMPLE)
 
 
 # Build deskhistory table -------------------------------------------------
-# dbExecute(HRSAMPLE, "DELETE FROM deskhistory")
+dbExecute(HRSAMPLE, "SET FOREIGN_KEY_CHECKS = 0;") 
+dbExecute(HRSAMPLE, "DROP TABLE IF EXISTS deskhistory;") 
+dbExecute(HRSAMPLE, "SET FOREIGN_KEY_CHECKS=1;")
 dbExecute(HRSAMPLE, "CREATE TABLE deskhistory (
   employee_num INT (11),
   desk_id INT (10) unsigned NOT NULL,
@@ -262,7 +264,9 @@ dbExecute(HRSAMPLE, deskhistory_sql)
 
 df <- dbGetQuery(HRSAMPLE, "SELECT *  FROM deskhistory")
 
-# dbExecute(HRSAMPLE, "DELETE FROM deskjob")
+dbExecute(HRSAMPLE, "SET FOREIGN_KEY_CHECKS = 0;") 
+dbExecute(HRSAMPLE, "DROP TABLE IF EXISTS deskjob;") 
+dbExecute(HRSAMPLE, "SET FOREIGN_KEY_CHECKS=1;")
 dbExecute(HRSAMPLE, "CREATE TABLE deskjob (
           desk_id INT (10) unsigned NOT NULL,
           job_name VARCHAR (255),

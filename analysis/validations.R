@@ -100,7 +100,7 @@ deskhistory_table %>%
   distinct() %>% 
   count(employee_num) %>% 
   rename(count_of_different_levels = n) %>% 
-  arrange(desc(count_of_different_levels))
+  arrange(desc(count_of_different_levels)) 
 
 # b. Turnover seems ok
 deskhistory_table %>% 

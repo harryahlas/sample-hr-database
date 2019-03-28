@@ -79,9 +79,10 @@ ggsave(employee_distribution, filename =  "images/employee_distribution.png", de
 
 merit_increases <- salaryhistory_table %>%
   mutate(`Salary Increase Year` = lubridate::year(salary_effective_date)) %>%
-  filter(salary_increase > 0,
-         `Salary Increase Year` >= 2010,
-         `Salary Increase Year` <= 2018) %>%
+  filter(salary_increase > 0#,
+         ##`Salary Increase Year` >= 2010,
+         #`Salary Increase Year` <= 2018
+         ) %>%
   ggplot(aes(x = salary_increase)) +
   geom_histogram(bins = 15, fill = default_color) +
   scale_x_continuous(labels = percent) +

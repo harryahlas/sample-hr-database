@@ -10,6 +10,9 @@ dbListTables(HRSAMPLE)
 # Build employeeinfo table ------------------------------------------------
 # dbExecute(HRSAMPLE, "DROP TABLE employeeinfo")
 # dbExecute(HRSAMPLE, "DELETE from  employeeinfo")
+dbExecute(HRSAMPLE, "SET FOREIGN_KEY_CHECKS = 0;") 
+dbExecute(HRSAMPLE, "DROP TABLE IF EXISTS employeeinfo;") 
+dbExecute(HRSAMPLE, "SET FOREIGN_KEY_CHECKS=1;")
 dbExecute(HRSAMPLE, "CREATE TABLE employeeinfo (
                     employee_num INT (11) AUTO_INCREMENT PRIMARY KEY,
                     first_name VARCHAR (255),

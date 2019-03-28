@@ -11,7 +11,7 @@ jobs_that_can_change_org <- jobs %>%
   select(job_name)
 
 # Essentially the as of date.  Highest possible date to quit job, needs to be an imported variable
-max_date <- end_date_of_hierarchy
+max_date <- end_date_of_hierarchy 
 
 # Connect to database stored on localhost
 HRSAMPLE <- dbConnect(RMariaDB::MariaDB(), user='newuser', password='newuser', dbname='hrsample', host='localhost')
@@ -61,7 +61,7 @@ loopnumber = 0
 
 # The upcoming while loop will update records that have a desk_id_end_date up to this date
 run_through_date <- end_date_of_hierarchy#as.Date("2018-12-31")
-
+run_through_date <- as.Date("2003-01-31")
 # while loop --------------------------------------------------------------
 
 # The while loop looks at employees 1 by 1, starting with the employee with the oldest 
@@ -70,8 +70,15 @@ run_through_date <- end_date_of_hierarchy#as.Date("2018-12-31")
 #   find a new job - move to a new desk_id and their old desk_id will open up for someone else
 #   get promoted - keep the same desk_id (eg move from Salesperson 1 to Salesperson 2)
 
-while (sort(deskhistory_table_most_recent$desk_id_end_date, TRUE)[length(deskhistory_table_most_recent$desk_id_end_date)- i] < run_through_date) {
+#TRY THIS AT BEGINNING
+loop_date <- sort(deskhistory_table_most_recent$desk_id_end_date, TRUE)[length(deskhistory_table_most_recent$desk_id_end_date)- i]
 
+
+while (sort(deskhistory_table_most_recent$desk_id_end_date, TRUE)[length(deskhistory_table_most_recent$desk_id_end_date)] < run_through_date) {
+#while (sort(deskhistory_table_most_recent$desk_id_end_date, TRUE)[length(deskhistory_table_most_recent$desk_id_end_date)- i] < run_through_date) {
+
+    temp_deskhistory_table_append <- NULL
+    temp_deskhistory_table <- NULL
 ##############NOT SURE WE NEED TO INCREASE i AFTER A TERMINATION. TRY REMOVING IT
   
   # update the loopnumber
@@ -80,6 +87,48 @@ print("made it 1")
   # Refresh deskhistory_table_most_recent, which has only the most recent desk records.
   deskhistory_table_most_recent <- refresh_deskhistory_table_most_recent()  
 
+  #FIRST CHECK WHAT NEW HIRES IS DOING HERE ANDT THINK ABOUT IT
+  #IS MOST RECENT ROW A TERMINATION > 90 DAYS?
+  
+  # Check most recent and see if new hire is needed
+  temp_employee_num <- deskhistory_table_most_recent$employee_num[1]
+  temp_desk_id <- deskhistory_table_most_recent$desk_id[1]
+  temp_depth <-  deskhistory_table_most_recent$depth[1]
+  temp_end_date <- deskhistory_table_most_recent$desk_id_end_date[1]
+  temp_job_name <- deskjob_table$job_name[deskjob_table$desk_id == temp_desk_id]
+  
+  time_since_oldest_end_date <- as.numeric(loop_date - deskhistory_table_most_recent$desk_id_end_date[1])
+  ## Start 90 day new hire fill
+  if (time_since_oldest_end_date > 90) {#not putting this into global variable until permanent
+    external_hire_text <- "" # for error log
+    external_hire_employee_number <- find_external_hire()
+    external_hire_text <- "and position filled by external hire"
+    temp_deskhistory_table_append <- create_deskhistory_row(
+      f_temp_new_desk_id = temp_desk_id,
+      f_temp_employee_num = external_hire_employee_number)
+    temp_deskhistory_table <- temp_deskhistory_table %>% 
+      bind_rows(temp_deskhistory_table_append)
+    # Add new row to deskhistory_table
+    deskhistory_table <- bind_rows(deskhistory_table, temp_deskhistory_table)
+    
+    # Error log printout for troubleshooting
+    error_log <- error_log %>% 
+      bind_rows(data.frame(loopnumber = loopnumber, 
+                           employee_num = temp_employee_num, 
+                           desk_id = temp_desk_id,
+                           new_desk_id = temp_same_level$desk_id[1],
+                           issue = paste("Job added, same level in hierarchy (", temp_depth, ").", external_hire_text),
+                           old_job = temp_job_name,
+                           new_job = deskjob_table$job_name[deskjob_table$desk_id == temp_same_level$desk_id[1]]))
+  next
+    }  ## End 90 day new hire fill
+  
+
+
+  #IF YES THEN HAVE NEW HIRE?
+  #ELSE PICK FIRST ROW THAT IS NOT A TERMINATION
+  
+  
   # Get information about employee and their current job before they move on
   temp_employee_num <- deskhistory_table_most_recent$employee_num[i]
   temp_desk_id <- deskhistory_table_most_recent$desk_id[i]
@@ -93,7 +142,7 @@ print("made it 1")
   if (deskhistory_table_most_recent$termination_flag[i] == 1) {
     error_log <- error_log %>%
       bind_rows(data.frame(loopnumber = loopnumber, employee_num = temp_employee_num, desk_id = temp_desk_id, issue = paste("Job opening not filled because it was a termination")))
-    i = i +1 # increase row number to look at
+    i = i +1 # increase row number to look at 
     next}
   
   ####NEED TO UPDATE LEADERS BELOW
@@ -526,9 +575,13 @@ print("made it 1")
       
     
   }
+  else {
   
   print("made it 14")
   
+  
+  
+   ###############3
   # If none of above conditions are met, give promotion, keeping same desk_id.
   temp_deskhistory_table <- create_deskhistory_row(
     f_temp_new_desk_id = temp_desk_id,
@@ -546,9 +599,12 @@ print("made it 1")
                          new_desk_id = temp_desk_id, #temp_children_same_parent$desk_id[1], ### <- PRETTY SURE THIS IS WRONG
                          issue = paste("gave promotion"),
                          old_job = temp_job_name,
-                         new_job = "same job due to promotion"))
+                         new_job = "same job due to promotionxxx"))
+
+  }
   
-  print(paste0(loopnumber, "loopnumber.  Date: ", sort(deskhistory_table_most_recent$desk_id_end_date, TRUE)[length(deskhistory_table_most_recent$desk_id_end_date)- i] ))
+  loop_date <-  sort(deskhistory_table_most_recent$desk_id_end_date, TRUE)[length(deskhistory_table_most_recent$desk_id_end_date)- i]
+  print(paste0("Loopnumber: ", loopnumber,  " - Date: ", loop_date ))
 }
 
 

@@ -7,6 +7,14 @@ library(RMariaDB)
 library(tidyverse)
 
 
+# State/County Info -------------------------------------------------------
+#### Note: not currently used - placeholder
+#https://www.ers.usda.gov/webdocs/DataFiles/48747/PopulationEstimates.xls?v=4934.5
+state_county_population <- readxl::read_excel("data/PopulationEstimates.xls", skip = 2)
+state_county_population2 <- state_county_population %>% 
+  mutate(Area_Name = gsub(pattern = "county|borough|census area", "", Area_Name, ignore.case = TRUE)) %>% 
+  select(Area_Name)
+
 # Create business lines ---------------------------------------------------
 lob <- read_csv("data/lob.csv")
 
@@ -21,14 +29,16 @@ HRSAMPLE <- dbConnect(RMariaDB::MariaDB(), user='newuser', password='newuser', d
 dbListTables(HRSAMPLE)
 
 # Make desk_id/hierarchy table
+dbExecute(HRSAMPLE, "SET FOREIGN_KEY_CHECKS = 0;") 
+dbExecute(HRSAMPLE, "DROP TABLE IF EXISTS hierarchy;") 
+dbExecute(HRSAMPLE, "SET FOREIGN_KEY_CHECKS=1;")
 dbExecute(HRSAMPLE, "CREATE TABLE hierarchy (
           desk_id int(10) unsigned NOT NULL AUTO_INCREMENT,
           org varchar(255) NOT NULL,
           parent_id int(10) unsigned DEFAULT NULL,
           PRIMARY KEY (desk_id),
           FOREIGN KEY (parent_id) REFERENCES hierarchy (desk_id) 
-          ON DELETE CASCADE ON UPDATE CASCADE
-);")
+          ON DELETE CASCADE ON UPDATE CASCADE);")
 
 # Add CEO (root node, no parent)
 dbExecute(HRSAMPLE, "INSERT INTO hierarchy (org, parent_id) VALUES('CEO',NULL);")

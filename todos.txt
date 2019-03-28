@@ -1,4 +1,4 @@
-WHO ARE THE 23 TMS WITH MULTIPLE LEVELS? SEE 105 IN VALIDATIONS
+
 try https://www.adminer.org/ for he.net mgmt
 
 sql server instructions https://www.r-bloggers.com/setting-up-an-odbc-connection-with-ms-sql-server-on-windows/
@@ -9,12 +9,28 @@ For the 24th release:
 	UPDATE DATA DISCLAIMER (AND OTHERS) TO USE HRSAMPLE PACKAGE
 	send tweet...add images
 
+Validations on LAST RUN
+	look at turnover by year
+	look at promoations by year
+	look at job totals
+	look at how long jobs are open
+	look at bad employee/mgr turnover	
+	
+WHY DID HEADCOUNT GO DOWN SO MUCH? 190 TMS? MAYBE 45K WASNT ENOUGH TMS? MAKE SURE THEY ARE HIRING NEW PEOPLE.	
+WHY IS PROMOTIONS GOING DOWN?
+WHY IS INCREASES GOING DOWN?
+WHY IS PROMOTIONS USUALLY NA?
+
+Add state/county etc on 03
+
 At some point communicate functions to create SQL databases	
 	
 Next run quick changes:	
-	Validate turnover rate increase should be up to 10% now
-	Check to make sure few people with 1 or 2 reviews are getting promotions (should already be in validations file)
+	TERMS LOOK LIKE THEY ARE NOT LOWER FOR 1-2s. Validate turnover rate increase should be up to 10% now
+		could it be backwards where 4-5s term more?
+	COMPLETE - Check to make sure few people with 1 or 2 reviews are getting promotions (should already be in validations file)
 	update all graphics after upload to git
+	Look for bad managers
 	
 COMPLETE - Per hw, add function that will create databases
 	1. see if he responds after a few days
