@@ -61,7 +61,7 @@ loopnumber = 0
 
 # The upcoming while loop will update records that have a desk_id_end_date up to this date
 run_through_date <- end_date_of_hierarchy#as.Date("2018-12-31")
-run_through_date <- as.Date("2003-01-31")
+run_through_date <- as.Date("2019-01-31")
 # while loop --------------------------------------------------------------
 
 # The while loop looks at employees 1 by 1, starting with the employee with the oldest 
@@ -73,10 +73,18 @@ run_through_date <- as.Date("2003-01-31")
 #TRY THIS AT BEGINNING
 loop_date <- sort(deskhistory_table_most_recent$desk_id_end_date, TRUE)[length(deskhistory_table_most_recent$desk_id_end_date)- i]
 
-
-while (sort(deskhistory_table_most_recent$desk_id_end_date, TRUE)[length(deskhistory_table_most_recent$desk_id_end_date)] < run_through_date) {
+##### see if it's a term then do new hire, what happens if not?
+while (sort(deskhistory_table_most_recent$desk_id_end_date, TRUE)[nrow(deskhistory_table_most_recent)] < run_through_date) {
 #while (sort(deskhistory_table_most_recent$desk_id_end_date, TRUE)[length(deskhistory_table_most_recent$desk_id_end_date)- i] < run_through_date) {
-
+print("a")
+  ### temp break, OK TO REMOVE once duplicates are fixed
+  if(loopnumber > 5) {
+    if(error_log[nrow(error_log),"loopnumber"] == error_log[(nrow(error_log) - 1),"loopnumber"]) {
+      break
+    }
+  }
+  print("b")
+  
     temp_deskhistory_table_append <- NULL
     temp_deskhistory_table <- NULL
 ##############NOT SURE WE NEED TO INCREASE i AFTER A TERMINATION. TRY REMOVING IT
@@ -96,10 +104,65 @@ print("made it 1")
   temp_depth <-  deskhistory_table_most_recent$depth[1]
   temp_end_date <- deskhistory_table_most_recent$desk_id_end_date[1]
   temp_job_name <- deskjob_table$job_name[deskjob_table$desk_id == temp_desk_id]
+  temp_termination_flag <- deskhistory_table_most_recent$termination_flag[1]
+  print("c")
   
-  time_since_oldest_end_date <- as.numeric(loop_date - deskhistory_table_most_recent$desk_id_end_date[1])
-  ## Start 90 day new hire fill
+
+  time_since_oldest_end_date <- as.numeric(loop_date - temp_end_date)
+
+  # Old Desk ID cleanup
+  # If the desk id end date is > 90 and the TM has not started a new job then give a promotion
+  # Note this is sloppy cleanup that may not be needed if "i" process improves.
+  if (time_since_oldest_end_date > 90 & temp_termination_flag == 0) {
+    # Does TM have new job?
+    temp_most_recent_desk_id <- deskhistory_table %>% 
+      filter(employee_num == temp_employee_num) %>% 
+      arrange(desc(desk_id_end_date)) %>% 
+      filter(row_number() == 1) %>% 
+      select(desk_id) %>% 
+      as.character()
+    
+    emp_does_not_have_new_job <- temp_most_recent_desk_id == temp_desk_id
+    print("d")
+    
+    # If no then give him a promotion using duplicate promotion code at bottom
+    if (emp_does_not_have_new_job) {
+      print("Job still open after 90 days and emp has not found a new job, giving promotion")
+      print("e")
+      #- Start duplicate code from below
+        # If none of above conditions are met, give promotion, keeping same desk_id.
+        temp_deskhistory_table <- create_deskhistory_row(
+          f_temp_new_desk_id = temp_desk_id,
+          f_temp_promotion_flag = 1)
+        
+        deskhistory_table <- bind_rows(deskhistory_table, temp_deskhistory_table)
+        
+        # Error log printout for troubleshooting
+        error_log <- error_log %>% 
+          bind_rows(data.frame(loopnumber = loopnumber, 
+                               employee_num = temp_employee_num, 
+                               desk_id = temp_desk_id,
+                               new_desk_id = temp_desk_id, #temp_children_same_parent$desk_id[1], ### <- PRETTY SURE THIS IS WRONG
+                               issue = paste("gave promotion"),
+                               old_job = temp_job_name,
+                               new_job = "same job due to promotion, 90 day rule"))
+        #- End duplicate code
+        # If yes then next
+        print("f")
+        
+        next
+        print("g")
+        
+      }
+    
+  }
+  print("h")
+  
+    ## Start 90 day new hire fill for terminated desk_ids.  May want to make 90 days more random
+  #OLD - if (time_since_oldest_end_date > 90 & temp_termination_flag == 1) {#not putting this into global variable until permanent
   if (time_since_oldest_end_date > 90) {#not putting this into global variable until permanent
+    print("i")
+    
     external_hire_text <- "" # for error log
     external_hire_employee_number <- find_external_hire()
     external_hire_text <- "and position filled by external hire"
@@ -110,21 +173,27 @@ print("made it 1")
       bind_rows(temp_deskhistory_table_append)
     # Add new row to deskhistory_table
     deskhistory_table <- bind_rows(deskhistory_table, temp_deskhistory_table)
-    
+     
+    #######3EDIT BELOW???????????????????????
     # Error log printout for troubleshooting
     error_log <- error_log %>% 
       bind_rows(data.frame(loopnumber = loopnumber, 
                            employee_num = temp_employee_num, 
-                           desk_id = temp_desk_id,
-                           new_desk_id = temp_same_level$desk_id[1],
-                           issue = paste("Job added, same level in hierarchy (", temp_depth, ").", external_hire_text),
-                           old_job = temp_job_name,
-                           new_job = deskjob_table$job_name[deskjob_table$desk_id == temp_same_level$desk_id[1]]))
-  next
+                           desk_id = NA,
+                           new_desk_id = temp_desk_id,
+                           issue = paste("EXTERNAL HIRE depth: (", temp_depth, ")."),
+                           old_job = "none-external hire",
+                           new_job = temp_job_name))
+    print("j")
+    i = max(1, i - 1) # bring marker back up if a term was hired
+    print("external hire due to 90 days")
+    next
+    print("k")
     }  ## End 90 day new hire fill
+  print("l")
   
 
-
+print("1. not external hire")
   #IF YES THEN HAVE NEW HIRE?
   #ELSE PICK FIRST ROW THAT IS NOT A TERMINATION
   
@@ -136,19 +205,20 @@ print("made it 1")
   temp_end_date <- deskhistory_table_most_recent$desk_id_end_date[i]
   temp_job_name <- deskjob_table$job_name[deskjob_table$desk_id == temp_desk_id]
   
-
+print(paste("desk id:", temp_desk_id, "- eid:", temp_employee_num))
   # If the employee's current job shows termination then move to the next employee.
   # The desk_id will open up for someone else.
   if (deskhistory_table_most_recent$termination_flag[i] == 1) {
     error_log <- error_log %>%
       bind_rows(data.frame(loopnumber = loopnumber, employee_num = temp_employee_num, desk_id = temp_desk_id, issue = paste("Job opening not filled because it was a termination")))
-    i = i +1 # increase row number to look at 
+    i = i +1 # increase row number to look at if there was a term.
+print("termination flag, let job open for someone else")
     next}
   
   ####NEED TO UPDATE LEADERS BELOW
   # if it is depth 0-3 then skip for now, leave plug
   if (temp_depth == 3) {
-    
+print("temp depth = 3")   
     # This code is essentially the same for levels 1, 2, and 3
     # look for open level 1 jobs within past 90 days.  
     # If there are any then take them
@@ -222,6 +292,7 @@ print("made it 1")
   }
 
   if (temp_depth == 2) {
+print("temp depth = 2")   
     
     # This code is essentially the same for levels 1, 2, and 3
     # look for open level 1 jobs within past 90 days.  
@@ -297,6 +368,7 @@ print("made it 1")
   }
   
   if (temp_depth == 1) {
+print("temp depth = 1")   
     
     # This code is essentially the same for levels 1, 2, and 3
     # look for open level 1 jobs within past 90 days.  
@@ -416,7 +488,8 @@ print("made it 1")
   same_node_and_job_availability <- if_else(nrow(temp_children_same_parent_job) == 0, FALSE, TRUE)
 
   if(same_node_and_job_availability == TRUE) {
-    print("made it 4")
+    print("6 same_node_and_job_availability == TRUE")
+    
     
     # If so create a row for the oldest opening to be added to deskhistory_table
     # Note: this function determines the duration of this new job as well as whether
@@ -457,7 +530,6 @@ print("made it 1")
     
     next
   }
-  print("made it 7")
   
     # Similar to logic above with a few differences. It can be a different job in the same node.
   # And it can be 90 days old (vs 60). Also note there is a 65% chance of this happening.
@@ -476,13 +548,13 @@ print("made it 1")
   if(same_node_availability == TRUE &
      sample(0:100,1) > 35) # 65% of the time have this happen
     {
-    print("made it 8")
-    
+    print("same_node_availability and .65 random")
+   ###???? 
     # Create a row for the oldest opening to be added to deskhistory_table
     temp_deskhistory_table <- create_deskhistory_row(
       f_temp_new_desk_id = temp_children_same_parent$desk_id[1])
     
-    
+    ###??? IS THIS AN ERROR? WHY APPEND ROWS BELOW?
     # Create new hire to fill open position 50% of time
     external_hire_text <- "" # for error log
     if (sample(1:3, 1 ) != 1) {
@@ -581,16 +653,13 @@ print("made it 1")
   
   
   
-   ###############3
   # If none of above conditions are met, give promotion, keeping same desk_id.
   temp_deskhistory_table <- create_deskhistory_row(
     f_temp_new_desk_id = temp_desk_id,
     f_temp_promotion_flag = 1)
 
   deskhistory_table <- bind_rows(deskhistory_table, temp_deskhistory_table)
-############
-  ##### missing add to database here
-  
+
   # Error log printout for troubleshooting
   error_log <- error_log %>% 
     bind_rows(data.frame(loopnumber = loopnumber, 
@@ -607,6 +676,32 @@ print("made it 1")
   print(paste0("Loopnumber: ", loopnumber,  " - Date: ", loop_date ))
 }
 
+
+# Clean up employees that have no job but didn't term ---------------------
+# Count of TMs that had max date before as.Date("2999-01-01") but did not terminate by month
+# These need to terminate
+employees_to_add_terms <- deskhistory_table %>% 
+  group_by(employee_num) %>% 
+  summarize(last_day = max(desk_id_end_date),
+            term_flag = max(termination_flag)) %>% 
+  filter(last_day < loop_date - 90,
+         term_flag == 0) %>% 
+  select(-term_flag)
+
+# Terminate their most recent desk_history row
+deskhistory_table <- deskhistory_table %>% 
+  left_join(employees_to_add_terms) %>% 
+  mutate(termination_flag = case_when(last_day == desk_id_end_date ~ 1,
+                                      TRUE ~ termination_flag)) %>% 
+  select(-last_day)
+
+#check
+bob <- deskhistory_table %>% 
+  filter(desk_id_end_date > (loop_date - 90)) %>% 
+  count(desk_id) %>% 
+  filter(n > 1) %>% 
+  left_join(deskhistory_table) %>% 
+  arrange(desk_id)
 
 # Upload data -------------------------------------------------------------
 
@@ -684,6 +779,92 @@ newhires2002 <- employees2002 %>%
   left_join(employees2002, by = c("employee_num", "hire_date" = "desk_id_start_date"))
 length(newhires2002$employee_num)/length(employees2002$employee_num)
 
+deskhistory_table %>% 
+  group_by(employee_num) %>% 
+  summarize(hire_year = year(min(desk_id_start_date))) %>% 
+  count(hire_year)
+
+# terms by year
+deskhistory_table %>% 
+  filter(termination_flag == 1, desk_id_end_date != as.Date("2999-01-01")) %>% 
+  count(year(desk_id_end_date)) %>% 
+  ggplot(aes(x = `year(desk_id_end_date)`, y = n)) +
+  geom_col()
+
+deskhistory_table %>% 
+  filter(desk_id_end_date == as.Date("2999-01-01")) %>% 
+  nrow()
+
+# Count of TMs that started in first_date_of_hierarchy
+deskhistory_table %>% 
+  group_by(employee_num) %>% 
+  summarize(first_day = min(desk_id_start_date)) %>% 
+  filter(first_day == first_date_of_hierarchy) %>%
+  nrow()
+
+# Count of TMs that terminated by month
+deskhistory_table %>% 
+  filter(termination_flag == 1, desk_id_end_date != as.Date("2999-01-01")) %>% 
+  mutate(termmonth = floor_date(desk_id_end_date, "month")) %>% 
+  count(termmonth) %>% 
+  ggplot(aes(x = termmonth, y = n)) +
+  geom_col()
+  
+# Count of TMs that were hired after first_date_of_hierarchy
+deskhistory_table %>% 
+  group_by(employee_num) %>% 
+  summarize(first_day = min(desk_id_start_date)) %>% 
+  filter(first_day > first_date_of_hierarchy) %>%
+  nrow()
+
+# Count of TMs that had max date before as.Date("2999-01-01") but did not terminate
+joe <- deskhistory_table %>% 
+  group_by(employee_num) %>% 
+  summarize(last_day = max(desk_id_end_date),
+            term_flag = max(termination_flag)) %>% 
+  filter(last_day < as.Date("2999-01-01"), term_flag == 0) %>%
+  mutate(last_month = floor_date(last_day, "month")) %>% 
+  count(last_month)
+  
+deskhistory_table %>% 
+  group_by(employee_num) %>% 
+  summarize(last_day = max(desk_id_end_date),
+            term_flag = max(termination_flag)) %>% 
+  filter(last_day < as.Date("2999-01-01"), term_flag == 0) %>%
+  mutate(last_month = floor_date(last_day, "month")) %>% 
+  count(last_month) %>% 
+  ggplot(aes(x = last_month, y = n)) +
+  geom_col()
+
+
+
+
+
+
+bob <- deskhistory_table %>% 
+  group_by(employee_num) %>% 
+  mutate(last_day = max(desk_id_end_date)) %>% 
+  ungroup() %>% 
+  filter(last_day < as.Date("2019-01-01"),
+         desk_id_end_date == last_day,
+         termination_flag != 1) %>% 
+  arrange(desc(last_day)) %>% 
+  #filter(row_number() == 3000)
+  select(employee_num, last_day) %>% 
+  left_join(deskhistory_table)          
+
+sam <- deskhistory_table %>% 
+  group_by(employee_num) %>% 
+  mutate(last_day = max(desk_id_end_date)) %>% 
+  ungroup() %>% 
+  filter(last_day < as.Date("2019-01-01"),
+         desk_id_end_date == last_day,
+         termination_flag != 1) %>% 
+  arrange(desc(last_day)) %>% 
+  left_join(error_log, by = c("employee_num", "desk_id"))
+  
+  #filter(row_number() == 3000)
+  select(employee_num, last_day) %>% 
 # New Hire jobs
 oldnewhires2002 <- newhires2002 %>% 
   left_join(deskjob_table) %>% 

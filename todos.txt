@@ -1,10 +1,16 @@
+LOOKS LIKE i IS MESSING THINGS UP.  WAS AT 984.
 
+CHECK CEO TO SEE IF HE GOT PROMOTION
+WHY ARE THERE 1192 ROWS INSTEAD OF 1190? SOME DUPLICATES ACTIVE?
 try https://www.adminer.org/ for he.net mgmt
 
 sql server instructions https://www.r-bloggers.com/setting-up-an-odbc-connection-with-ms-sql-server-on-windows/
 harryahlas
 
 For the 24th release: 
+	"this read may not be for you"
+	put bullets closer to beginning and say you are going to use hrsample data to tie data together etc
+	switch knitr to glimpse?
 	make sure names/values match what is in post
 	UPDATE DATA DISCLAIMER (AND OTHERS) TO USE HRSAMPLE PACKAGE
 	send tweet...add images
@@ -14,7 +20,8 @@ Validations on LAST RUN
 	look at promoations by year
 	look at job totals
 	look at how long jobs are open
-	look at bad employee/mgr turnover	
+	look at bad employee/mgr turnover
+		look to see if new hires seem to happen a lot after 90 days - if so then look at 90 day new hire fill toward beginning of loop
 	
 WHY DID HEADCOUNT GO DOWN SO MUCH? 190 TMS? MAYBE 45K WASNT ENOUGH TMS? MAKE SURE THEY ARE HIRING NEW PEOPLE.	
 WHY IS PROMOTIONS GOING DOWN?
