@@ -181,4 +181,63 @@ deskhistory_table %>%
   count(termination) %>% 
   spread(key = termination, value = n) %>% 
   mutate(pct = term2017 / (term2017 + notterm2017))
-  
+
+
+#terminations by year
+terms_by_year <- deskhistory_table %>% filter(termination_flag == 1) %>% count(year(desk_id_end_date))
+
+
+# Headcount by Year -------------------------------------------------------
+hcyear <- seq(1999,2019,1)
+
+get_end_of_year_headcount <- function (hcyear = 1999) {
+  x <- deskhistory_table %>% 
+    filter(desk_id_end_date >= as.Date(paste0(hcyear, "-12-31")),
+           desk_id_start_date <= as.Date(paste0(hcyear, "-12-31"))) %>% 
+    nrow()
+  return(x)
+}
+
+tibble(hcyear = hcyear) %>% 
+  rowwise() %>% 
+  mutate(end_of_year_hc = get_end_of_year_headcount(hcyear)) %>% 
+  ggplot(aes(hcyear, end_of_year_hc)) +
+  geom_col()
+
+# Time between jobs -------------------------------------------------------
+# Next: maybe add tenure by line of business
+bob <- deskhistory_table %>% 
+  filter(termination_flag == 1, desk_id_end_date < as.Date("2019-01-01")) %>% 
+  select(employee_num) %>%
+  left_join(deskhistory_table) %>% 
+  group_by(employee_num) %>% 
+  mutate(end_date = max(desk_id_end_date),
+         start_date = min(desk_id_start_date)) %>% 
+  ungroup() %>% 
+  mutate(tenure = as.numeric(end_date - start_date)) %>% 
+  select(employee_num, tenure) %>%
+  distinct() %>% 
+  left_join(employeeinfo_table %>% 
+               select(employee_num, bad_employee_flag))
+#%>% 
+  ggplot(aes(as.factor(bad_employee_flag), tenure)) +
+  geom_boxplot()
+
+# Table repair ------------------------------------------------------------
+
+# Active employees
+deskhistory_table %>% 
+  filter(desk_id_end_date >= as.Date("2019-01-02")) %>% 
+  count(desk_id) %>% 
+  arrange(desc(n))
+
+# Show duplicates that need to be fixed
+deskhistory_table %>% 
+  filter(desk_id == 252) 
+
+# Sample remove row if needed
+library(RMariaDB)
+HRSAMPLE <- dbConnect(RMariaDB::MariaDB(), user='newuser', password='newuser', dbname='hrsample', host='localhost')
+dbGetQuery(HRSAMPLE, "select count(*) from deskhistory")
+dbExecute(HRSAMPLE, "delete from deskhistory where desk_id = 252 and desk_id_start_date = '2999-01-02'")
+dbGetQuery(HRSAMPLE, "select count(*) from deskhistory")

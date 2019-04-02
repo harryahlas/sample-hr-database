@@ -1,4 +1,19 @@
-LOOKS LIKE i IS MESSING THINGS UP.  WAS AT 984.
+NEXT RUN: DECREASE TURNOVER RATE BY 2% SINCE INCREASED BAD EMPLOYEE FLAG
+NEXT RUN: TEST BAD EMPLOYEE FLAG.  BAD EMPLOYEES SHOULD HAVE HIGHER TURNOVER AND LOWER STAYS IN Job
+
+BAD EMPLOYEE FLAG IS NOT HAVING IMPACT ON TURNOVER, SEE IF IT IS BEING IMPLEMENTED
+	fix: add bad emp flag to create_deskhistory_row function
+		add multiplier for days in job, multiply by .5-.1 or something
+		increase chance of turnover
+IS BAD EMP FLAG IMPACTING REVIEW SCORES?
+
+
+At some point communicate functions to create SQL databases	
+
+LOOK AT BAD MANAGERS
+REMOVE BAD TM FLAG
+Remove term flag for tms w 2999 exp date
+Remove extra employees from employeeinfo
 
 CHECK CEO TO SEE IF HE GOT PROMOTION
 WHY ARE THERE 1192 ROWS INSTEAD OF 1190? SOME DUPLICATES ACTIVE?
@@ -15,22 +30,17 @@ For the 24th release:
 	UPDATE DATA DISCLAIMER (AND OTHERS) TO USE HRSAMPLE PACKAGE
 	send tweet...add images
 
-Validations on LAST RUN
-	look at turnover by year
-	look at promoations by year
-	look at job totals
-	look at how long jobs are open
+	
+
+NEXT RUN FIXES:
+Add state/county etc on 03
+Reduce number of promotions maybe
+
+Validations on Next RUN
 	look at bad employee/mgr turnover
 		look to see if new hires seem to happen a lot after 90 days - if so then look at 90 day new hire fill toward beginning of loop
-	
-WHY DID HEADCOUNT GO DOWN SO MUCH? 190 TMS? MAYBE 45K WASNT ENOUGH TMS? MAKE SURE THEY ARE HIRING NEW PEOPLE.	
-WHY IS PROMOTIONS GOING DOWN?
-WHY IS INCREASES GOING DOWN?
-WHY IS PROMOTIONS USUALLY NA?
 
-Add state/county etc on 03
 
-At some point communicate functions to create SQL databases	
 	
 Next run quick changes:	
 	TERMS LOOK LIKE THEY ARE NOT LOWER FOR 1-2s. Validate turnover rate increase should be up to 10% now
@@ -45,7 +55,7 @@ COMPLETE - Per hw, add function that will create databases
 	3. suggestion would be to have code that automatically installs mysql, not sure if need to have just an error message or if need to install mariadb
 	4. look at nosql and others
 
-Bad manager/bad employee plug
+Bad manager/bad employee plug SOME OF BELOW IS COMPLETE
 	1. COMPLETE - FIRST need to edit create_deskhistory_row() in 01 functions.  Add an argument that can increase the termination ratio and add that in w/bad mgr, bad employee etc.
 	2. COMPLETE - Create bad employee ratio at 10% on variables file
 	3. COMPLETE - On create TMs add bad_employee_flag
@@ -107,7 +117,7 @@ Add termination types:
 	Retirement: Employees retire from employment when they reach an age at which they are ready to elave the workforce permanently.
 	Involuntary termination:Involuntary termination can include layoffs, closure of business, or individual termination as a result of unsatisfactory performance. (source: https://www.bambee.com/termination/)
 
-
+Add movement between levels, so 4 to 3 eg
 
 Add rehires.  When picking TMs, take a look and maybe 1/20? set rehire rate globally, take that % when picking TM.  Set min 1 year since term.
 

@@ -19,16 +19,22 @@ create_deskhistory_row <- function(f_temp_end_date = temp_end_date,
                                    f_temp_new_desk_id = new_desk_id,
                                    f_temp_promotion_flag = 0,
                                    f_temp_termination_probability = c(0.30, 0.70)) {
+  f_temp_bad_employee_flag <- employeeinfo_table %>% 
+    filter(employee_num == f_temp_employee_num) %>% 
+    select(bad_employee_flag) %>% 
+    as.numeric()
+  f_temp_bad_employee_tij_multiplier <-  1 + f_temp_bad_employee_flag * bad_employee_time_in_job_multiplier
+  f_temp_bad_employee_term_multiplier <-  1 + f_temp_bad_employee_flag * bad_employee_termination_multiplier
   f_temp_start_date_add = f_temp_end_date + 1
-  f_temp_days_in_job_add <- round(rgamma(1, shape=3.777666, scale=1000/3.777666) ,0)
+  f_temp_days_in_job_add <- round(rgamma(1, shape=3.777666, scale=1000/3.777666) ,0) * f_temp_bad_employee_tij_multiplier
   f_temp_end_date_add = f_temp_start_date_add + f_temp_days_in_job_add
   f_temp_end_date_add = if_else(f_temp_end_date_add < f_max_date, 
                                 f_temp_end_date_add, 
                                 as.Date("2999-01-01")) # "2999-01-01" is for active information
   
-  
   # Determine whether the new end date will be due to termination.  If the end date is current then it cannot be a termination.
   # Termination weights can bet determined by function argument f_temp_termination_probability
+  f_temp_termination_probability[1] <- f_temp_termination_probability[1] * f_temp_bad_employee_term_multiplier #increase term probability by multiplier
   f_termination_flag_text <- sample(c("Termination", "Not Termination"), 1, prob=f_temp_termination_probability, replace=TRUE)
   f_termination_flag_text <- if_else(f_temp_end_date == as.Date("2999-01-01"),  "Not Termination", f_termination_flag_text) #if it is the last end date then it can't be a termination
   f_termination_flag <- if_else(f_termination_flag_text == "Termination", 1, 0)

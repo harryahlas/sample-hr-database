@@ -155,6 +155,7 @@ job_distribution <- deskhistory_table %>%
 # Promotions --------------------------------------------------------------
 #count of promotions by year
 deskhistory_table %>% 
+   filter(desk_id_start_date <= as.Date("2019-01-01")) %>% # needed for this run only, probably ok to delete later
    left_join(hierarchy_spread_all) %>% 
    mutate(year = year(desk_id_start_date)) %>% 
    count(year, lvl01_org, promotion_flag) %>% 
@@ -169,4 +170,19 @@ deskhistory_table %>%
          panel.grid.minor = element_blank(),
          axis.text.x      = element_blank()) 
  
+ deskhistory_table %>% 
+   filter(desk_id_start_date <= as.Date("2019-01-01")) %>% # needed for this run only, probably ok to delete later
+   left_join(hierarchy_spread_all) %>% 
+   mutate(year = year(desk_id_start_date)) %>% 
+   count(year, lvl01_org, promotion_flag) %>% 
+   filter(year != 1999) %>% 
+   ggplot(aes(x = year, y = n, fill = promotion_flag)) +
+   geom_col(position = "dodge") +
+   facet_wrap(~lvl01_org) +
+   labs(y = "Count of Promotions",
+        title = "Promotions by Business Line") +
+   theme_minimal() +
+   theme(panel.grid.major = element_blank(), 
+         panel.grid.minor = element_blank(),
+         axis.text.x      = element_blank()) 
  

@@ -13,3 +13,9 @@ female_male_ratio <- .55
 
 # Ratio of bad employees. Receive lower review scores. They and their direct reports have increased turnover and shorter tenure. 
 bad_employee_ratio <- c(.1,.9)
+
+# Percent of normal job tenure for bad employees
+bad_employee_time_in_job_multiplier <- -.65 #not tested
+
+# Bad employee termination multiplier
+bad_employee_termination_multiplier <- 1.5 #not currently used
