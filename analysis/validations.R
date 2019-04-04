@@ -131,9 +131,10 @@ deskhistory_table %>%
   geom_col(position = "fill") +
   labs(title = "% of employees who received\na Promotion at some point by level")
 
-# 5. Only 692 TMs right now
+# 5. Number of TMs right now
 deskhistory_table %>% 
-  filter(desk_id_end_date >= as.Date("2019-01-01")) %>% 
+  filter(desk_id_end_date >= as.Date("2019-01-01"),
+         desk_id_start_date <= as.Date("2019-01-01")) %>% 
   nrow()
 
 # 6. check job by states
@@ -175,16 +176,15 @@ perf_promotions %>%
 
 # 8. Termination rate is low
 deskhistory_table %>% 
-  filter(desk_id_start_date <= as.Date("2018-01-01"),
-         desk_id_end_date >= as.Date("2017-01-01")) %>% 
-  mutate(termination = if_else(termination_flag == 1 & (year(desk_id_end_date) == 2017 ), "term2017", "notterm2017")) %>% 
+  filter(desk_id_start_date <= as.Date("2006-01-01"),
+         desk_id_end_date >= as.Date("2005-01-01")) %>% 
+  mutate(termination = if_else(termination_flag == 1 & (year(desk_id_end_date) == 2005 ), "term2017", "notterm2017")) %>% 
   count(termination) %>% 
   spread(key = termination, value = n) %>% 
   mutate(pct = term2017 / (term2017 + notterm2017))
 
 
-#terminations by year
-terms_by_year <- deskhistory_table %>% filter(termination_flag == 1) %>% count(year(desk_id_end_date))
+
 
 
 # Headcount by Year -------------------------------------------------------
@@ -198,15 +198,34 @@ get_end_of_year_headcount <- function (hcyear = 1999) {
   return(x)
 }
 
-tibble(hcyear = hcyear) %>% 
+hc_by_year <- tibble(hcyear = hcyear) %>% 
   rowwise() %>% 
-  mutate(end_of_year_hc = get_end_of_year_headcount(hcyear)) %>% 
+  mutate(end_of_year_hc = get_end_of_year_headcount(hcyear)) 
+
+hc_by_year %>% 
   ggplot(aes(hcyear, end_of_year_hc)) +
   geom_col()
 
+source("02_variables.R")
+#terminations by year
+terms_by_year <- deskhistory_table %>% 
+  filter(termination_flag == 1) %>% 
+  left_join(employeeinfo_table) %>% 
+  mutate(year = year(desk_id_end_date)) %>% 
+  count(bad_employee_flag, year) %>% 
+  spread((bad_employee_flag), n) %>% 
+  left_join(hc_by_year, by = c("year" = "hcyear")) %>% 
+  mutate(normal_emp_pct = (`0` / end_of_year_hc),
+         bad_emp_pct = (`1` / (end_of_year_hc * bad_employee_ratio[1]))) # divided by 10 because 1/10 employees are bad
+
+terms_by_year %>% 
+  filter(!is.na(bad_emp_pct), year < 2020) %>% 
+  ggplot(aes(year, bad_emp_pct)) +
+  geom_line()
+
 # Time between jobs -------------------------------------------------------
 # Next: maybe add tenure by line of business
-bob <- deskhistory_table %>% 
+deskhistory_table %>% 
   filter(termination_flag == 1, desk_id_end_date < as.Date("2019-01-01")) %>% 
   select(employee_num) %>%
   left_join(deskhistory_table) %>% 
@@ -218,26 +237,27 @@ bob <- deskhistory_table %>%
   select(employee_num, tenure) %>%
   distinct() %>% 
   left_join(employeeinfo_table %>% 
-               select(employee_num, bad_employee_flag))
-#%>% 
+               select(employee_num, bad_employee_flag))%>% 
   ggplot(aes(as.factor(bad_employee_flag), tenure)) +
   geom_boxplot()
 
 # Table repair ------------------------------------------------------------
 
 # Active employees
-deskhistory_table %>% 
+aa <- deskhistory_table %>% 
   filter(desk_id_end_date >= as.Date("2019-01-02")) %>% 
   count(desk_id) %>% 
-  arrange(desc(n))
+  arrange(desc(n)) %>% 
+  filter(n>1) %>% 
+  left_join(deskhistory_table)
 
 # Show duplicates that need to be fixed
 deskhistory_table %>% 
   filter(desk_id == 252) 
 
-# Sample remove row if needed
-library(RMariaDB)
-HRSAMPLE <- dbConnect(RMariaDB::MariaDB(), user='newuser', password='newuser', dbname='hrsample', host='localhost')
-dbGetQuery(HRSAMPLE, "select count(*) from deskhistory")
-dbExecute(HRSAMPLE, "delete from deskhistory where desk_id = 252 and desk_id_start_date = '2999-01-02'")
-dbGetQuery(HRSAMPLE, "select count(*) from deskhistory")
+# # Sample remove row if needed
+# library(RMariaDB)
+# HRSAMPLE <- dbConnect(RMariaDB::MariaDB(), user='newuser', password='newuser', dbname='hrsample', host='localhost')
+# dbGetQuery(HRSAMPLE, "select count(*) from deskhistory")
+# dbExecute(HRSAMPLE, "delete from deskhistory where desk_id = 252 and desk_id_start_date = '2999-01-02'")
+# dbGetQuery(HRSAMPLE, "select count(*) from deskhistory")

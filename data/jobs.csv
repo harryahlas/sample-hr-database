@@ -1,6 +1,6 @@
 job_name, single_lob,avg_starting_salary,rank,pct_of_lob,cannot_change_org,leadership_role,high_turnover_flag
-Administrative Assistant,,50000,1,,0,0
-Salesperson,Sales,75000,1,1,1,1
+Administrative Assistant,,50000,1,,0,0,0
+Salesperson,Sales,75000,1,1,1,0,1
 Product Manager,,90000,2,,0,,0
 Project Manager,,100000,2,,0,,0
 Consultant,,115000,2,,0,,0

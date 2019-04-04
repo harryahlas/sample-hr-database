@@ -61,7 +61,7 @@ loopnumber = 0
 
 # The upcoming while loop will update records that have a desk_id_end_date up to this date
 run_through_date <- end_date_of_hierarchy#as.Date("2018-12-31")
-run_through_date <- as.Date("2019-01-31")
+#run_through_date <- as.Date("2019-01-31")
 # while loop --------------------------------------------------------------
 
 # The while loop looks at employees 1 by 1, starting with the employee with the oldest 
@@ -72,19 +72,13 @@ run_through_date <- as.Date("2019-01-31")
 
 #TRY THIS AT BEGINNING
 loop_date <- sort(deskhistory_table_most_recent$desk_id_end_date, TRUE)[length(deskhistory_table_most_recent$desk_id_end_date)- i]
-
 ##### see if it's a term then do new hire, what happens if not?
 while (sort(deskhistory_table_most_recent$desk_id_end_date, TRUE)[nrow(deskhistory_table_most_recent)] < run_through_date) {
 #while (sort(deskhistory_table_most_recent$desk_id_end_date, TRUE)[length(deskhistory_table_most_recent$desk_id_end_date)- i] < run_through_date) {
 print("a")
-  ### temp break, OK TO REMOVE once duplicates are fixed
-  if(loopnumber > 5) {
-    if(error_log[nrow(error_log),"loopnumber"] == error_log[(nrow(error_log) - 1),"loopnumber"]) {
-      break
-    }
-  }
-  print("b")
   
+  print("b")
+
     temp_deskhistory_table_append <- NULL
     temp_deskhistory_table <- NULL
 ##############NOT SURE WE NEED TO INCREASE i AFTER A TERMINATION. TRY REMOVING IT
@@ -107,7 +101,8 @@ print("made it 1")
   temp_termination_flag <- deskhistory_table_most_recent$termination_flag[1]
   print("c")
   
-
+  if (temp_desk_id == 1) {next}
+  
   time_since_oldest_end_date <- as.numeric(loop_date - temp_end_date)
 
   # Old Desk ID cleanup
@@ -204,6 +199,8 @@ print("1. not external hire")
   temp_depth <-  deskhistory_table_most_recent$depth[i]
   temp_end_date <- deskhistory_table_most_recent$desk_id_end_date[i]
   temp_job_name <- deskjob_table$job_name[deskjob_table$desk_id == temp_desk_id]
+  
+  if (temp_desk_id == 1) {next}
   
 print(paste("desk id:", temp_desk_id, "- eid:", temp_employee_num))
   # If the employee's current job shows termination then move to the next employee.

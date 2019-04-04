@@ -35,16 +35,16 @@ For the 24th release:
 NEXT RUN FIXES:
 Add state/county etc on 03
 Reduce number of promotions maybe
+!!!!!!!!!111TEST f_temp_high_turnover_job_flag#########~!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 Validations on Next RUN
 	look at bad employee/mgr turnover
 		look to see if new hires seem to happen a lot after 90 days - if so then look at 90 day new hire fill toward beginning of loop
+	Look at high turnover jobs and make sure they have higher turnover
 
 
 	
 Next run quick changes:	
-	TERMS LOOK LIKE THEY ARE NOT LOWER FOR 1-2s. Validate turnover rate increase should be up to 10% now
-		could it be backwards where 4-5s term more?
 	COMPLETE - Check to make sure few people with 1 or 2 reviews are getting promotions (should already be in validations file)
 	update all graphics after upload to git
 	Look for bad managers
@@ -59,16 +59,16 @@ Bad manager/bad employee plug SOME OF BELOW IS COMPLETE
 	1. COMPLETE - FIRST need to edit create_deskhistory_row() in 01 functions.  Add an argument that can increase the termination ratio and add that in w/bad mgr, bad employee etc.
 	2. COMPLETE - Create bad employee ratio at 10% on variables file
 	3. COMPLETE - On create TMs add bad_employee_flag
-	4. On create_deskhistory_row() add shortened tenure and increased chance of term if mgr is bad employee or just increased chance of term if TM is bad employee. do this inside function.
-		a. Look up manager at start of tenure.
-		b. If manager is bad employee or if TM is bad employee switch scale=1000/3.777666 to scale=500/3.777666 (shortens job tenure)
-		c. If manager is bad employee then - increase chance of termination by 2
-			- multiply f_temp_termination_probability in create_deskhistory_row to * c(2,1))
-		c. If job is high turnover then - increase chance of termination by 2 again
-			- multiply f_temp_termination_probability in create_deskhistory_row to * c(2,1))
-		b. if TM is bad employee then change f_temp_termination_probability in create_deskhistory_row to c(.9,.1)
-			- increase chance of termination
-		d. add high_turnover_flag to process
+	4. COMPLETE -On create_deskhistory_row() add shortened tenure and increased chance of term if mgr is bad employee or just increased chance of term if TM is bad employee (COMPLETE) . do this inside function.
+		a. COMPLETE -Look up manager at start of tenure.
+		b. COMPLETE -If manager is bad employee switch scale=1000/3.777666 to scale=500/3.777666 (shortens job tenure)
+		c. COMPLETE -If manager is bad employee then - increase chance of termination by 2
+			- COMPLETE -multiply f_temp_termination_probability in create_deskhistory_row to * c(2,1))
+		c. COMPLETE -If job is high turnover then - increase chance of termination by 2 again
+			- COMPLETE -multiply f_temp_termination_probability in create_deskhistory_row to * c(2,1))
+		b. COMPLETE if TM is bad employee then change f_temp_termination_probability in create_deskhistory_row to c(.9,.1)
+			- COMPLETE -increase chance of termination
+		d. COMPLETE -add high_turnover_flag to process
 			COMPLETE - Add high_turnover_flag to jobs input
 			- add job name input into create_deskhistory_row 
 			- If job is high turnover then double the turnover chances c(2,1) * c(2,1)
