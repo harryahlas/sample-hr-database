@@ -1,46 +1,48 @@
+# from harry.ahlas.com/2019/04/07/information-security-tab/index.html
+
+devtools::install_github("harryahlas/hrsample")
+library(hrsample)
 library(tidyverse)
 library(scales)
+library(lubridate)
 library(openxlsx)
 
 # Tracking information
-as_of_date <- Sys.Date()
 report_name <- "PA73405 - Attrition by Job 2009"
+as_of_date <- Sys.Date()
 
-# Import data
-deskhistory_table <- read_csv("https://raw.githubusercontent.com/harryahlas/sample-hr-database/master/data/deskhistory_table.csv")
-deskjob_table <- read_csv("https://raw.githubusercontent.com/harryahlas/sample-hr-database/master/data/deskjob_table.csv")
-
-knitr::kable(deskhistory_table[sample(nrow(deskhistory_table),5),])
 knitr::kable(deskjob_table[sample(nrow(deskjob_table),5),])
-
+knitr::kable(deskhistory_table[sample(nrow(deskhistory_table),5),])
 
 # Summary data frame
 hcto_summary <- deskhistory_table %>% 
-  left_join(deskjob_table) %>% 
+  left_join(deskjob_table) %>%
   filter(desk_id_start_date <= as.Date("2009-12-31"),
-         desk_id_end_date >= as.Date("2009-01-01")) %>% 
+         desk_id_end_date >= as.Date("2009-01-01")) %>%
   arrange(desc(desk_id_end_date)) %>% 
   group_by(employee_num) %>% 
   filter(row_number() == 1) %>% 
-  ungroup() %>% 
+  ungroup() %>%
   mutate(year = "2009",
-         termination_flag = if_else(termination_flag == 1, "Terminated", "DidNotTerminate")) %>% 
-  count(year, job_name, termination_flag) %>% 
+         termination_flag = if_else(termination_flag == 1 & year(desk_id_end_date) == 2009, 
+                                    "Terminated", 
+                                    "DidNotTerminate")) %>% 
+  count(job_name, termination_flag) %>% 
   spread(termination_flag, n, fill = 0) %>% 
   mutate(Headcount =  Terminated + DidNotTerminate,
          TerminationRate = percent(Terminated / Headcount)) %>% 
   arrange(desc(Terminated / Headcount))
-
+  
 knitr::kable(hcto_summary)
 
 # Data disclaimer
-disclaimer_info <-   data.frame(Information = 
-  c("Source: https://github.com/harryahlas/sample-hr-database/tree/master/data",
-    paste("Data as of", as_of_date, "."),
-    "Data includes all employees rolling up to CEO Tricia Avallone who were active at any point from Jan 1, 2009 through December 31, 2009.",
-    "If the employee had multiple jobs during 2009, only the most recent job is counted.",
-    "Data is confidential and should be shared on a need to know basis only.",
-    "Do not distribute externally.")) 
+disclaimer_info <- data.frame(Information = 
+                                c("Source: hrsample",
+                                  paste("Data as of", as_of_date, "."),
+                                  "Data includes all employees rolling up to CEO Danica Hammel who were active at any point from Jan 1, 2009 through December 31, 2009.",
+                                  "If the employee had multiple jobs during 2009, only the most recent job is counted.",
+                                  "Data is confidential and should be shared on a need to know basis only.",
+                                  "Do not distribute externally.")) 
 
 
 # Export to Excel
