@@ -1,5 +1,7 @@
-NEXT RUN: DECREASE TURNOVER RATE BY 2% SINCE INCREASED BAD EMPLOYEE FLAG
-NEXT RUN: TEST BAD EMPLOYEE FLAG.  BAD EMPLOYEES SHOULD HAVE HIGHER TURNOVER AND LOWER STAYS IN Job
+NEXT RUN: Think about changing term rates and salaries/salary increase rate
+NEXT RUN: Remove bad employee flag.  Add code to save it in an alternate file for reference.  Bad employee reference list.
+
+BAD MANAGER is not impacting turnover.  See bottom of validations.R.  Do we need to recode that?
 
 BAD EMPLOYEE FLAG IS NOT HAVING IMPACT ON TURNOVER, SEE IF IT IS BEING IMPLEMENTED
 	fix: add bad emp flag to create_deskhistory_row function
@@ -23,26 +25,20 @@ sql server instructions https://www.r-bloggers.com/setting-up-an-odbc-connection
 harryahlas
 
 For the 24th release: 
-	"this read may not be for you"
-	put bullets closer to beginning and say you are going to use hrsample data to tie data together etc
 	switch knitr to glimpse?
 	make sure names/values match what is in post
-	UPDATE DATA DISCLAIMER (AND OTHERS) TO USE HRSAMPLE PACKAGE
 	send tweet...add images
+	My new #rstats blog post: http://harry.ahlas.com/2019/04/07/information-security-tab/index.html Use R to add a Data Disclaimer to an Excel Report. Includes some wrangling of the hrsample package/database. Check it out and let me know what you think! http://harry.ahlas.com/2019/04/07/information-security-tab/code.gif http://harry.ahlas.com/2019/04/07/information-security-tab/disclaimer_tab.png
 
-	
+Future blog ideas:
+	show hierarchy spread SQL
 
 NEXT RUN FIXES:
 Add state/county etc on 03
-Reduce number of promotions maybe
-!!!!!!!!!111TEST f_temp_high_turnover_job_flag#########~!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
 Validations on Next RUN
 	look at bad employee/mgr turnover
 		look to see if new hires seem to happen a lot after 90 days - if so then look at 90 day new hire fill toward beginning of loop
 	Look at high turnover jobs and make sure they have higher turnover
-
-
 	
 Next run quick changes:	
 	COMPLETE - Check to make sure few people with 1 or 2 reviews are getting promotions (should already be in validations file)

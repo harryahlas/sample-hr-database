@@ -1,6 +1,7 @@
 library(tidyverse)
 library(hrsample)
 library(lubridate)
+library(fuzzyjoin)
 
 # No rehires --------------------------------------------------------------
 deskhistory_table %>% 
@@ -176,9 +177,9 @@ perf_promotions %>%
 
 # 8. Termination rate is low
 deskhistory_table %>% 
-  filter(desk_id_start_date <= as.Date("2006-01-01"),
-         desk_id_end_date >= as.Date("2005-01-01")) %>% 
-  mutate(termination = if_else(termination_flag == 1 & (year(desk_id_end_date) == 2005 ), "term2017", "notterm2017")) %>% 
+  filter(desk_id_start_date <= as.Date("2010-01-01"),
+         desk_id_end_date >= as.Date("2009-01-01")) %>% 
+  mutate(termination = if_else(termination_flag == 1 & (lubridate::year(desk_id_end_date) == 2009 ), "term2017", "notterm2017")) %>% 
   count(termination) %>% 
   spread(key = termination, value = n) %>% 
   mutate(pct = term2017 / (term2017 + notterm2017))
@@ -240,6 +241,54 @@ deskhistory_table %>%
                select(employee_num, bad_employee_flag))%>% 
   ggplot(aes(as.factor(bad_employee_flag), tenure)) +
   geom_boxplot()
+
+# Bad Manager analysis ----------------------------------------------------
+
+# function to get term rate for a manager
+#Start manually for a couple
+rollup <- dbGetQuery(HRSAMPLE, "SELECT * FROM ROLLUP") #Vies on mysql only
+
+manager_desk_ids <- hierarchy_with_depth %>% 
+  filter(depth < 4) %>% #manager desk ids
+  select(desk_id) 
+
+bad_managers_deskhistory <- deskhistory_table %>% # their employee#s
+  semi_join(manager_desk_ids) %>% 
+  left_join(employeeinfo_table %>% 
+              select(employee_num, bad_employee_flag)) %>% 
+  filter(bad_employee_flag == 1)
+
+deskhistory_w_parent <- deskhistory_table %>% 
+  left_join(hierarchy_with_depth %>% select(desk_id, parent_id)) 
+
+desk_history_if_bad_manager <- deskhistory_w_parent %>% 
+  fuzzy_semi_join(bad_managers_deskhistory, by = c(
+    "parent_id" = "desk_id",
+    "desk_id_start_date" = "desk_id_end_date",
+    "desk_id_end_date" = "desk_id_start_date"
+  ),
+  match_fun = list(`==`, `<=`, `>=`)) 
+
+desk_history_if_not_bad_manager <- deskhistory_w_parent %>% 
+  fuzzy_anti_join(bad_managers_deskhistory, by = c(
+    "parent_id" = "desk_id",
+    "desk_id_start_date" = "desk_id_end_date",
+    "desk_id_end_date" = "desk_id_start_date"
+  ),
+  match_fun = list(`==`, `<=`, `>=`)) 
+
+  
+desk_history_if_bad_manager %>% count(termination_flag) %>% spread(termination_flag, n) %>% mutate(pct = `1` / (`1` + `0`))
+desk_history_if_not_bad_manager %>% count(termination_flag)%>% spread(termination_flag, n) %>% mutate(pct = `1` / (`1` + `0`))
+
+
+# Find them
+
+# Get count of  manager desk id s
+# For each desk id Get count of desk ids reporting to it
+##NOTE: THIS WILL HAVE TO BE UPDATED WHEN DESK IDS START CHANGING
+#if mgr is in role for full year
+# Then get count of terms for that year
 
 # Table repair ------------------------------------------------------------
 
