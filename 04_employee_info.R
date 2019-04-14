@@ -1,6 +1,7 @@
 library(RMariaDB)
 library(tidyverse)
 library(babynames)
+library(readxl)
 source("01_functions.R")
 source("02_variables.R")
 
@@ -44,6 +45,38 @@ surnames <- read_csv("data/surnames.csv", col_names = "last_name" )
 
 # Create list of cities and states - source: https://raw.githubusercontent.com/grammakov/USA-cities-and-states/master/us_cities_states_counties.csv
 cities <- read_delim("data/cities.csv", delim = "|")
+
+# State/County Info -------------------------------------------------------
+#### Note: not currently used - placeholder
+#https://www.ers.usda.gov/webdocs/DataFiles/48747/PopulationEstimates.xls?v=4934.5
+state_county_population <- read_excel("data/PopulationEstimates.xls", skip = 2) %>% 
+  mutate(Area_Name = trimws(toupper(gsub(pattern = "county|borough|census area", "", Area_Name, ignore.case = TRUE)))) %>% 
+ # select(Area_Name, State, POP_ESTIMATE_2017) %>% 
+  rename(COUNTY_POP_ESTIMATE_2017 = POP_ESTIMATE_2017) %>% 
+  mutate(sample_weight = COUNTY_POP_ESTIMATE_2017 / sum(COUNTY_POP_ESTIMATE_2017, na.rm = TRUE)) %>% 
+  filter(!is.na(sample_weight) & !is.na(`Rural-urban_Continuum Code_2003`))#Area_Name != "UNITED STATES")
+
+
+#filter for rural continuum is not na
+aa <- state_county_population %>% 
+  select(Area_Name, sample_weight) %>% 
+  distinct() %>% 
+  sample_n(size = 1000,  weight = sample_weight, replace = TRUE) %>% 
+  count(Area_Name) %>% 
+  arrange(desc(n)) 
+  
+
+
+cities_w_county_population <- cities %>% 
+  select(City,
+         State = `State short`,
+         Area_Name = County) %>% 
+  distinct() %>% 
+  left_join(state_county_population) %>% 
+  rename(COUNTY_POP_ESTIMATE_2017 = POP_ESTIMATE_2017) %>% 
+  mutate(sample_weight = COUNTY_POP_ESTIMATE_2017 / sum(COUNTY_POP_ESTIMATE_2017, na.rm = TRUE)) %>% 
+  filter(!is.na(sample_weight))
+
 
 
 # Create data for employeeinfo table --------------------------------------

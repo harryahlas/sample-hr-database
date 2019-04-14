@@ -265,7 +265,7 @@ desk_history_if_bad_manager <- deskhistory_w_parent %>%
   fuzzy_semi_join(bad_managers_deskhistory, by = c(
     "parent_id" = "desk_id",
     "desk_id_start_date" = "desk_id_end_date",
-    "desk_id_end_date" = "desk_id_start_date"
+    "desk_id_start_date" = "desk_id_start_date"
   ),
   match_fun = list(`==`, `<=`, `>=`)) 
 
@@ -273,7 +273,7 @@ desk_history_if_not_bad_manager <- deskhistory_w_parent %>%
   fuzzy_anti_join(bad_managers_deskhistory, by = c(
     "parent_id" = "desk_id",
     "desk_id_start_date" = "desk_id_end_date",
-    "desk_id_end_date" = "desk_id_start_date"
+    "desk_id_start_date" = "desk_id_start_date"
   ),
   match_fun = list(`==`, `<=`, `>=`)) 
 

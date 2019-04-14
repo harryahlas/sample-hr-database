@@ -1,3 +1,0 @@
-INSERT INTO employeeinfoxxx (first_name, last_name, city, state) VALUES('Olive','Puchalski','Laclede','MO');
- INSERT INTO employeeinfoxxx (first_name, last_name, city, state) VALUES('Ameer','Hardebeck','Hurdsfield','ND');
-

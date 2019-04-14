@@ -5,15 +5,21 @@
 #install.packages("RMariaDB")
 library(RMariaDB)
 library(tidyverse)
+library(readxl)
 
 
-# State/County Info -------------------------------------------------------
-#### Note: not currently used - placeholder
-#https://www.ers.usda.gov/webdocs/DataFiles/48747/PopulationEstimates.xls?v=4934.5
-state_county_population <- readxl::read_excel("data/PopulationEstimates.xls", skip = 2)
-state_county_population2 <- state_county_population %>% 
-  mutate(Area_Name = gsub(pattern = "county|borough|census area", "", Area_Name, ignore.case = TRUE)) %>% 
-  select(Area_Name)
+# State Population for Sales Distributions --------------------------------
+state_population <- read_excel("data/PopulationEstimates.xls", skip = 2) %>% 
+  filter(is.na(`Rural-urban_Continuum Code_2003`),
+         Area_Name != "United States") %>% 
+  select(Area_Name,POP_ESTIMATE_2017) 
+
+#Normalize population estimate.  Then randomly choose number based on that population_factor.
+state_population <- state_population %>% 
+  rowwise() %>% 
+  mutate(population_factor = round(POP_ESTIMATE_2017 / 3000000, 0),
+         team_size = max(0, sample((population_factor + 3):(population_factor + 10), 1, replace = TRUE))) %>% 
+  filter(team_size > 4)
 
 # Create business lines ---------------------------------------------------
 lob <- read_csv("data/lob.csv")
@@ -22,8 +28,6 @@ sum(lob$proportion)# should equal 1
 
 # Create desk_ids and hierarchy -------------------------------------------
 # http://www.mysqltutorial.org/mysql-adjacency-list-tree/
-
-#dbExecute(HRSAMPLE, "DROP TABLE HIERARCHY")
 
 HRSAMPLE <- dbConnect(RMariaDB::MariaDB(), user='newuser', password='newuser', dbname='hrsample', host='localhost')
 dbListTables(HRSAMPLE)
@@ -92,16 +96,22 @@ for (i in (1:length(depts$dept))) {
 
 # Add N, E, S, W sales regions
 # Get list of regions and parents
-sales_nesw_regions <- read_csv("data/sales_nesw_regions.csv") %>% 
-  mutate(region = paste0(gsub("[aeiou]|","",parent_name), " - ", region))
+nonstandard_regions <- read_csv("data/nonstandard_regions.csv") %>% 
+  mutate(region_old = region,
+         region = paste0(gsub("[aeiou]|","",parent_name), " - ", region))
 
 # Get parent_id from database
-sales_nesw_regions <- sales_nesw_regions %>% 
+nonstandard_regions <- nonstandard_regions %>% 
   mutate(parent_id = get_org_desk_id(parent_name)) 
 
+# Remove regions that will not have team members
+nonstandard_regions <- nonstandard_regions %>% 
+  left_join(state_population %>% select(Area_Name, team_size), by = c("region_old" = "Area_Name")) %>% 
+  filter(use_population_for_size != 1 | team_size > 5)
+
 # Add regions
-for (i in (1:length(sales_nesw_regions$region))) {
-  create_insert_hierarchy(sales_nesw_regions$region[i], sales_nesw_regions$parent_id[i])
+for (i in (1:length(nonstandard_regions$region))) {
+  create_insert_hierarchy(nonstandard_regions$region[i], nonstandard_regions$parent_id[i])
 }
 
 
@@ -112,8 +122,8 @@ for (i in (1:length(sales_nesw_regions$region))) {
 op <- options("useFancyQuotes")
 options(useFancyQuotes = FALSE)
 orgs_to_exclude_from_region_add <- paste0(sQuote(c(lob$lob, 
-                                                   unique(sales_nesw_regions$parent_name),
-                                                   sales_nesw_regions$region)),
+                                                   unique(nonstandard_regions$parent_name),
+                                                   nonstandard_regions$region)),
                                           collapse = ", ")
 options(op)
 
@@ -165,7 +175,10 @@ hierarchy_spread <- hierarchy %>%
       rnorm(n = 1,
             mean = avg_report_to_count,
             sd =  4)
-      ,0),2))
+      ,0),2)) %>% 
+  left_join(nonstandard_regions %>% # Adding team size from earlier calculation
+              select(region, team_size), by = c("lvl03_org" = "region")) %>% 
+  mutate(head_count = if_else(is.na(team_size), head_count, team_size))
 
 
 # Add level4 desk_ids -----------------------------------------------------

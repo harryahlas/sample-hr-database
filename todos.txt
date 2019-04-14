@@ -1,7 +1,14 @@
+
 NEXT RUN: Think about changing term rates and salaries/salary increase rate
 NEXT RUN: Remove bad employee flag.  Add code to save it in an alternate file for reference.  Bad employee reference list.
+Remove These:
+	from employee_info:
+		bad_employee_flag
+		TMs who are not in deskhistory (except maybe CEO, not sure if he is there)
+	From deskhistory:
+		Remove term flag for tms w 2999 exp date
 
-BAD MANAGER is not impacting turnover.  See bottom of validations.R.  Do we need to recode that?
+BAD MANAGER may not be impacting turnover.  See bottom of validations.R.  Do we need to recode that? 
 
 BAD EMPLOYEE FLAG IS NOT HAVING IMPACT ON TURNOVER, SEE IF IT IS BEING IMPLEMENTED
 	fix: add bad emp flag to create_deskhistory_row function
@@ -9,74 +16,46 @@ BAD EMPLOYEE FLAG IS NOT HAVING IMPACT ON TURNOVER, SEE IF IT IS BEING IMPLEMENT
 		increase chance of turnover
 IS BAD EMP FLAG IMPACTING REVIEW SCORES?
 
-
 At some point communicate functions to create SQL databases	
+
+Add specialized leader job names below.  Do this at end of 03. Look up name to job to deskid and rename that way.
 
 LOOK AT BAD MANAGERS
 REMOVE BAD TM FLAG
-Remove term flag for tms w 2999 exp date
 Remove extra employees from employeeinfo
 
 CHECK CEO TO SEE IF HE GOT PROMOTION
 WHY ARE THERE 1192 ROWS INSTEAD OF 1190? SOME DUPLICATES ACTIVE?
-try https://www.adminer.org/ for he.net mgmt
 
 sql server instructions https://www.r-bloggers.com/setting-up-an-odbc-connection-with-ms-sql-server-on-windows/
 harryahlas
 
-For the 24th release: 
-	switch knitr to glimpse?
-	make sure names/values match what is in post
-	send tweet...add images
-	My new #rstats blog post: http://harry.ahlas.com/2019/04/07/information-security-tab/index.html Use R to add a Data Disclaimer to an Excel Report. Includes some wrangling of the hrsample package/database. Check it out and let me know what you think! http://harry.ahlas.com/2019/04/07/information-security-tab/code.gif http://harry.ahlas.com/2019/04/07/information-security-tab/disclaimer_tab.png
 
 Future blog ideas:
 	show hierarchy spread SQL
 
 NEXT RUN FIXES:
-Add state/county etc on 03
+Add state/county etc on 03 - START ON 04 ## Temp analysis - THIS IS HOW TO JOIN
+
+
+add rehires
 Validations on Next RUN
 	look at bad employee/mgr turnover
 		look to see if new hires seem to happen a lot after 90 days - if so then look at 90 day new hire fill toward beginning of loop
 	Look at high turnover jobs and make sure they have higher turnover
 	
 Next run quick changes:	
-	COMPLETE - Check to make sure few people with 1 or 2 reviews are getting promotions (should already be in validations file)
 	update all graphics after upload to git
 	Look for bad managers
 	
-COMPLETE - Per hw, add function that will create databases
-	1. see if he responds after a few days
-	2. reread, reevaluate
-	3. suggestion would be to have code that automatically installs mysql, not sure if need to have just an error message or if need to install mariadb
-	4. look at nosql and others
 
 Bad manager/bad employee plug SOME OF BELOW IS COMPLETE
-	1. COMPLETE - FIRST need to edit create_deskhistory_row() in 01 functions.  Add an argument that can increase the termination ratio and add that in w/bad mgr, bad employee etc.
-	2. COMPLETE - Create bad employee ratio at 10% on variables file
-	3. COMPLETE - On create TMs add bad_employee_flag
-	4. COMPLETE -On create_deskhistory_row() add shortened tenure and increased chance of term if mgr is bad employee or just increased chance of term if TM is bad employee (COMPLETE) . do this inside function.
-		a. COMPLETE -Look up manager at start of tenure.
-		b. COMPLETE -If manager is bad employee switch scale=1000/3.777666 to scale=500/3.777666 (shortens job tenure)
-		c. COMPLETE -If manager is bad employee then - increase chance of termination by 2
-			- COMPLETE -multiply f_temp_termination_probability in create_deskhistory_row to * c(2,1))
-		c. COMPLETE -If job is high turnover then - increase chance of termination by 2 again
-			- COMPLETE -multiply f_temp_termination_probability in create_deskhistory_row to * c(2,1))
-		b. COMPLETE if TM is bad employee then change f_temp_termination_probability in create_deskhistory_row to c(.9,.1)
-			- COMPLETE -increase chance of termination
-		d. COMPLETE -add high_turnover_flag to process
-			COMPLETE - Add high_turnover_flag to jobs input
-			- add job name input into create_deskhistory_row 
+	Solve bad manager issue - i don't think they are having higher turnover for their TMs.
 			- If job is high turnover then double the turnover chances c(2,1) * c(2,1)
 	5. Increase chances of poor review
 		a. on 07 add poor_review_plug = 1.  If bad_employee_flag then turn to 2.
 		b. on 07, around row 188 add poor_review plug to 1 and 2 ratio.
 			
-	Set while loop to go shorter
-
-	Remove from employee_info:
-		bad_employee_flag
-		TMs who are not in deskhistory (except maybe CEO, not sure if he is there)
 	
 	
 Look for errors - see analysis/validations.R
@@ -117,6 +96,13 @@ Add movement between levels, so 4 to 3 eg
 
 Add rehires.  When picking TMs, take a look and maybe 1/20? set rehire rate globally, take that % when picking TM.  Set min 1 year since term.
 
+Add job level, 1-5
+
+Add FLSA
+
+Add recruiting source
+
+Add higher turnover for higher report to number, maybe
 
 need to add original hire date back in somewhere? maybe
 
@@ -189,6 +175,7 @@ Technology,Information Architect,3
 Technology,Information Security Officer,3
 Technology,Information Security Specialist,4
 Technology,Developer,4
+Technology,Technology Specialist,4
 
 Strategy,Chief Administration Officer,2
 Strategy,Strategy Manager,3
