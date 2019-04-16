@@ -1,14 +1,14 @@
-job_name, single_lob,avg_starting_salary,rank,pct_of_lob,cannot_change_org,leadership_role,high_turnover_flag
-Administrative Assistant,,50000,1,,0,0,0
-Salesperson,Sales,75000,1,1,1,0,1
-Product Manager,,90000,2,,0,,0
-Project Manager,,100000,2,,0,,0
-Consultant,,115000,2,,0,,0
-Developer,Technology,150000,1,.8,0,,0
-Attorney,Legal,150000,9,.6,0,,0
-Paralegal,Legal,80000,2,.3,0,,1
-Analyst,,140000,2,,0,,0
-CEO,,5000000,,,,1,0
-Business Leader,,1500000,,,,1,0
-Department Leader,,750000,,,,1,0
-Regional Leader,,400000,,,,1,0
+job_name, single_lob,avg_starting_salary,rank,pct_of_lob,cannot_change_org,leadership_role,high_turnover_flag,cannot_increase_org
+Administrative Assistant,,40000,1,,0,0,0,1
+Salesperson,Sales,75000,1,1,1,0,1,0
+Product Manager,,90000,2,,0,,0,0
+Project Manager,,93000,2,,0,,0,0
+Consultant,,80000,2,,0,,0,0
+Developer,Technology,80000,1,.8,0,,0,0
+Attorney,Legal,150000,9,.6,0,,0,0
+Paralegal,Legal,60000,2,.3,0,,1,1
+Analyst,,90000,2,,0,,0,0
+CEO,,5000000,,,,1,0,0
+Business Leader,,1500000,,,,1,0,0
+Department Leader,,600000,,,,1,0,0
+Regional Leader,,200000,,,,1,0,0

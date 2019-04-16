@@ -224,6 +224,19 @@ terms_by_year %>%
   ggplot(aes(year, bad_emp_pct)) +
   geom_line()
 
+
+# Level changing ----------------------------------------------------------
+# None yet
+# deskhistory job level distinct count
+deskhistory_table %>% 
+  select(employee_num, desk_id) %>% 
+  left_join(hierarchy_with_depth %>% select(desk_id, depth)) %>% 
+  select(employee_num, depth) %>% 
+  distinct() %>% 
+  count(employee_num, depth) %>% 
+  arrange(desc(n))
+
+
 # Time between jobs -------------------------------------------------------
 # Next: maybe add tenure by line of business
 deskhistory_table %>% 

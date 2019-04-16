@@ -4,10 +4,16 @@ library(lubridate)
 source("01_functions.R")
 source("02_variables.R")
 
+set.seed(999)
+
 # Import jobs
 jobs <- read_csv("data/jobs.csv")
 jobs_that_can_change_org <- jobs %>% 
   filter(cannot_change_org == 0) %>% 
+  select(job_name)
+
+jobs_that_can_increase_org <- jobs %>% 
+  filter(cannot_increase_org == 0) %>% 
   select(job_name)
 
 # Essentially the as of date.  Highest possible date to quit job, needs to be an imported variable
@@ -74,15 +80,17 @@ run_through_date <- end_date_of_hierarchy#as.Date("2018-12-31")
 loop_date <- sort(deskhistory_table_most_recent$desk_id_end_date, TRUE)[length(deskhistory_table_most_recent$desk_id_end_date)- i]
 ##### see if it's a term then do new hire, what happens if not?
 while (sort(deskhistory_table_most_recent$desk_id_end_date, TRUE)[nrow(deskhistory_table_most_recent)] < run_through_date) {
-#while (sort(deskhistory_table_most_recent$desk_id_end_date, TRUE)[length(deskhistory_table_most_recent$desk_id_end_date)- i] < run_through_date) {
-print("a")
+
+  if(nrow(deskhistory_table) != nrow(distinct(deskhistory_table))) {
+    print("error found")
+    break}
   
-  print("b")
+print("a")
+print("b")
 
     temp_deskhistory_table_append <- NULL
     temp_deskhistory_table <- NULL
-##############NOT SURE WE NEED TO INCREASE i AFTER A TERMINATION. TRY REMOVING IT
-  
+
   # update the loopnumber
   loopnumber = loopnumber + 1
 print("made it 1")
@@ -212,6 +220,68 @@ print(paste("desk id:", temp_desk_id, "- eid:", temp_employee_num))
 print("termination flag, let job open for someone else")
     next}
   
+
+# Movement between levels -------------------------------------------------
+  # Check to see if it is a job that can move up a level
+  # Check to see if it is a bad employee
+  # Check to see if mgr job opened within past 90 days (max end date)
+
+    reports_to_temp <- hierarchy_with_depth %>% 
+      filter(desk_id == temp_desk_id) %>%
+      select(parent_id) %>% 
+    left_join(deskhistory_table, by = c("parent_id" = "desk_id")) 
+    
+    # Get open date of mgr's job
+    mgr_job_open_date <- max(reports_to_temp$desk_id_end_date) + 1
+  
+    # Is the mgr's job open within 90 days of this end date?
+    mgr_job_available <- temp_end_date >= mgr_job_open_date &
+      temp_end_date <= mgr_job_open_date + 90
+
+    ###NEED TO ADD CHECK HERE TO SEE IF MGR EITHER TERMINATED OR GOT A NEW JOB
+    ###LOOK TO SEE IF THE MOST RECENT EMP NUM FOR THE MGR JOB HAS A MORE RECENT DESK ID
+    ###IF NEITHER THEN CANNOT PROMOTE
+    
+    ## NOte: not worrying about if incumbent termed, I think this is covered earlier
+    # If it is a job that can jump a level and the mgr's job is open...
+    if (temp_job_name %in% jobs_that_can_increase_org$job_name & mgr_job_available == TRUE) {
+      # Check for bad employee
+      bad_emp_flag <- employeeinfo_table %>% 
+        filter(employee_num == temp_employee_num) %>% 
+        select(bad_employee_flag) %>% 
+        as.numeric()
+      
+      # Randomize
+      fill_mgr_flag <- sample(c(1,0), size = 1, prob = c(next_level_ratio, 1 - next_level_ratio))
+      
+      # If all good then promote to next level
+      if (bad_emp_flag == 0 & fill_mgr_flag == 1) {
+        temp_deskhistory_table_append <- create_deskhistory_row(
+          f_temp_new_desk_id = reports_to_temp$parent_id[1],
+          f_temp_promotion_flag = 1)
+        
+        temp_deskhistory_table <- temp_deskhistory_table %>% 
+          bind_rows(temp_deskhistory_table_append)
+        
+        # Add new row to deskhistory_table
+        deskhistory_table <- bind_rows(deskhistory_table, temp_deskhistory_table)
+        
+        # Error log printout for troubleshooting
+        error_log <- error_log %>% 
+          bind_rows(data.frame(loopnumber = loopnumber, 
+                               employee_num = temp_employee_num, 
+                               desk_id = temp_desk_id,
+                               new_desk_id = reports_to_temp$parent_id,
+                               issue = paste("Promoted to higher level"),
+                               old_job = temp_job_name,
+                               new_job = "look it up yourself"))
+        next
+      }
+    }  
+    # End Movement between levels
+
+
+
   ####NEED TO UPDATE LEADERS BELOW
   # if it is depth 0-3 then skip for now, leave plug
   if (temp_depth == 3) {
