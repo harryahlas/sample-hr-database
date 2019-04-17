@@ -51,7 +51,7 @@ hierarchy_with_depth <- dbGetQuery(HRSAMPLE, hierarchy_with_depth.sql)
 error_log <- data.frame(employee_num = integer(), desk_id = integer(), issue = character())
 
 # Update CEO so that there is no churn there.
-deskhistory_table$desk_id_end_date[deskhistory_table$desk_id == 1] <- end_date_of_hierarchy
+deskhistory_table$desk_id_end_date[deskhistory_table$desk_id == 1] <- as.Date("2999-01-01")
 
 # Create deskhistory_table_most_recent. This selects the most recent row for each employee.
 # So each desk_id has only 1 row. Think of this as the current layout of the organization.
@@ -93,7 +93,7 @@ print("b")
 
   # update the loopnumber
   loopnumber = loopnumber + 1
-print("made it 1")
+print(paste("made it 1, loop:", loopnumber))
   # Refresh deskhistory_table_most_recent, which has only the most recent desk records.
   deskhistory_table_most_recent <- refresh_deskhistory_table_most_recent()  
 
@@ -200,6 +200,10 @@ print("1. not external hire")
   #IF YES THEN HAVE NEW HIRE?
   #ELSE PICK FIRST ROW THAT IS NOT A TERMINATION
   
+# If i is for a row that is at max end date then reduce i by 1
+if(deskhistory_table_most_recent$desk_id_end_date[i] == as.Date("2999-01-01")) {
+  i = i-1
+}
   
   # Get information about employee and their current job before they move on
   temp_employee_num <- deskhistory_table_most_recent$employee_num[i]
