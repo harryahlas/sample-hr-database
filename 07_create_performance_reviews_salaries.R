@@ -76,9 +76,7 @@ hierarchy_spread <- hierarchy %>%
   left_join(hierarchy, by = c("lvl03_desk_id" = "parent_id"))  
 
 # Add level 1-3 employees since hierarchy_spread only counts level 04
-hierarchy_spread_lvl01 <- hierarchy_spread %>% 
-  select(lvl00_desk_id, lvl00_org, desk_id = lvl01_desk_id) %>% 
-  distinct()
+
 
 hierarchy_spread_lvl02 <- hierarchy_spread %>% 
   select(lvl01_desk_id, lvl01_org, desk_id = lvl02_desk_id) %>% 
@@ -88,9 +86,16 @@ hierarchy_spread_lvl03 <- hierarchy_spread %>%
   select(lvl01_desk_id, lvl01_org, desk_id = lvl03_desk_id) %>% 
   distinct()
 
+hierarchy_spread_lvl01 <- hierarchy_spread %>% 
+  select(lvl00_desk_id, lvl00_org, desk_id = lvl01_desk_id) %>% 
+  distinct() %>% 
+  left_join((hierarchy_spread_lvl02 %>% select(lvl01_desk_id, lvl01_org)), by = c("desk_id" = "lvl01_desk_id"))
+
 ### Note this hierarchy_spread_all is different than from 04. Includes everyone except CEO
 hierarchy_spread_all <- hierarchy_spread %>% 
   bind_rows(hierarchy_spread_lvl01, hierarchy_spread_lvl02, hierarchy_spread_lvl03)
+
+
 
 # Get highest seat of lvl01s. Anyone below this number will not get a review here
 desk_id_no_review_max = max(hierarchy_spread_all$lvl01_desk_id, na.rm = TRUE)
