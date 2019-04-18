@@ -4,6 +4,7 @@ library(lubridate)
 source("01_functions.R")
 source("02_variables.R")
 
+
 set.seed(999)
 
 # Import jobs

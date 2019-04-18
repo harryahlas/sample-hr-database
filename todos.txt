@@ -1,4 +1,8 @@
-if error on next run: added this which may be causing issue
+
+
+
+
+Note: if error on next run: added this which may be causing issue
 # If i is for a row that is at max end date then reduce i by 1
 if(deskhistory_table_most_recent$desk_id_end_date[i] == as.Date("2999-01-01")) {
   i = i-1
@@ -13,6 +17,7 @@ NEXT RUN: Remove bad employee flag.  Add code to save it in an alternate file fo
 NEXT RUN: validate that level movement makes sense.  Look at TMs that moved up a level and see if their job change is good, see if the incumbent terminated and got promoted (shouldnt happen but check)
 NEXT RUN: Validate no terminations after end date of run.  Or with date 2099 etc.  If you get those then look at Create deskhistory function, 67 "  f_termination_flag <- if_else(f_temp_end_date_add < f_max_date, f_termination_flag, 0) #Similar to code above.  If job lasts until most recent date then it cannot be a termination.  So canceling termination" .  Shouldn't need this because a previous line should be taking care of it.
 
+Update recruiting piece to account for rehires
 
 employee_info cleanup -Start 08
 	Add recruiting source (new table called recruiting)

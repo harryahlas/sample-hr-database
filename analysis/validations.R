@@ -92,7 +92,7 @@ HRSAMPLE <- dbConnect(RMariaDB::MariaDB(), user='newuser', password='newuser', d
 hierarchy_with_depth.sql <- read_file("scripts/hierarchy_with_depth.sql")
 hierarchy_with_depth <- dbGetQuery(HRSAMPLE, hierarchy_with_depth.sql)
 
-# a. No movement between levels
+# a. Some movement between levels
 deskhistory_table %>% 
   select(employee_num, desk_id) %>%
   distinct() %>% 
@@ -233,7 +233,7 @@ deskhistory_table %>%
   left_join(hierarchy_with_depth %>% select(desk_id, depth)) %>% 
   select(employee_num, depth) %>% 
   distinct() %>% 
-  count(employee_num, depth) %>% 
+  count(employee_num) %>% 
   arrange(desc(n))
 
 
@@ -256,6 +256,13 @@ deskhistory_table %>%
   geom_boxplot()
 
 # Bad Manager analysis ----------------------------------------------------
+
+## Note: need to redo below, doing it backward here.  Should be looking at term rates.
+# So get term rates for each manager
+# For one: get mgr desk_ids and time periods
+# get list of desk_ids that report to mgr desk_ids
+# filter deskhistory for those desk_ids during those dates
+# rats
 
 # function to get term rate for a manager
 #Start manually for a couple
@@ -304,6 +311,13 @@ desk_history_if_not_bad_manager %>% count(termination_flag)%>% spread(terminatio
 # Then get count of terms for that year
 
 # Table repair ------------------------------------------------------------
+
+desk_id_end_date_repair <- deskhistory_table %>% 
+  group_by(desk_id) %>% 
+  summarize(desk_id_end_date_max = max(desk_id_end_date)) %>% 
+  filter(desk_id_end_date_max < as.Date("2099-01-01"))
+
+
 
 # Active employees
 aa <- deskhistory_table %>% 
