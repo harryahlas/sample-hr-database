@@ -22,3 +22,28 @@ bademployee_table <- dbGetQuery(HRSAMPLE, "SELECT * FROM bademployee")
 
 dbExecute(HRSAMPLE, "ALTER TABLE employeeinfo DROP COLUMN bad_employee_flag;") 
 
+
+
+# Remove people who were never employees ----------------------------------
+
+# Get list of employees from deskhistory
+deskhistory_table <- dbGetQuery(HRSAMPLE, "SELECT * FROM deskhistory")
+
+id_list <- deskhistory_table %>% 
+  select(employee_num) %>% 
+  distinct() 
+
+id_list <- paste0(id_list$employee_num, collapse = ",")
+
+# Create SQL
+
+employeeinfo_remove_sql <- paste("DELETE FROM employeeinfo WHERE employee_num NOT IN (",
+                                 id_list,
+                                 ")")
+                                 
+# Delete Data
+dbExecute(HRSAMPLE, employeeinfo_remove_sql)
+
+# Check
+df <- dbGetQuery(HRSAMPLE, "SELECT *  FROM employeeinfo")
+

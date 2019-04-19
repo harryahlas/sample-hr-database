@@ -34,12 +34,54 @@ initial_hire_dates <- deskhistory_table %>%
   select(employee_num, desk_id_start_date) %>% 
   ungroup()
 
-# Assign recruitment
+# Function to assign recruiter based on start date
 # If start date is first_date_of_hierarchy then NA
-recruiting <- initial_hire_dates %>% 
-  mutate(recruiting_source = case_when(desk_id_start_date == first_date_of_hierarchy ~ "NA",
-                                       TRUE ~ "TBD"))
+get_recruiter <- function(f_desk_id_start_date) {
+  f_desk_id_start_year <- year(f_desk_id_start_date)
+  
+  f_possible_recruiters <- recruiters %>% 
+    filter(effective_year <= f_desk_id_start_year)
+  
+  f_recruiter <- sample(f_possible_recruiters$recruiting_source,
+                        1, 
+                        replace = TRUE, 
+                        prob = f_possible_recruiters$recruiting_source_ratio)
+  f_recruiter <- if_else(f_desk_id_start_date == first_date_of_hierarchy, "NA", f_recruiter)
+  
+  return(f_recruiter)
+}
+
+
+# Identify recruiter ------------------------------------------------------
+
+recruiting_table <- initial_hire_dates %>% 
+  rowwise() %>% 
+  mutate(recruiting_source = get_recruiter(desk_id_start_date))
+
+
+# Validation --------------------------------------------------------------
+
+recruiting_table %>% 
+  ungroup() %>% 
+  count(recruiting_source, year = year(desk_id_start_date)) %>% 
+  filter(year != 1999) %>% 
+  ggplot(aes(year, n, fill = recruiting_source)) +
+  geom_col() +
+  facet_wrap(~recruiting_source)
 
 # Placeholder for rehires: for terminated employees, grab their first hire after termination and 
 
-# Create Recruiting Table
+# Populate recruiting -------------------------------------------------
+
+# Populate recruiting
+recruiting_sql <- paste(
+  "INSERT INTO recruiting (employee_num, recruiting_source) VALUES ",
+  paste0(
+    "('",
+    recruiting_table$employee_num, "','",
+    recruiting_table$recruiting_source, "')",
+    collapse = ", "),
+  ";"
+)
+
+dbExecute(HRSAMPLE, recruiting_sql)
