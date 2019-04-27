@@ -18,7 +18,7 @@ create_deskhistory_row <- function(f_temp_end_date = temp_end_date,
                                    f_temp_employee_num = temp_employee_num, 
                                    f_temp_new_desk_id = new_desk_id,
                                    f_temp_promotion_flag = 0,
-                                   f_temp_termination_probability = c(0.20, 0.80),
+                                   f_temp_termination_probability = c(0.12, 0.88),
                                    f_temp_job_name = temp_job_name) {
   f_temp_start_date_add = f_temp_end_date + 1
   #965 444

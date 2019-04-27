@@ -49,7 +49,7 @@ performancereview_table %>%
   ggplot(aes(x = as.factor(min_perf_review), y = n, fill = termination_flag)) +
   geom_col(position = "fill") +
   labs(title = "% of employees that termed by their minimum review score",
-       subtitle = "Should be higher for 1 or 2 scores")
+       subtitle = "Not higher for 1 or 2 scores because it means less jobs")
 
 #   b. tenure for tms with 1-2 vs 3, 4,5
 termed_employees_start_end <- deskhistory_terms %>% 
@@ -208,12 +208,16 @@ hc_by_year %>%
   geom_col()
 
 source("02_variables.R")
+
+bad_employee_table <- dbGetQuery(HRSAMPLE, "select * from bademployee")
+  
 #terminations by year
 terms_by_year <- deskhistory_table %>% 
   filter(termination_flag == 1) %>% 
   left_join(employeeinfo_table) %>% 
+  left_join(bad_employee_table) %>% 
   mutate(year = year(desk_id_end_date)) %>% 
-  count(bad_employee_flag, year) %>% 
+  count(bad_employee_flag, year) %>% # can get bad employee table
   spread((bad_employee_flag), n) %>% 
   left_join(hc_by_year, by = c("year" = "hcyear")) %>% 
   mutate(normal_emp_pct = (`0` / end_of_year_hc),
@@ -250,8 +254,7 @@ deskhistory_table %>%
   mutate(tenure = as.numeric(end_date - start_date)) %>% 
   select(employee_num, tenure) %>%
   distinct() %>% 
-  left_join(employeeinfo_table %>% 
-               select(employee_num, bad_employee_flag))%>% 
+  left_join(bad_employee_table) %>% 
   ggplot(aes(as.factor(bad_employee_flag), tenure)) +
   geom_boxplot()
 

@@ -1,11 +1,19 @@
-CREATE VIEW `hrsample`.`rollup` AS  #ok to change this name and name of this sql file
+library(RMariaDB)
+library(tidyverse)
+
+HRSAMPLE <- dbConnect(RMariaDB::MariaDB(), user='newuser', password='newuser', dbname='hrsample', host='localhost')
+
+# Create rollup_view ------------------------------------------------------
+
+rollup_sql <- "CREATE VIEW rollup AS  
 WITH RECURSIVE cte AS
 (
-  SELECT desk_id, org, parent_id, 0 AS depth FROM `hrsample`.`hierarchy` WHERE parent_id IS NULL
+  SELECT desk_id, org, parent_id, 0 AS depth FROM hierarchy WHERE parent_id IS NULL
   UNION ALL
-  SELECT c.desk_id, c.org, c.parent_id, cte.depth+1 FROM `hrsample`.`hierarchy` c JOIN cte ON
-    cte.desk_id=c.parent_id
+  SELECT c.desk_id, c.org, c.parent_id, cte.depth+1 FROM hierarchy c JOIN cte ON
+  cte.desk_id=c.parent_id
 ),
+  
 
 
 cte3 AS (SELECT * FROM cte WHERE depth = 3),
@@ -111,4 +119,9 @@ cte3 AS (SELECT * FROM cte WHERE depth = 3),
   FROM cte
   WHERE cte.depth = 0
   
-  ORDER BY depth
+  ORDER BY depth"
+
+  
+dbExecute(HRSAMPLE, "DROP VIEW IF EXISTS rollup;") 
+dbExecute(HRSAMPLE, rollup_sql)
+
