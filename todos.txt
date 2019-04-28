@@ -41,6 +41,13 @@ NEXT RUN: Validate no terminations after end date of run.  Or with date 2099 etc
 
 Update recruiting piece to account for rehires
 
+area_code_list - create list of area codes below
+function create phone number( leave argument for state)
+	pick random from area_code_list
+	
+for each employee
+	
+
 	addd phone numbers, use these zip codes + random sprintf 3 digit and 4 digit
 		each one gets 1-2 phone numbers, main, alternate.  
 		main has effective date of start date. 
