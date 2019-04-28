@@ -19,7 +19,7 @@ dbExecute(HRSAMPLE, "CREATE TABLE employeeinfo (
                     first_name VARCHAR (255),
                     last_name VARCHAR (255),
                     city VARCHAR (255),
-                    state  VARCHAR (255),
+                    state  VARCHAR (4),
                     bad_employee_flag INT (1))
                     ;")
 
