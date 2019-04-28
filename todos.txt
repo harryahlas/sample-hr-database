@@ -1,20 +1,10 @@
+Final validation/runthrough of blog
+
 My latest blog post: http://harry.ahlas.com/2019/04/28/automated-report-generation/index.html
 Use #rstats to automate multiple Human Resources reports in Excel.
 image: http://harry.ahlas.com/2019/04/28/automated-report-generation/page_shot.png
 
 
-# NEXT: RUN THROUGH EXERCISE AND BE SURE TO RECODE EVERYTHING
-
-
-!!! SOMETHING IS WRONG WITH TERMINATION RATES ON EXCEL OUTPUT, LOOK INTO IT
-TERM RATES LOOK TO BE TOO HIGH
-SHOULD BE CALCULATED AS AVG HEADCOUNT OR END OF YEAR HEADCOUNT AS DENOMINATOR
-go through code in new 4 and update
-
-##!!Add hierarchyspread_view database
-## need to figure this out. don't think we need state etc.  Test to see if view meets need.  Maybe add this as another step assuming we need historical hierarchy
-	try pulling with sql and compare it to what is in R/csv
-	
 Export updated mysql database
 
 update names of view? maybe better to leave messy
@@ -23,7 +13,7 @@ install from github
 run through exercises?
 
 # sqlpet changes
-VERY EASY - State in the Employeeinfo table doesn’t need to be 255 characters long. - HA: are you suggestiong to change the VARCHAR(255)?
+COMPLETE - VERY EASY - State in the Employeeinfo table doesn’t need to be 255 characters long. - HA: are you suggestiong to change the VARCHAR(255)?
 STRAIGHT FORWARD - Add multiple phone numbers, mobile, home, different effective dates...all phones prior to xxx date have same effective date etc
 	some work and home numbers should be the same (some built-in name collisions, like having an employee’s home phone in employeeinfo and their office phone say in deskhistory have the same name -HA: great suggestion!)
 MEDIUM CHALLENGE - Some many-to-many relationships? - HA: I could add  skills and education tables which would be many to many.  I could see them like this:
@@ -31,25 +21,14 @@ Skills: three columns: employee_num, skill_name, skill_type (skill type would be
 Education: three columns: employee_num, degree level (BA, BS, MA, MS, PhD etc), school_name (this would be very difficult to make realistic but I am happy to shoot for it), other suggestions?
 MEDIUM CHALLENGE - First contact date - HA: I am in the process of adding this to the recruiting table
 
-# add rollup_view
-# Redo exercises
-# change entire hierarchy spread piece?
+COMPLETE - # add rollup_view
+COMPLETE - # Redo exercises
+COMPLETE - # change entire hierarchy spread piece?
 
-#Upload latest hrsample to github
-#add: "A hierarchical view called rollup_view is also available" to samplehr page
-
-
-Ian call 
-intuitive enough
-exploring an unknown
-credi
+COMPLETE - #Upload latest hrsample to github
+COMPLETE - #add: "A hierarchical view called rollup_view is also available" to samplehr page
 
 
-Note: if error on next run: added this which may be causing issue
-# If i is for a row that is at max end date then reduce i by 1
-if(deskhistory_table_most_recent$desk_id_end_date[i] == as.Date("2999-01-01")) {
-  i = i-1
-}
 
 #     ###NEED TO ADD CHECK HERE TO SEE IF MGR EITHER TERMINATED OR GOT A NEW JOB
     ###LOOK TO SEE IF THE MOST RECENT EMP NUM FOR THE MGR JOB HAS A MORE RECENT DESK ID
