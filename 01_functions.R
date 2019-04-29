@@ -186,7 +186,7 @@ create_starting_salary <- function (employee_num_temp) {
 # create_phone_number -----------------------------------------------------
 # Creates random phone number using randomly selected area codes
 # area_codes <- read_csv("data/area_codes.csv") should be preloaded
-# not yet used
+# Used on 11
 
 create_phone_number <- function(state = NULL) {
   area_code_temp <- sample(area_codes$area_code, 1) %>% as.character()
@@ -195,3 +195,6 @@ create_phone_number <- function(state = NULL) {
   phone_temp <- paste(area_code_temp, phone_prefix, phone_suffix, sep = "-")
   return(phone_temp)
 }
+
+
+
