@@ -33,6 +33,6 @@ next_level_ratio <- .4
 # Education information
 BA_pct <- .81
 BS_pct <- .06
-MS_pct <- .11  #If BA or BS only
-MA_pct <- .08  #If BA or BS only
+MS_pct <- .06  #If BA or BS only
+MA_pct <- .03  #If BA or BS only
 PhD_pct <- .33 #If MS or MA only

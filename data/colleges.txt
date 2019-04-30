@@ -1723,7 +1723,7 @@ Rank|School|City
 1722|St. Gregory's University|Shawnee
 1723|Patten University|Oakland
 1724|Pontifical Faculty of the Immaculate Conception|Washington
-1725|Labouré College|Milton
+1725|Laboure College|Milton
 1726|Blessing-Rieman College of Nursing|Quincy
 1727|Crossroads College|Rochester
 1728|Trinity Bible College|Ellendale
