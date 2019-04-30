@@ -1,3 +1,7 @@
+# Company information
+company_name <- "hrsample"
+company_website <- "hrsample.com"
+
 # Number of potential employees
 number_of_employees <- 45000
 company_open_date <- as.Date('1993/07/02')
@@ -25,3 +29,10 @@ high_turnover_job_multiplier <- 1.3 #not currently used
 
 # Next level promotion Ratio. If mgr job is available, chances that employee gets it.
 next_level_ratio <- .4
+
+# Education information
+BA_pct <- .81
+BS_pct <- .06
+MS_pct <- .11  #If BA or BS only
+MA_pct <- .08  #If BA or BS only
+PhD_pct <- .33 #If MS or MA only

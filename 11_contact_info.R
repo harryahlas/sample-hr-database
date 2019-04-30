@@ -28,8 +28,23 @@ dbExecute(HRSAMPLE, "CREATE TABLE contact (
 area_codes <- read_csv("data/area_codes.csv")
 
 
-phone_number_max_end_date <- as.Date("2999-01-01")
+contact_max_end_date <- as.Date("2999-01-01")
 
+
+# Create work email addresses ---------------------------------------------
+email_addresses <- deskhistory_table %>% 
+  select(employee_num) %>% 
+  distinct() %>% 
+  left_join(employeeinfo_table) %>% 
+  mutate(add_work_email = sample(c(1,0), 1, prob = c(993,7), replace = TRUE),
+         contact = ifelse(add_work_email == 1, paste0(tolower(first_name), ".", tolower(last_name), "@", company_website), NA),
+         contact_type = "email",
+         contact_sub_type = "work",
+         contact_end_date = contact_max_end_date) 
+
+# Count/validate email unique
+# If this is false then there will be duplicate email addresses
+nrow(email_addresses) == email_addresses %>% select(contact) %>% n_distinct()
 
 
 # Create work and personal phone numbers ----------------------------------
@@ -60,7 +75,7 @@ personal_phone_list1 <- deskhistory_table %>%
   distinct() %>% 
   mutate(add_personal_phone = sample(c(1,0), 1, prob = c(89,11), replace = TRUE),
          contact = ifelse(add_personal_phone == 1, create_phone_number(), NA),
-         contact_end_date = phone_number_max_end_date) %>% 
+         contact_end_date = contact_max_end_date) %>% 
   filter(!is.na(contact)) %>% 
   mutate(contact_type = "phone", contact_sub_type = "personal")
 
@@ -70,7 +85,7 @@ personal_phone_list2 <- deskhistory_table %>%
   rowwise() %>% 
   mutate(add_personal_phone = sample(c(1,0), 1, prob = c(8,92), replace = TRUE),
          contact = ifelse(add_personal_phone == 1, create_phone_number(), NA),
-         contact_end_date = phone_number_max_end_date) %>% 
+         contact_end_date = contact_max_end_date) %>% 
   filter(!is.na(contact)) %>% 
   mutate(contact_type = "phone", contact_sub_type = "personal")
 
@@ -80,7 +95,7 @@ personal_phone_list3 <- deskhistory_table %>%
             desk_id_end_date_min = min(desk_id_end_date)) %>% 
   ungroup() %>% 
   #####filter out highest end date (2099)
-  filter(desk_id_end_date != phone_number_max_end_date) %>% 
+  filter(desk_id_end_date != contact_max_end_date) %>% 
   rowwise() %>% 
   mutate(add_personal_phone = sample(c(1,0), 1, prob = c(18,82), replace = TRUE),
          contact = ifelse(add_personal_phone == 1, create_phone_number(), NA),
@@ -91,7 +106,8 @@ personal_phone_list3 <- deskhistory_table %>%
 contact_table <- bind_rows(work_phone_list,
                           personal_phone_list1,
                           personal_phone_list2,
-                          personal_phone_list3) %>% 
+                          personal_phone_list3,
+                          email_addresses) %>% 
   select(employee_num, 
          contact_type,
          contact_sub_type, 
@@ -118,6 +134,10 @@ contact_table <- contact_table %>%
                            contact_new,
                            contact)) %>% 
   select(-contact_new, -replace_work_number)
+
+
+
+
 
 
 # Validation --------------------------------------------------------------

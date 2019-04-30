@@ -1,9 +1,9 @@
-Final validation/runthrough of blog
-
 My latest blog post: http://harry.ahlas.com/2019/04/28/automated-report-generation/index.html
 Use #rstats to automate multiple Human Resources reports in Excel.
 image: http://harry.ahlas.com/2019/04/28/automated-report-generation/page_shot.png
 
+
+At end of next run, need to check employeeinfo to make sure everyone on deskhistory is there.  for some reason not working.
 
 Export updated mysql database
 
@@ -13,8 +13,8 @@ install from github
 run through exercises?
 
 # sqlpet changes
-COMPLETE - VERY EASY - State in the Employeeinfo table doesn’t need to be 255 characters long. - HA: are you suggestiong to change the VARCHAR(255)?
-STRAIGHT FORWARD - Add multiple phone numbers, mobile, home, different effective dates...all phones prior to xxx date have same effective date etc
+COMPLETE - State in the Employeeinfo table doesn’t need to be 255 characters long. - HA: are you suggestiong to change the VARCHAR(255)?
+COMPLETE - Add multiple phone numbers, mobile, home, different effective dates...all phones prior to xxx date have same effective date etc
 	some work and home numbers should be the same (some built-in name collisions, like having an employee’s home phone in employeeinfo and their office phone say in deskhistory have the same name -HA: great suggestion!)
 MEDIUM CHALLENGE - Some many-to-many relationships? - HA: I could add  skills and education tables which would be many to many.  I could see them like this:
 Skills: three columns: employee_num, skill_name, skill_type (skill type would be experience, certificate, course, etc...other suggestions?)
@@ -28,7 +28,7 @@ COMPLETE - # change entire hierarchy spread piece?
 COMPLETE - #Upload latest hrsample to github
 COMPLETE - #add: "A hierarchical view called rollup_view is also available" to samplehr page
 
-
+VERY EASY - Add work email addresses to contact table
 
 #     ###NEED TO ADD CHECK HERE TO SEE IF MGR EITHER TERMINATED OR GOT A NEW JOB
     ###LOOK TO SEE IF THE MOST RECENT EMP NUM FOR THE MGR JOB HAS A MORE RECENT DESK ID
@@ -41,35 +41,7 @@ NEXT RUN: Validate no terminations after end date of run.  Or with date 2099 etc
 
 Update recruiting piece to account for rehires
 
-area_code_list - create list of area codes below
-function create phone number( leave argument for state)
-	pick random from area_code_list
-	
-for each employee
-	
 
-	addd phone numbers, use these zip codes + random sprintf 3 digit and 4 digit
-		each one gets 1-2 phone numbers, main, alternate.  
-		main has effective date of start date. 
-		227
-		274
-		283
-		326
-		327
-		341
-		428
-		447
-		464
-		474
-		557
-		659
-		672
-		679
-		689
-		730
-		839
-		879
-		975
 	
 
 
