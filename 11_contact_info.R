@@ -23,6 +23,8 @@ dbExecute(HRSAMPLE, "CREATE TABLE contact (
 
 
 # Import data -------------------------------------------------------------
+deskhistory_table <- dbGetQuery(HRSAMPLE, "select * from deskhistory")
+employeeinfo_table <- dbGetQuery(HRSAMPLE, "select * from employeeinfo")
 
 # Import area codes to be used.  These are actual planned area codes.  7 trailing digits are composed randomly.
 area_codes <- read_csv("data/area_codes.csv")
@@ -99,7 +101,7 @@ personal_phone_list3 <- deskhistory_table %>%
   rowwise() %>% 
   mutate(add_personal_phone = sample(c(1,0), 1, prob = c(18,82), replace = TRUE),
          contact = ifelse(add_personal_phone == 1, create_phone_number(), NA),
-         contact_end_date = sample(seq.Date(desk_id_end_date_min, desk_id_end_date_max, by = "days"),1)) %>% 
+         contact_end_date = sample(seq.Date(desk_id_end_date_min, min(desk_id_end_date_max, end_date_of_hierarchy), by = "days"),1)) %>% 
   filter(!is.na(contact)) %>% 
   mutate(contact_type = "phone", contact_sub_type = "personal")
 

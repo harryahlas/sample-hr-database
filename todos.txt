@@ -1,12 +1,5 @@
-###wtf is this??
-
-> deskhistory_table %>% 
-+     anti_join(employeeinfo_table, by = "employee_num") %>% nrow()
-[1] 8439
-> deskhistory_table %>% 
-+     semi_join(employeeinfo_table, by = "employee_num") %>% nrow()
-[1] 1582
-
+Make sure phones have collisions
+	
 My latest blog post: http://harry.ahlas.com/2019/04/28/automated-report-generation/index.html
 Use #rstats to automate multiple Human Resources reports in Excel.
 image: http://harry.ahlas.com/2019/04/28/automated-report-generation/page_shot.png

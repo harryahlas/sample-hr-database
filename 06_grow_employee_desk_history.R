@@ -80,7 +80,7 @@ run_through_date <- end_date_of_hierarchy#as.Date("2018-12-31")
 #TRY THIS AT BEGINNING
 loop_date <- sort(deskhistory_table_most_recent$desk_id_end_date, TRUE)[length(deskhistory_table_most_recent$desk_id_end_date)- i]
 ##### see if it's a term then do new hire, what happens if not?
-while (sort(deskhistory_table_most_recent$desk_id_end_date, TRUE)[nrow(deskhistory_table_most_recent)] < run_through_date) {
+while (sort(deskhistory_table_most_recent$desk_id_end_date, TRUE)[nrow(deskhistory_table_most_recent)] < (run_through_date - 90)) {
 
   if(nrow(deskhistory_table) != nrow(distinct(deskhistory_table))) {
     print("error found")

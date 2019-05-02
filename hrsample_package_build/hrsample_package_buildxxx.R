@@ -32,6 +32,9 @@ performancereview_table <- dbGetQuery(HRSAMPLE, "SELECT *  FROM performancerevie
 salaryhistory_table     <- dbGetQuery(HRSAMPLE, "SELECT *  FROM salaryhistory")
 recruiting_table        <- dbGetQuery(HRSAMPLE, "SELECT *  FROM recruiting")
 rollup_view             <- dbGetQuery(HRSAMPLE, "SELECT *  FROM rollup")
+contact_table           <- dbGetQuery(HRSAMPLE, "SELECT *  FROM contact")
+education_table         <- dbGetQuery(HRSAMPLE, "SELECT *  FROM education")
+skills_table            <- dbGetQuery(HRSAMPLE, "SELECT *  FROM skills")
 
 # Put your data files into the data-raw folder
 save(employeeinfo_table,       file = "data-raw/employeeinfo_table.rda")
@@ -41,8 +44,9 @@ save(hierarchy_table,          file = "data-raw/hierarchy_table.rda")
 save(performancereview_table,  file = "data-raw/performancereview_table.rda")
 save(salaryhistory_table,      file = "data-raw/salaryhistory_table.rda")
 save(recruiting_table,         file = "data-raw/recruiting_table.rda")
-save(rollup_view,              file = "data-raw/rollup_view.rda")
-
+save(contact_table,            file = "data-raw/contact_table.rda")
+save(education_table,          file = "data-raw/education_table.rda")
+save(skills_table,             file = "data-raw/skills_table.rda")
 
 # update Process.R
 load("data-raw/employeeinfo_table.rda")
@@ -53,6 +57,9 @@ load("data-raw/performancereview_table.rda")
 load("data-raw/salaryhistory_table.rda")
 load("data-raw/recruiting_table.rda")
 load("data-raw/rollup_view.rda")
+load("data-raw/contact_table.rda")
+load("data-raw/education_table.rda")
+load("data-raw/skills_table.rda")
 
 devtools::use_data(employeeinfo_table,
                    deskhistory_table,
@@ -62,6 +69,9 @@ devtools::use_data(employeeinfo_table,
                    salaryhistory_table,
                    recruiting_table,
                    rollup_view,
+                   contact_table,
+                   education_table,
+                   skills_table,
                    overwrite = T)
 
 
@@ -81,6 +91,9 @@ sinew::makeOxygen(performancereview_table, add_fields = "source" ) %>% write(fil
 sinew::makeOxygen(salaryhistory_table, add_fields = "source" ) %>% write(file="R/data.r",append=TRUE)
 sinew::makeOxygen(recruiting_table, add_fields = "source" ) %>% write(file="R/data.r",append=TRUE)
 sinew::makeOxygen(rollup_view, add_fields = "source" ) %>% write(file="R/data.r",append=TRUE)
+sinew::makeOxygen(contact_table, add_fields = "source" ) %>% write(file="R/data.r",append=TRUE)
+sinew::makeOxygen(education_table, add_fields = "source" ) %>% write(file="R/data.r",append=TRUE)
+sinew::makeOxygen(skills_table, add_fields = "source" ) %>% write(file="R/data.r",append=TRUE)
 
 
 # Make sure Build tab is there and Build...ROxygen is checked, configured with build etc
