@@ -19,10 +19,10 @@ female_male_ratio <- .55
 bad_employee_ratio <- c(.1,.9)
 
 # Percent of normal job tenure for bad employees
-bad_employee_time_in_job_multiplier <- -.65 #not tested
+bad_employee_time_in_job_multiplier <- -.65 
 
 # Bad employee termination multiplier
-bad_employee_termination_multiplier <- 1.5 #not tested
+bad_employee_termination_multiplier <- 1.5 
 
 # High turnover job multiplier
 high_turnover_job_multiplier <- 1.3 #not currently used
