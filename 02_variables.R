@@ -6,7 +6,7 @@ company_website <- "hrsample.com"
 number_of_employees <- 45000
 company_open_date <- as.Date('1993/07/02')
 first_date_of_hierarchy <- as.Date('1999/01/01')
-end_date_of_hierarchy <- as.Date("2019/01/01")
+end_date_of_hierarchy <- as.Date("2019-01-01")
 
 # Substitute hierarchy_start_date and max_date with dates above
 #hierarchy_start_date <- as.Date("1999-01-01")
@@ -32,7 +32,7 @@ next_level_ratio <- .4
 
 # Recruiting initial contact date NA ratio
 initial_contact_date_NA_ratio <- 37
-recruiter_missing_ratio <- 5
+recruiter_missing_ratio <- 9
 
 # Education information
 BA_pct <- .81

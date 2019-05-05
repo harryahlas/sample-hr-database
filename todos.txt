@@ -27,7 +27,7 @@ COMPLETE - Add multiple phone numbers, mobile, home, different effective dates..
 COMPLETE - Some many-to-many relationships? - HA: I could add  skills and education tables which would be many to many.  I could see them like this:
 	COMPLETE -Skills: three columns: employee_num, skill_name, skill_type (skill type would be experience, certificate, course, etc...other suggestions?)
 	COMPLETE -Education: three columns: employee_num, degree level (BA, BS, MA, MS, PhD etc), school_name (this would be very difficult to make realistic but I am happy to shoot for it), other suggestions?
-MEDIUM CHALLENGE - First contact date - HA: I am in the process of adding this to the recruiting table
+COMPLETE - First contact date - HA: I am in the process of adding this to the recruiting table
 
 COMPLETE - # add rollup_view
 COMPLETE - # Redo exercises
@@ -48,16 +48,6 @@ NEXT RUN: Validate no terminations after end date of run.  Or with date 2099 etc
 
 Update recruiting piece to account for rehires
 
-
-	
-
-
-Remove These:
-	from employee_info:
-		bad_employee_flag
-		TMs who are not in deskhistory (except maybe CEO, not sure if he is there)
-	From deskhistory:
-		Remove term flag for tms w 2999 exp date
 
 BAD MANAGER may not be impacting turnover.  See bottom of validations.R.  Do we need to recode that? 
 

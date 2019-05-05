@@ -47,3 +47,12 @@ dbExecute(HRSAMPLE, employeeinfo_remove_sql)
 # Check
 df <- dbGetQuery(HRSAMPLE, "SELECT *  FROM employeeinfo")
 
+
+
+# Remove termination_flag from current employees --------------------------
+
+fix_end_date_of_hierarchy_sql <- paste0("UPDATE deskhistory SET termination_flag = 0 WHERE desk_id_end_date > '", 
+                                        end_date_of_hierarchy, "'")
+
+dbExecute(HRSAMPLE, fix_end_date_of_hierarchy_sql)
+
