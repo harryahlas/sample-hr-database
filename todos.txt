@@ -1,15 +1,22 @@
+Rerun, fixed bug (hopefully) on bad mgr turnover.  Need to retest new validation code for bad manager
+
 Make sure phones have collisions
 	
 My latest blog post: http://harry.ahlas.com/2019/04/28/automated-report-generation/index.html
 Use #rstats to automate multiple Human Resources reports in Excel.
 image: http://harry.ahlas.com/2019/04/28/automated-report-generation/page_shot.png
 
+probably need to increase term rates for bad managers, not sure how, think like wk
 
 At end of next run, need to check employeeinfo to make sure everyone on deskhistory is there.  for some reason not working.
 
 Export updated mysql database
 
+# turn validations turnover into a view? monthly turnover?
+
 add education and contact to hrsample/document
+
+prorate turnover rate on validations and create view out of it
 
 install from github
 run through exercises?

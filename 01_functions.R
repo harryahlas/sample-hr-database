@@ -34,7 +34,8 @@ create_deskhistory_row <- function(f_temp_end_date = temp_end_date,
     as.numeric()
   
   # If hired without manager then bad manager flag is assigned
-  f_temp_bad_mgr_flag <- if_else(is.na(f_temp_bad_mgr_flag), 1, 0)
+  f_temp_bad_mgr_flag <- if_else(is.na(f_temp_bad_mgr_flag), 1, f_temp_bad_mgr_flag)
+  
   # Look up job high turnover flag
   f_temp_high_turnover_job_flag <- jobs %>% 
     filter(job_name == f_temp_job_name) %>% 

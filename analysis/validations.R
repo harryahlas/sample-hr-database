@@ -89,7 +89,7 @@ performancereview_table %>%
 # Retrieve depth table - NOTE: if desk_ids are added/moved/removed then this needs to be included in loop
 library(RMariaDB)
 HRSAMPLE <- dbConnect(RMariaDB::MariaDB(), user='newuser', password='newuser', dbname='hrsample', host='localhost')
-hierarchy_with_depth.sql <- read_file("scripts/hierarchy_with_depth.sql")
+hierarchy_with_depth.sql <- read_file("C:\\Development\\github\\sample-hr-database\\scripts\\hierarchy_with_depth.sql")
 hierarchy_with_depth <- dbGetQuery(HRSAMPLE, hierarchy_with_depth.sql)
 
 # a. Some movement between levels
@@ -101,7 +101,8 @@ deskhistory_table %>%
   distinct() %>% 
   count(employee_num) %>% 
   rename(count_of_different_levels = n) %>% 
-  arrange(desc(count_of_different_levels)) 
+  arrange(desc(count_of_different_levels)) %>% 
+  count(count_of_different_levels)
 
 # b. Turnover seems ok
 deskhistory_table %>% 
@@ -207,7 +208,7 @@ hc_by_year %>%
   ggplot(aes(hcyear, end_of_year_hc)) +
   geom_col()
 
-source("02_variables.R")
+source("C:\\Development\\github\\sample-hr-database\\02_variables.R")
 
 bad_employee_table <- dbGetQuery(HRSAMPLE, "select * from bademployee")
   
@@ -270,14 +271,18 @@ deskhistory_table %>%
 # function to get term rate for a manager
 #Start manually for a couple
 rollup <- dbGetQuery(HRSAMPLE, "SELECT * FROM ROLLUP") #Vies on mysql only
+rollup <- rollup_view
+bademployee <- dbGetQuery(HRSAMPLE, "SELECT * FROM bademployee") #Vies on mysql only
 
+
+# needed below as well
 manager_desk_ids <- hierarchy_with_depth %>% 
   filter(depth < 4) %>% #manager desk ids
   select(desk_id) 
 
 bad_managers_deskhistory <- deskhistory_table %>% # their employee#s
   semi_join(manager_desk_ids) %>% 
-  left_join(employeeinfo_table %>% 
+  left_join(bademployee %>% 
               select(employee_num, bad_employee_flag)) %>% 
   filter(bad_employee_flag == 1)
 
@@ -305,13 +310,65 @@ desk_history_if_bad_manager %>% count(termination_flag) %>% spread(termination_f
 desk_history_if_not_bad_manager %>% count(termination_flag)%>% spread(termination_flag, n) %>% mutate(pct = `1` / (`1` + `0`))
 
 
-# Find them
 
-# Get count of  manager desk id s
-# For each desk id Get count of desk ids reporting to it
-##NOTE: THIS WILL HAVE TO BE UPDATED WHEN DESK IDS START CHANGING
-#if mgr is in role for full year
-# Then get count of terms for that year
+# Bad manager analysis ----------------------------------------------------
+
+
+# Turn this into a view
+# Select month
+trend_start_date <- as.Date("2000-01-01")
+trend_end_date <- as.Date("2018-12-31")
+month_sequence <- seq(trend_start_date, trend_end_date, by = 'months')
+
+for (month in month_sequence) {print(as.Date(month))}
+
+mgr_hcterms <- tibble()
+for (i in (1:length(month_sequence))) {
+#for (i in (1:2)) {
+  print(as.Date(month_sequence[i]))
+  term_month_start <- as.Date(month_sequence[i])
+  term_month_end <- ceiling_date(as.Date(month_sequence[i]), "month") - 1
+  trendmonth <- term_month_start
+  print(term_month_start)
+  
+  headcount_monthly <- deskhistory_table %>% 
+    filter(desk_id_end_date >= term_month_end, 
+           desk_id_start_date <= term_month_start) %>% 
+    left_join(hierarchy_table) %>% 
+    count(parent_id) %>% 
+    rename(manager_desk_id = parent_id, headcount = n)
+  
+  # calculate # terms for each month for each manager
+  termcount_monthly <- deskhistory_table %>% 
+    filter(desk_id_end_date >= term_month_start, 
+           desk_id_start_date <= term_month_end) %>% 
+    left_join(hierarchy_table) %>% 
+    mutate(terminated_this_month = ifelse(termination_flag == 1 &
+                                            year(desk_id_end_date) == year(term_month_end) &
+                                            month(desk_id_end_date) == month(term_month_end),
+                                          1, 0)) %>% 
+    group_by(parent_id) %>% 
+    summarize(termcount = sum(terminated_this_month)) %>% 
+    select(manager_desk_id = parent_id, termcount)
+  
+  mgr_hcterms_temp <- mgr_desk_history_snapshot %>% 
+    left_join(headcount_monthly) %>% 
+    left_join(termcount_monthly) %>% 
+    mutate(month = trendmonth)  
+  
+  mgr_hcterms <- bind_rows(mgr_hcterms, mgr_hcterms_temp)
+  
+}
+
+# Does not appear bad managers have higher turnover
+mgr_hcterms %>%
+  left_join(bad_employee_table) %>% 
+  group_by(bad_employee_flag) %>% 
+  summarize(headcount = sum(headcount, na.rm = T),
+            termcount = sum(termcount, na.rm = T)) %>% 
+  mutate(termrate = termcount/headcount)
+
+
 
 # Table repair ------------------------------------------------------------
 
