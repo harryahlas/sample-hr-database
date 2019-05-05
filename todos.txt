@@ -1,14 +1,9 @@
 Rerun, fixed bug (hopefully) on bad mgr turnover.  Need to retest new validation code for bad manager
 
-Make sure phones have collisions
-	
+
 My latest blog post: http://harry.ahlas.com/2019/04/28/automated-report-generation/index.html
 Use #rstats to automate multiple Human Resources reports in Excel.
 image: http://harry.ahlas.com/2019/04/28/automated-report-generation/page_shot.png
-
-probably need to increase term rates for bad managers, not sure how, think like wk
-
-At end of next run, need to check employeeinfo to make sure everyone on deskhistory is there.  for some reason not working.
 
 Export updated mysql database
 
@@ -16,18 +11,21 @@ Export updated mysql database
 
 add education and contact to hrsample/document
 
-prorate turnover rate on validations and create view out of it
+Create turnover view.  Use validations code for this.  But need to prorate the headcount based on start date during month.
 
-install from github
 run through exercises?
+
+Switch from postgresql to postgres or whatever
+
+Bad recruiter - in recruiting can create bad recruiters, if short tenure then likely bad recruiter
+add other and Other to recruiters, and maybe a few OTHER
 
 # sqlpet changes
 COMPLETE - State in the Employeeinfo table doesn’t need to be 255 characters long. - HA: are you suggestiong to change the VARCHAR(255)?
 COMPLETE - Add multiple phone numbers, mobile, home, different effective dates...all phones prior to xxx date have same effective date etc
 	some work and home numbers should be the same (some built-in name collisions, like having an employee’s home phone in employeeinfo and their office phone say in deskhistory have the same name -HA: great suggestion!)
-MEDIUM CHALLENGE - Some many-to-many relationships? - HA: I could add  skills and education tables which would be many to many.  I could see them like this:
-	Skills: three columns: employee_num, skill_name, skill_type (skill type would be experience, certificate, course, etc...other suggestions?)
-		
+COMPLETE - Some many-to-many relationships? - HA: I could add  skills and education tables which would be many to many.  I could see them like this:
+	COMPLETE -Skills: three columns: employee_num, skill_name, skill_type (skill type would be experience, certificate, course, etc...other suggestions?)
 	COMPLETE -Education: three columns: employee_num, degree level (BA, BS, MA, MS, PhD etc), school_name (this would be very difficult to make realistic but I am happy to shoot for it), other suggestions?
 MEDIUM CHALLENGE - First contact date - HA: I am in the process of adding this to the recruiting table
 
@@ -42,8 +40,9 @@ COMPLETE - Add work email addresses to contact table
     ###LOOK TO SEE IF THE MOST RECENT EMP NUM FOR THE MGR JOB HAS A MORE RECENT DESK ID
     ###IF NEITHER THEN CANNOT PROMOTE
 
+	
+	
 NEXT RUN: Think about changing term rates and salaries/salary increase rate
-NEXT RUN: Remove bad employee flag.  Add code to save it in an alternate file for reference.  Bad employee reference list.
 NEXT RUN: validate that level movement makes sense.  Look at TMs that moved up a level and see if their job change is good, see if the incumbent terminated and got promoted (shouldnt happen but check)
 NEXT RUN: Validate no terminations after end date of run.  Or with date 2099 etc.  If you get those then look at Create deskhistory function, 67 "  f_termination_flag <- if_else(f_temp_end_date_add < f_max_date, f_termination_flag, 0) #Similar to code above.  If job lasts until most recent date then it cannot be a termination.  So canceling termination" .  Shouldn't need this because a previous line should be taking care of it.
 

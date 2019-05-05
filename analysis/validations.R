@@ -370,6 +370,21 @@ mgr_hcterms %>%
 
 
 
+# Phone collisions --------------------------------------------------------
+
+contact_table %>% 
+  count(contact, sort = T)
+
+
+# Education ---------------------------------------------------------------
+
+education_table %>% 
+  filter(str_detect(school_name, "Santa Clara")) %>% 
+  #left_join(salaryhistory_table) %>% 
+  left_join(deskhistory_table) %>% 
+  left_join(deskjob_table)
+
+
 # Table repair ------------------------------------------------------------
 
 desk_id_end_date_repair <- deskhistory_table %>% 
