@@ -1,5 +1,13 @@
-Rerun, fixed bug (hopefully) on bad mgr turnover.  Need to retest new validation code for bad manager
+########need to find mgr desk history snapshot    
 
+
+#phone numbers are bad, one keeps getting repeated
+
+# fix employees that are in desk_id_end_date_repair in validations.R
+
+After all this, go over rehire piece. use find_external_hire function
+	maybe say no rehires in sales jobs, or areas that have to be local
+	maybe 1/40 external hires are rehires. maybe higher in technology
 
 My latest blog post: http://harry.ahlas.com/2019/04/28/automated-report-generation/index.html
 Use #rstats to automate multiple Human Resources reports in Excel.

@@ -756,7 +756,7 @@ employees_to_add_terms <- deskhistory_table %>%
   group_by(employee_num) %>% 
   summarize(last_day = max(desk_id_end_date),
             term_flag = max(termination_flag)) %>% 
-  filter(last_day < loop_date - 90,
+  filter(last_day < end_date_of_hierarchy - 90,
          term_flag == 0) %>% 
   select(-term_flag)
 
@@ -936,7 +936,7 @@ sam <- deskhistory_table %>%
   left_join(error_log, by = c("employee_num", "desk_id"))
   
   #filter(row_number() == 3000)
-  select(employee_num, last_day) %>% 
+  #select(employee_num, last_day) %>% 
 # New Hire jobs
 oldnewhires2002 <- newhires2002 %>% 
   left_join(deskjob_table) %>% 

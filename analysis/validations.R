@@ -3,7 +3,53 @@ library(hrsample)
 library(lubridate)
 library(fuzzyjoin)
 
+
+
+
+# Make sure all tables have valid employees and desks ----------------------
+
+deskhistory_table %>% 
+  anti_join(employeeinfo_table) %>% 
+  nrow()
+
+deskjob_table %>% 
+  anti_join(deskhistory_table) %>% 
+  nrow()
+
+hierarchy_table %>% 
+  anti_join(deskhistory_table) %>% 
+  nrow()
+
+performancereview_table %>% 
+  anti_join(employeeinfo_table) %>% 
+  nrow()
+
+salaryhistory_table %>% 
+  anti_join(employeeinfo_table) %>% 
+  nrow()
+
+recruiting_table %>% 
+  anti_join(employeeinfo_table) %>% 
+  nrow()
+
+rollup_view %>% 
+  anti_join(deskhistory_table, by = c("lvl04_desk_id" = "desk_id")) %>% 
+  nrow()
+
+contact_table %>% 
+  anti_join(employeeinfo_table) %>% 
+  nrow()
+
+education_table %>% 
+  anti_join(employeeinfo_table) %>% 
+  nrow()
+
+skills_table %>% 
+  anti_join(employeeinfo_table) %>% 
+  nrow()
+
 # No rehires --------------------------------------------------------------
+
 deskhistory_table %>% 
   mutate(endyear = year(desk_id_end_date),
          termyear = ifelse(termination_flag == 1, endyear, NA)) %>% 
@@ -176,7 +222,7 @@ perf_promotions %>%
   labs(title = "% of employees that promoted the year \nfollowing review score below",
        subtitle = "Maybe should be lower for 1 or 2 scores")
 
-# 8. Termination rate is low
+# 8. Termination rate 
 deskhistory_table %>% 
   filter(desk_id_start_date <= as.Date("2010-01-01"),
          desk_id_end_date >= as.Date("2009-01-01")) %>% 
@@ -231,7 +277,6 @@ terms_by_year %>%
 
 
 # Level changing ----------------------------------------------------------
-# None yet
 # deskhistory job level distinct count
 deskhistory_table %>% 
   select(employee_num, desk_id) %>% 
@@ -261,16 +306,14 @@ deskhistory_table %>%
 
 # Bad Manager analysis ----------------------------------------------------
 
-## Note: need to redo below, doing it backward here.  Should be looking at term rates.
 # So get term rates for each manager
 # For one: get mgr desk_ids and time periods
 # get list of desk_ids that report to mgr desk_ids
 # filter deskhistory for those desk_ids during those dates
-# rats
 
 # function to get term rate for a manager
 #Start manually for a couple
-rollup <- dbGetQuery(HRSAMPLE, "SELECT * FROM ROLLUP") #Vies on mysql only
+#rollup <- dbGetQuery(HRSAMPLE, "SELECT * FROM ROLLUP") #Vies on mysql only
 rollup <- rollup_view
 bademployee <- dbGetQuery(HRSAMPLE, "SELECT * FROM bademployee") #Vies on mysql only
 
@@ -312,15 +355,19 @@ desk_history_if_not_bad_manager %>% count(termination_flag)%>% spread(terminatio
 
 
 # Bad manager analysis ----------------------------------------------------
-
-
+#remove this one?
+mgr_desk_history_snapshot <- rollup_view %>% 
+  select(manager_desk_id = lvl03_desk_id) %>% 
+  distinct() %>% 
+  left_join(deskhistory_table, by = c("manager_desk_id" = "desk_id"))
+  
 # Turn this into a view
 # Select month
 trend_start_date <- as.Date("2000-01-01")
 trend_end_date <- as.Date("2018-12-31")
 month_sequence <- seq(trend_start_date, trend_end_date, by = 'months')
 
-for (month in month_sequence) {print(as.Date(month))}
+#for (month in month_sequence) {print(as.Date(month))}
 
 mgr_hcterms <- tibble()
 for (i in (1:length(month_sequence))) {
@@ -330,6 +377,16 @@ for (i in (1:length(month_sequence))) {
   term_month_end <- ceiling_date(as.Date(month_sequence[i]), "month") - 1
   trendmonth <- term_month_start
   print(term_month_start)
+  
+  #start here
+  mgr_desk_history_snapshot <- hierarchy_table %>% 
+    select(manager_desk_id = parent_id) %>% 
+    distinct() %>% 
+    left_join(deskhistory_table %>%
+                filter(desk_id_end_date >= term_month_end, 
+                       desk_id_start_date < term_month_end),
+              by = c("manager_desk_id" = "desk_id")) 
+   
   
   headcount_monthly <- deskhistory_table %>% 
     filter(desk_id_end_date >= term_month_end, 
@@ -350,8 +407,9 @@ for (i in (1:length(month_sequence))) {
     group_by(parent_id) %>% 
     summarize(termcount = sum(terminated_this_month)) %>% 
     select(manager_desk_id = parent_id, termcount)
-  
+####need to find mgr desk history snapshot    
   mgr_hcterms_temp <- mgr_desk_history_snapshot %>% 
+  #mgr_hcterms_temp <- manager_desk_ids %>% 
     left_join(headcount_monthly) %>% 
     left_join(termcount_monthly) %>% 
     mutate(month = trendmonth)  

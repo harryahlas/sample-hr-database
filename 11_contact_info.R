@@ -75,6 +75,7 @@ work_phone_list <- deskhistory_table %>%
 personal_phone_list1 <- deskhistory_table %>% 
   select(employee_num) %>% 
   distinct() %>% 
+  rowwise() %>% 
   mutate(add_personal_phone = sample(c(1,0), 1, prob = c(89,11), replace = TRUE),
          contact = ifelse(add_personal_phone == 1, create_phone_number(), NA),
          contact_end_date = contact_max_end_date) %>% 
@@ -104,6 +105,7 @@ personal_phone_list3 <- deskhistory_table %>%
          contact_end_date = sample(seq.Date(desk_id_end_date_min, min(desk_id_end_date_max, end_date_of_hierarchy), by = "days"),1)) %>% 
   filter(!is.na(contact)) %>% 
   mutate(contact_type = "phone", contact_sub_type = "personal")
+
 
 contact_table <- bind_rows(work_phone_list,
                           personal_phone_list1,
@@ -144,6 +146,7 @@ contact_table <- contact_table %>%
 
 # Validation --------------------------------------------------------------
 
+contact_table %>% count(contact, sort = T)
 contact_table %>% count(employee_num, contact_end_date) %>% arrange(desc(n))
 contact_table %>% filter(contact_end_date == as.Date("2999-01-01")) %>% count(contact_sub_type)
 
