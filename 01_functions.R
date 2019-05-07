@@ -142,10 +142,34 @@ find_external_hire <- function(f_desk_id = temp_desk_id,
     select(state = `State short`) %>% 
     distinct() %>% 
     as.character()
-  
+
   # Flag if desk_id is associated with state
   desk_id_state_check <- !is.na(desk_id_state)
   
+  # Determine if a rehire will be attempted. If yes then look for an eligible former employee, searching state if necessary.
+  rehire_former_employee <- sample(c(1,0), 1, prob = c(rehire_rate, 100 - rehire_rate))
+  if(rehire_former_employee == 1) {
+    # Filter deskhistory for terminated, inactive employees only. Add State.
+    former_employees_with_state <- f_deskhistory_table %>% 
+      group_by(employee_num) %>% 
+      mutate(max_desk_id_end_date = max(desk_id_end_date)) %>% 
+      ungroup() %>%
+      filter(termination_flag == 1,
+             max_desk_id_end_date == desk_id_end_date) %>% # filter for termed on most recent row
+      left_join(f_employeeinfo_table) %>% 
+      filter(if (desk_id_state_check == TRUE)  state == desk_id_state
+             else TRUE) 
+    
+    former_employees_exist <- nrow(former_employees_with_state) > 0
+
+    # if potential rehire exists then return it
+    if(former_employees_exist == TRUE) { 
+      print("found eligible in state hire")
+      eligible_former_employee <- former_employees_with_state %>%  sample_n(1)
+      return(eligible_former_employee$employee_num)}
+  } 
+  
+  # If no rehire...
   # If it is a salesjob then pick random person in same state
   # Else pick random person from any state. 
   eligible_employee <- f_employeeinfo_table %>% 

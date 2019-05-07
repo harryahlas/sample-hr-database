@@ -1,3 +1,4 @@
+set.seed(2973)
 # First: set up MySQL Workbench here
 # Second: set up tables
 #https://programminghistorian.org/en/lessons/getting-started-with-mysql-using-r#downloading-and-installing-mysql

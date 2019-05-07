@@ -30,6 +30,9 @@ high_turnover_job_multiplier <- 1.3 #not currently used
 # Next level promotion Ratio. If mgr job is available, chances that employee gets it.
 next_level_ratio <- .4
 
+# Rehire rate
+rehire_rate <- 2
+
 # Recruiting initial contact date NA ratio
 initial_contact_date_NA_ratio <- 37
 recruiter_missing_ratio <- 9

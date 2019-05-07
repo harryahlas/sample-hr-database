@@ -2,6 +2,10 @@
 
 # fix employees that are in desk_id_end_date_repair in validations.R
 
+
+####VALIDATE REHIRES. LOOK AT ALL OF THEM AND MAKE SURE THEY ONLY EXIST TWICE OR THREE TIMES. SHOULDN'T BE MANY OF THEM.
+
+
 After all this, go over rehire piece. use find_external_hire function
 	maybe say no rehires in sales jobs, or areas that have to be local
 	maybe 1/40 external hires are rehires. maybe higher in technology
@@ -14,12 +18,19 @@ Use #rstats to automate multiple Human Resources reports in Excel.
 image: http://harry.ahlas.com/2019/04/28/automated-report-generation/page_shot.png
 
 
+
 # turn validations turnover into a view? monthly turnover?
 
 Create turnover view.  Use validations code for this.  But need to prorate the headcount based on start date during month.
 
 run through exercises?
 
+# Latest upcoming changes
+Rehires - this is a big piece that I need to get done. There are currently no rehires and I need to fix that.
+	try updating 06 and then testing on future (temp change loop date)
+Bad leader/poisonous department - want to have high termination counts and poor reviews for select department/time periods.  This is also a bit of a challenge.  Still trying to figure out the best way to do it.
+Bad recruiters - bad recruiters will hire employees that get bad reviews and terminate early.
+Add a turnover view that shows termination rates by year or month or something similar.
 
 Bad recruiter - in recruiting can create bad recruiters, if short tenure then likely bad recruiter
 add other and Other to recruiters, and maybe a few OTHER

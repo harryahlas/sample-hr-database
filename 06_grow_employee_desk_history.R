@@ -5,7 +5,7 @@ source("01_functions.R")
 source("02_variables.R")
 
 
-set.seed(999)
+
 
 # Import jobs
 jobs <- read_csv("data/jobs.csv")
@@ -98,8 +98,6 @@ print(paste("made it 1, loop:", loopnumber))
   # Refresh deskhistory_table_most_recent, which has only the most recent desk records.
   deskhistory_table_most_recent <- refresh_deskhistory_table_most_recent()  
 
-  #FIRST CHECK WHAT NEW HIRES IS DOING HERE ANDT THINK ABOUT IT
-  #IS MOST RECENT ROW A TERMINATION > 90 DAYS?
   
   # Check most recent and see if new hire is needed
   temp_employee_num <- deskhistory_table_most_recent$employee_num[1]
