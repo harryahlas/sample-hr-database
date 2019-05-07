@@ -5,6 +5,26 @@ library(fuzzyjoin)
 
 
 
+# Check that active employees have 2999 end date --------------------------
+
+active_employees <- deskhistory_table %>% 
+  group_by(employee_num) %>% 
+  mutate(max_desk_id_end_date = max(desk_id_end_date),
+            max_termination_flag = max(termination_flag)) %>% 
+  ungroup() %>% 
+  filter(desk_id_end_date == max_desk_id_end_date,
+         max_termination_flag == 0) 
+
+# Should only have 1 row (max date)
+active_employees %>% 
+  count(desk_id_end_date)
+
+
+# Make sure new jobs are starting toward end of process -------------------
+
+# Should return multiple rows
+deskhistory_table %>% 
+  filter(between(desk_id_start_date, as.Date("2018-10-01"), as.Date("2019-01-01")))
 
 # Make sure all tables have valid employees and desks ----------------------
 
