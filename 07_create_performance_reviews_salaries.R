@@ -194,7 +194,11 @@ for (i in 1:nrow(employee_list)) {
     mutate(perf_review_score_4 = if_else(promotion_flag ==1, perf_review_score_4 * 2, perf_review_score_4),
            perf_review_score_5 = if_else(promotion_flag ==1, perf_review_score_5 * 2, perf_review_score_5)) %>% #if so then double their chances of getting a 4 or 5 
     rowwise() %>% 
-    filter(!is.na(employee_num)) %>% #Added to fix rehire issue
+    filter(!is.na(employee_num)) #%>% #Added to fix rehire issue
+    
+  if(nrow(review_year_list_append) == 0) next
+  
+  review_year_list_append <- review_year_list_append %>% 
     # Calculate performance review
     mutate(perf_review_score = max(sample(c(1,2,3,4,5,NA), 1, 
                                           prob= c(perf_review_score_1,
