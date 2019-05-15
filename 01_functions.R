@@ -155,7 +155,8 @@ find_external_hire <- function(f_desk_id = temp_desk_id,
       mutate(max_desk_id_end_date = max(desk_id_end_date)) %>% 
       ungroup() %>%
       filter(termination_flag == 1,
-             max_desk_id_end_date == desk_id_end_date) %>% # filter for termed on most recent row
+             max_desk_id_end_date == desk_id_end_date,                  # filter for termed on most recent row
+             (max_desk_id_end_date + 365) < f_desk_id_start_date) %>%   # Ensure they left company at least a year prior
       left_join(f_employeeinfo_table) %>% 
       filter(if (desk_id_state_check == TRUE)  state == desk_id_state
              else TRUE) 

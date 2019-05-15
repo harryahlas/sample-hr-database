@@ -4,7 +4,6 @@ library(lubridate)
 library(fuzzyjoin)
 
 
-
 # Check that active employees have 2999 end date --------------------------
 
 active_employees <- deskhistory_table %>% 
@@ -68,17 +67,33 @@ skills_table %>%
   anti_join(employeeinfo_table) %>% 
   nrow()
 
-# No rehires --------------------------------------------------------------
 
-deskhistory_table %>% 
+# Employees without a review ----------------------------------------------
+
+no_review <- deskhistory_table %>%
+  select(employee_num) %>% 
+  distinct() %>% 
+  anti_join(performancereview_table) %>% 
+  left_join(deskhistory_table) %>% 
+  arrange(employee_num, desk_id_end_date)
+
+# Rehires -----------------------------------------------------------------
+
+rehires_history <- deskhistory_table %>% 
   mutate(endyear = year(desk_id_end_date),
          termyear = ifelse(termination_flag == 1, endyear, NA)) %>% 
   group_by(employee_num) %>% 
-  mutate(mintermyear = min(termyear, na.rm = TRUE)) %>% 
-  ungroup() %>% 
-  group_by(employee_num) %>% 
-  filter(endyear != termyear) # 0 rows means no rehires
+  mutate(mintermyear = min(termyear, na.rm = TRUE),
+         maxyear = max(endyear)) %>% 
+  filter(maxyear > termyear) %>% 
+  select(employee_num) %>% 
+  left_join(deskhistory_table) %>% 
+  arrange(employee_num, desk_id_end_date)
 
+# Number of rehires
+rehires_history %>% 
+  select(employee_num) %>% 
+  n_distinct()
 
 # Check that TMs that left company and came back did not get a review during that period ----
 # Check this later
@@ -277,7 +292,8 @@ hc_by_year %>%
 source("C:\\Development\\github\\sample-hr-database\\02_variables.R")
 
 bad_employee_table <- dbGetQuery(HRSAMPLE, "select * from bademployee")
-  
+aaa <- dbGetQuery(HRSAMPLE, "select * from employeeinfo")
+
 #terminations by year
 terms_by_year <- deskhistory_table %>% 
   filter(termination_flag == 1) %>% 

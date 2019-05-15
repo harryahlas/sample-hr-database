@@ -186,13 +186,15 @@ for (i in 1:nrow(employee_list)) {
     ),
     match_fun = list(`==`, `>=`, `<=`)) %>% 
     select(-employee_numx) %>% 
-    left_join(hierarchy_spread_all %>% select(desk_id, lvl01_org)) %>% 
+    left_join(hierarchy_spread_all %>% select(desk_id, lvl01_org)) %>%
+    distinct() %>% 
     left_join(performance_review_ratios, by = c("lvl01_org" = "LOB")) %>% 
     arrange(review_year) %>% 
     mutate(next_year_promotion_flag = lead(promotion_flag)) %>% #did they have promotion the next year?
     mutate(perf_review_score_4 = if_else(promotion_flag ==1, perf_review_score_4 * 2, perf_review_score_4),
            perf_review_score_5 = if_else(promotion_flag ==1, perf_review_score_5 * 2, perf_review_score_5)) %>% #if so then double their chances of getting a 4 or 5 
     rowwise() %>% 
+    filter(!is.na(employee_num)) %>% #Added to fix rehire issue
     # Calculate performance review
     mutate(perf_review_score = max(sample(c(1,2,3,4,5,NA), 1, 
                                           prob= c(perf_review_score_1,

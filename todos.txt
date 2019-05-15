@@ -1,10 +1,25 @@
-########need to find mgr desk history snapshot    
+#Identify employees who are missing reviews
+#Run through reviews process for them
+
+# validate line 196 - fix reviews - 24685 was rehired and i think it fails because it is trying to get reviews for years he was not there. review_year_list_append is error
+	VALIDATE/spot check
+		TMS THAT REHIRED HAVE APPROPRIATE REVIEWS/SALARIES
+		not working >>TMS THAT TERMED HAVE APPROPRIATE REVIEWS/SALARIES
+		TMS THAT NEVER TERMED HAVE APPROPRIATE REVIEWS/SALARIES
+
+#####Seems like a lot of reviews are missing
+##Performance reviews go down each year.
+
+#Bademployee table not showing up
+08 looks like it didn't work, employee info cleanup didn't run bad employees
 
 # fix employees that are in desk_id_end_date_repair in validations.R
+# Fix active_employees in validation.  Q3 2018 end dates with no terms.
+
 
 
 ####VALIDATE REHIRES. LOOK AT ALL OF THEM AND MAKE SURE THEY ONLY EXIST TWICE OR THREE TIMES. SHOULDN'T BE MANY OF THEM.
-
+####Rehires need to have left for minimum 1 year
 
 After all this, go over rehire piece. use find_external_hire function
 	maybe say no rehires in sales jobs, or areas that have to be local
@@ -18,6 +33,7 @@ Use #rstats to automate multiple Human Resources reports in Excel.
 image: http://harry.ahlas.com/2019/04/28/automated-report-generation/page_shot.png
 
 
+# Add first contact date for rehires?  if needed
 
 # turn validations turnover into a view? monthly turnover?
 
