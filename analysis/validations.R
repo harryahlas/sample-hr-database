@@ -26,7 +26,7 @@ deskhistory_table %>%
   filter(between(desk_id_start_date, as.Date("2018-10-01"), as.Date("2019-01-01")))
 
 # Make sure all tables have valid employees and desks ----------------------
-
+# Should all be 0
 deskhistory_table %>% 
   anti_join(employeeinfo_table) %>% 
   nrow()
@@ -96,6 +96,11 @@ rehires_history %>%
   n_distinct()
 
 # Check that TMs that left company and came back did not get a review during that period ----
+rehires_reviews <- rehires_history %>% 
+  select(employee_num) %>% 
+  distinct() %>% 
+  left_join(performancereview_table)
+
 # Check this later
 
 # 3. Graph review score vs tenure
@@ -220,6 +225,9 @@ deskhistory_table %>%
          desk_id_start_date <= as.Date("2019-01-01")) %>% 
   nrow()
 
+# Number of desk_ids
+rollup_view %>% nrow()
+
 # 6. check job by states
 state_ratios <- deskhistory_table %>% 
   filter(desk_id_end_date >= as.Date("2019-01-01")) %>% 
@@ -292,7 +300,7 @@ hc_by_year %>%
 source("C:\\Development\\github\\sample-hr-database\\02_variables.R")
 
 bad_employee_table <- dbGetQuery(HRSAMPLE, "select * from bademployee")
-aaa <- dbGetQuery(HRSAMPLE, "select * from employeeinfo")
+#aaa <- dbGetQuery(HRSAMPLE, "select * from employeeinfo")
 
 #terminations by year
 terms_by_year <- deskhistory_table %>% 
@@ -325,9 +333,11 @@ deskhistory_table %>%
 
 # Time between jobs -------------------------------------------------------
 # Next: maybe add tenure by line of business
+# Note: excludes rehires
 deskhistory_table %>% 
   filter(termination_flag == 1, desk_id_end_date < as.Date("2019-01-01")) %>% 
   select(employee_num) %>%
+  anti_join(rehires_reviews) %>% 
   left_join(deskhistory_table) %>% 
   group_by(employee_num) %>% 
   mutate(end_date = max(desk_id_end_date),
@@ -385,6 +395,7 @@ desk_history_if_not_bad_manager <- deskhistory_w_parent %>%
   match_fun = list(`==`, `<=`, `>=`)) 
 
   
+# Should be higher pct for bad manager
 desk_history_if_bad_manager %>% count(termination_flag) %>% spread(termination_flag, n) %>% mutate(pct = `1` / (`1` + `0`))
 desk_history_if_not_bad_manager %>% count(termination_flag)%>% spread(termination_flag, n) %>% mutate(pct = `1` / (`1` + `0`))
 
@@ -484,11 +495,21 @@ education_table %>%
 desk_id_end_date_repair <- deskhistory_table %>% 
   group_by(desk_id) %>% 
   summarize(desk_id_end_date_max = max(desk_id_end_date)) %>% 
-  filter(desk_id_end_date_max < as.Date("2099-01-01"))
+  filter(desk_id_end_date_max < as.Date("2999-01-01"))
+
+
+#hopefully 0 rows
+employee_repair <- deskhistory_table %>% 
+  group_by(employee_num) %>% 
+  mutate(desk_id_end_date_max = max(desk_id_end_date)) %>% 
+  filter(desk_id_end_date_max < as.Date("2999-01-01"),
+         desk_id_end_date_max == desk_id_end_date,
+         termination_flag == 0)
 
 
 
-# Active employees
+
+# Active employees with bad end date - should be 0
 aa <- deskhistory_table %>% 
   filter(desk_id_end_date >= as.Date("2019-01-02")) %>% 
   count(desk_id) %>% 

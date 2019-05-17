@@ -143,3 +143,5 @@ recruiting_sql <- paste(
 )
 
 dbExecute(HRSAMPLE, recruiting_sql)
+
+save(recruiting_table, file = "data/recruiting_table.rda")

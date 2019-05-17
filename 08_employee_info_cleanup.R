@@ -56,3 +56,20 @@ fix_end_date_of_hierarchy_sql <- paste0("UPDATE deskhistory SET termination_flag
 
 dbExecute(HRSAMPLE, fix_end_date_of_hierarchy_sql)
 
+
+# Add termination_flag for lingering employees ----------------------------
+
+employee_term_repair <- deskhistory_table %>% 
+  group_by(employee_num) %>% 
+  mutate(desk_id_end_date_max = max(desk_id_end_date)) %>% 
+  filter(desk_id_end_date_max < as.Date("2999-01-01"),
+         desk_id_end_date_max == desk_id_end_date,
+         termination_flag == 0)
+
+employee_term_repair_sql <- paste("UPDATE deskhistory SET termination_flag = 1 WHERE (",
+                                  paste0(" desk_id_end_date = '",   employee_term_repair$desk_id_end_date, "' AND employee_num = ",
+                                         employee_term_repair$employee_num, collapse = ") OR ("),
+                                  ");")
+
+dbExecute(HRSAMPLE, employee_term_repair_sql)
+
