@@ -1,3 +1,7 @@
+# Update dates on both files
+# Add data loads either separate blog entry or within page
+	update "How to Install the hrsample MySQL Database" to "hrsample to a MySQL, postgres etc database"
+# use dbplyr??
 
 # validate line 196 - fix reviews - 24685 was rehired and i think it fails because it is trying to get reviews for years he was not there. review_year_list_append is error
 	VALIDATE/spot check
