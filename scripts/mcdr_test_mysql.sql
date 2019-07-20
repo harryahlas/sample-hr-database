@@ -4,8 +4,8 @@ SELECT
  DH.desk_id,
  DJ.job_name
  FROM 
-	deskhistory DH, 
-    deskjob DJ  
+	`hrsample`.`deskhistory` DH, 
+    `hrsample`.`deskjob` DJ  
  WHERE 
  DJ.desk_id = DH.desk_id
  AND DH.employee_num = 43349 
