@@ -1,7 +1,7 @@
 library(RMariaDB)
 library(tidyverse)
 library(openxlsx)
-source("02_dates.R")
+source("02_variables.R")
 
 HRSAMPLE <- dbConnect(RMariaDB::MariaDB(), user='newuser', password='newuser', dbname='hrsample', host='localhost')
 dbListTables(HRSAMPLE)
@@ -12,13 +12,13 @@ sql_random_employees <- "SELECT employee_num FROM `hrsample`.`deskhistory` ORDER
 random_employees <- dbGetQuery(HRSAMPLE, sql_random_employees)
 
 # Create date range -------------------------------------------------------
-legal_start_date <- sample(seq(as.Date(hierarchy_start_date),
-                               as.Date(max_date), 
+legal_start_date <- sample(seq(as.Date(first_date_of_hierarchy),
+                               as.Date(end_date_of_hierarchy), 
                                by = "day") ,
                            1)
 
 legal_end_date <- sample(seq(legal_start_date,
-                               as.Date(max_date), 
+                               as.Date(end_date_of_hierarchy), 
                                by = "day") ,
                            1)
 
