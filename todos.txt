@@ -1,5 +1,7 @@
 ALL TABLES SHOULD HAVE _TABLE AND _VIEW REMOVED ON DBs
 
+My latest blog post: use #rstats and #sql #sqlite to fulfill multi-conditional data requests.
+
 # Update dates on both files
 # Add data loads either separate blog entry or within page
 	update "How to Install the hrsample MySQL Database" to "hrsample to a MySQL, postgres etc database"
