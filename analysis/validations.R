@@ -138,6 +138,7 @@ performancereview_table %>%
        subtitle = "Not higher for 1 or 2 scores because it means less jobs")
 
 #   b. tenure for tms with 1-2 vs 3, 4,5
+#note: excludes rehires eg 29041
 termed_employees_start_end <- deskhistory_terms %>% 
   select(employee_num) %>% 
   left_join(deskhistory_table, by = "employee_num") %>% 
@@ -169,6 +170,13 @@ performancereview_table %>%
        Super difficult if you have long tenure. 
        For that reason, lower tenure for 4-5s.")
 
+# Potential analysis of 2017 reviews
+performancereview_table %>% 
+  filter(year == 2017) %>% 
+  left_join(deskhistory_table %>% 
+              filter(desk_id_start_date >= as.Date("2018-03-01"),
+                     desk_id_end_date <= as.Date("2018-03-01"),
+              ))
 
 # 4. Check movement, turnover, and promotions for levels 1-3
 
