@@ -171,12 +171,16 @@ performancereview_table %>%
        For that reason, lower tenure for 4-5s.")
 
 # Potential analysis of 2017 reviews
-performancereview_table %>% 
+aaa <- performancereview_table %>% 
   filter(year == 2017) %>% 
   left_join(deskhistory_table %>% 
-              filter(desk_id_start_date >= as.Date("2018-03-01"),
-                     desk_id_end_date <= as.Date("2018-03-01"),
-              ))
+              filter(desk_id_start_date <= as.Date("2018-03-01"),
+                     desk_id_end_date >= as.Date("2018-03-01")),
+             by = "employee_num" ) %>% 
+  left_join(rollup %>% select(lvl04_desk_id, lvl01_org), by = c("desk_id" = "lvl04_desk_id"))
+aaa %>% 
+  add_count(lvl01_org) %>% 
+  count(lvl01_org, perf_review_score, n)
 
 # 4. Check movement, turnover, and promotions for levels 1-3
 
