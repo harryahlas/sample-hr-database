@@ -1,6 +1,9 @@
 ALL TABLES SHOULD HAVE _TABLE AND _VIEW REMOVED ON DBs
 
-Today's blog post is a brief (2 minute read) on how to quickly upload large bunches of files to a remote server using #rstats
+update php mysql
+
+Today's blog post is a brief (2 minute read) on how to quickly upload large bunches of files to a remote server using #rstats.  Nice time save I use often.  http://harry.ahlas.com/2019/07/28/upload-directory-sftp-R/index.html
+
 
 work on this analysis: row 173 on validations.R, almost done, separate into 1-2, 3, 4-5
 # Potential analysis of 2017 reviews
