@@ -1,3 +1,7 @@
+#I like the simplicity of SQLite. Very fast for this type of database and easy to install.
+# Use hrsample
+# calendar table is good for month end reporting
+
 setwd("C:\\Users\\Anyone\\Desktop\\Toss")
 library(tidyverse)
 library(RSQLite)
@@ -12,8 +16,7 @@ hrsample::hrsampleCreateSQLite("my_db.sqlite3")
 
 # Connect to database -----------------------------------------------------
 
-con <- dbConnect(SQLite(), 
-                 'my_db.sqlite3')
+con <- dbConnect(SQLite(),'my_db.sqlite3')
 
 
 # Retrieve deskhistory (point in time table)
@@ -64,6 +67,29 @@ for (i in 1:length(month_list)) {
   dh_trend <- bind_rows(dh_trend, dh_trend_active, dh_trend_term)
   
 }
+
+# Convert date columns for SQLite
+dh_trend_backup <- dh_trend # take this out
+dh_trend$desk_id_start_date <- format(dh_trend$desk_id_start_date, "%Y-%m-%d")
+dh_trend$desk_id_end_date <- format(dh_trend$desk_id_end_date, "%Y-%m-%d")
+
+# Next we'll add the job title to our data. Each desk_id has a job assigned to it.  That assignment is on the deskjob table
+# add Job title
+dj <- dbGetQuery(con, "SELECT * FROM DESKJOB")
+dh_trend <- dh_trend %>% 
+  left_join(dj)
+
+
+## Having a hierarchy will make this table more valuable for reporting. Let's add org information. 
+## The Rollup view lists all the company's desk_ids 4 levels deep.
+## We will use the lvl04_desk_id to join the company hierarchy data.
+## NEED TO EXPLAIN BETTER
+# add rollup view
+ru <- dbGetQuery(con, "SELECT * FROM ROLLUP")
+dh_trendx <- dh_trend %>% 
+  left_join(ru)
+
+#upload new table employee_trend
 
 
  
