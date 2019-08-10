@@ -1,22 +1,35 @@
-#I like the simplicity of SQLite. Very fast for this type of database and easy to install.
+file.remove("my_db.sqlite3")
+# Basic ETL with R and SQL: Create Calendar Table from Point In Time Data 
+#Today we will dive into ETL: <li>Extract data from a point in time table, Transform it into a monthly table, and then Load it back to the database.
+
+# For this exercise we will use SQLite.  I like the simplicity of SQLite.  It is very fast for this type of database and easy to install, though there are some drawbacks, as we will touch upon.
+
 # Use hrsample
 # calendar table is good for month end reporting
 
+
 setwd("C:\\Users\\Anyone\\Desktop\\Toss")
+
+
 library(tidyverse)
 library(RSQLite)
 library(lubridate)
 #library(DBI) test without this
 
+
+# We will start by installing the hrsample (bloglink, rpackagelink) HR database.  If you went through my prior blog entry (linkw/name), you can continue to use that same database.
+# Note: for more information about <em>hrsample</em> please see <a my blog entry, link to the package on github, link to the development (samplehar)
+
 # Load hrsample -----------------------------------------------------------
 #devtools::install_github("harryahlas/hrsample")
-
 hrsample::hrsampleCreateSQLite("my_db.sqlite3")
 
+# Let's connect to the database.
 
 # Connect to database
 con <- dbConnect(SQLite(),'my_db.sqlite3')
 
+#The first table we will need is the deskhistory table.  We will import it into an object called <code>dh</code>.
 # Retrieve deskhistory (point in time table)
 dh <- dbGetQuery(con, "SELECT * FROM DESKHISTORY")
 
@@ -24,7 +37,8 @@ dh <- dbGetQuery(con, "SELECT * FROM DESKHISTORY")
 # Convert SQLite date fields from text to date
 dh <- dh %>% 
   mutate(desk_id_start_date = as.Date(desk_id_start_date),
-         desk_id_end_date = as.Date(desk_id_end_date))
+         desk_id_end_date = as.Date(desk_id_end_date)) %>% 
+  select(-promotion_flag)
 
 # Create empty deskhistory_trend table (monthly calendar table)
 dh_trend <- tibble()
@@ -45,6 +59,7 @@ month_list <- seq.Date(start_date, end_date, by = "month")
 
 
 ## Note we had to reassign the termination flag for months that they did not terminate
+## Also, we'll remove the promotion rows
 # Find employees that were active for entire month or termed during that month
 # Example For 2010-01-31: if their end date is > 2010-01-01 and start date <= 2010-01-31 and not termed then keep
 for (i in 1:length(month_list)) {
@@ -83,17 +98,44 @@ dh_trend <- dh_trend %>%
 ## The Rollup view lists all the company's desk_ids 4 levels deep along with the level of each desk.
 ## We will use the lvl04_desk_id to join the company hierarchy data.
 ## NEED TO EXPLAIN BETTER
+## We are going to remove the CEO columns since they are not adding value
 # add rollup view
 ru <- dbGetQuery(con, "SELECT * FROM ROLLUP")
+
+## We are going to remove the CEO columns since they are not adding value
+ru <- ru %>% 
+  select(-lvl00_desk_id, - lvl00_org)
+
 dh_trend <- dh_trend %>% 
   left_join(ru, by = c("desk_id" = "lvl04_desk_id"))
+
+# Let's also add the employee's name
+ei <- dbGetQuery(con, "SELECT * FROM EMPLOYEEINFO")
+dh_trend <- dh_trend %>% 
+  left_join(ei %>% select(employee_num,
+                          last_name,
+                          first_name))
+
+# Let's reorder some of the rows.
+dh_trend <- dh_trend %>% 
+  select(trend_month,
+         employee_num,
+         last_name,
+         first_name, 
+         job_name,
+         depth,
+         everything())
 
 ## Our last step is to upload the data to a new table as employee_trend
 #upload new table employee_trend
 dbWriteTable(con, "employee_trend", dh_trend, overwrite = TRUE)
 
 # See results
+et_sample <- dbGetQuery(con, "SELECT * FROM EMPLOYEE_TREND ORDER BY RANDOM() LIMIT 5")
+glimpse(et_sample)
+
 dbGetQuery(con, "SELECT TREND_MONTH, COUNT(*) FROM EMPLOYEE_TREND WHERE TERMINATION_FLAG = 1 GROUP BY TREND_MONTH")
+# Plot trend? maybe by org?
 
 # Close connection
 dbDisconnect(con) 
