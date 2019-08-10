@@ -2,14 +2,14 @@ file.remove("my_db.sqlite3")
 # Basic ETL with R and SQL: Create Calendar Table from Point In Time Data 
 #Today we will dive into ETL: <li>Extract data from a point in time table, Transform it into a monthly table, and then Load it back to the database.
 
-# For this exercise we will use SQLite.  I like the simplicity of SQLite.  It is very fast for this type of database and easy to install, though there are some drawbacks, as we will touch upon.
+# For this exercise we will use R and SQLite.  I like the simplicity of SQLite.  It is very fast for this type of database and easy to install, though there are some drawbacks, as we will touch upon.
 
 # Use hrsample
 # calendar table is good for month end reporting
 
 
 setwd("C:\\Users\\Anyone\\Desktop\\Toss")
-
+#These are the CRAN packages we will need:
 
 library(tidyverse)
 library(RSQLite)
@@ -17,7 +17,7 @@ library(lubridate)
 #library(DBI) test without this
 
 
-# We will start by installing the hrsample (bloglink, rpackagelink) HR database.  If you went through my prior blog entry (linkw/name), you can continue to use that same database.
+# Additionally, we use the data You will aWe will start by installing the hrsample (bloglink, rpackagelink) HR database.  If you went through my prior blog entry (linkw/name), you can continue to use that same database.
 # Note: for more information about <em>hrsample</em> please see <a my blog entry, link to the package on github, link to the development (samplehar)
 
 # Load hrsample -----------------------------------------------------------
@@ -32,6 +32,24 @@ con <- dbConnect(SQLite(),'my_db.sqlite3')
 #The first table we will need is the deskhistory table.  We will import it into an object called <code>dh</code>.
 # Retrieve deskhistory (point in time table)
 dh <- dbGetQuery(con, "SELECT * FROM DESKHISTORY")
+
+
+# > dh %>% sample_n(3)
+# employee_num desk_id desk_id_start_date desk_id_end_date termination_flag
+# 3034        44762     507         2003-08-13       2004-08-02                0
+# 1503        33719     989         2000-07-24       2002-06-27                0
+# 8004        40217      45         2013-04-18       2016-05-21                1
+
+# Let's look a little closer at the <code>dh</code> (deskhistory) table.
+
+sample_employee_num <- sample(dh$employee_num,1)
+dh %>% filter(employee_num == sample_employee_num)
+# employee_num desk_id desk_id_start_date desk_id_end_date termination_flag
+# 1         5970     274         2009-02-03       2012-04-25                0
+# 2         5970     274         2012-04-26       2014-05-23                0
+# 3         5970     990         2014-05-24       2016-03-12                1
+
+#you can see one row for each time employees was in a position or desk_id as it is called here. point in time
 
 ## One of the drawbacks of SQLite is that it does not store date formats.  So we will store them as text here.
 # Convert SQLite date fields from text to date
