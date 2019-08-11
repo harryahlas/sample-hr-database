@@ -94,6 +94,9 @@ dh_trend <- dh_trend %>%
          depth,
          everything())
 
+# View
+dh_trend %>% sample_n(3)
+
 # Upload new table employee_trend
 dbWriteTable(con, "employee_trend", dh_trend, overwrite = TRUE)
 
