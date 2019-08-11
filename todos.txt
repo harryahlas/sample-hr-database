@@ -1,4 +1,10 @@
+!!! ERROR: employee num 14405 has two start dates on 2008/10/15
+!!! and employee numb 19232 2016-09-07.  Looks like no others
+
 ALL TABLES SHOULD HAVE _TABLE AND _VIEW REMOVED ON DBs
+
+make sequence for each row, save as list
+iterate through each list
 
 update php mysql
 
