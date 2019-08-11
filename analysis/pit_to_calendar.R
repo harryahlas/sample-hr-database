@@ -64,10 +64,10 @@ dh <- dh %>%
 dh_trend <- tibble()
 
 
-#We need to create a list of all months that will be included in our calendar table data t
+#We need to create a list of all months that will be included in our calendar table data. <em>Lubridate</em> works best with the UTC time zone.
 # Get list of all months, by end of month
-start_date <- as.Date("1999-01-01")
-end_date <- as.Date("2018-12-30")  
+start_date <- as.Date("1999-01-01")#, tz = "UTC")
+end_date <- as.Date("2018-12-31")#, tz = "UTC")  
 month_list <- seq.Date(start_date, end_date, by = "month")
 
 # Now we are ready to do the real work - creating the new data.  To do so, we will:
@@ -84,14 +84,15 @@ month_list <- seq.Date(start_date, end_date, by = "month")
 for (i in 1:length(month_list)) {
   print(month_list[i])
   dh_trend_active <- dh %>% 
-    filter(desk_id_start_date <= ceiling_date(month_list[i]),
-           desk_id_end_date >= ceiling_date(month_list[i])) %>% 
+    filter(desk_id_start_date <= ceiling_date(month_list[i], "month") - 1,
+           desk_id_end_date >= ceiling_date(month_list[i], "month") - 1) %>% 
+    filter(termination_flag == 0 | desk_id_end_date != ceiling_date(month_list[i], "month") - 1) %>% 
     mutate(trend_month = month_list[i],
            termination_flag = 0)
   
   dh_trend_term <- dh %>% 
     filter(termination_flag == 1,
-           desk_id_end_date <= ceiling_date(month_list[i], "month"),
+           desk_id_end_date <= ceiling_date(month_list[i], "month") - 1,
            desk_id_end_date >= month_list[i]
            ) %>% 
     mutate(trend_month = month_list[i])
@@ -108,22 +109,26 @@ for (i in 1:length(month_list)) {
   
 # Then we'll create a temporary data frame <code>dh_trend_active</code> that captures active employees for the month in the current iteration. 
 # The code looks at the <code>desk_id_start_date</code> and <code>desk_id_end_date</code> columns to determine if an employee was active during that month.
-I THINK desk_id_end_date > month_list[i]) NEEDS TO BE CEILING DATE
 dh_trend_active <- dh %>% 
-  filter(desk_id_start_date <= ceiling_date(month_list[i]),
-         desk_id_end_date >= ceiling_date(month_list[i])) %>%
-
+  filter(desk_id_start_date <= ceiling_date(month_list[i], "month") - 1,
+         desk_id_end_date >= ceiling_date(month_list[i], "month") - 1) %>% 
+  
+  # Employees that termed on the last day of the month need to be excluded otherwise they will be doublecounted with terminations. So we'll filter them out with this snippet:
+  #filter(termination_flag == 0 | desk_id_end_date != ceiling_date(month_list[i])) %>% 
+  filter(termination_flag == 0 | desk_id_end_date != ceiling_date(month_list[i], "month") - 1) %>% 
+  
     # The next piece of this <em>dplyr chain</em> creates a new column for the month and recodes the <code>termination_flag</code> to 0 since these employees were all active during that month.
   mutate(trend_month = month_list[i],
          termination_flag = 0)
 
-# The loop repeats a nearly identical process for terminated employees. The only difference is there 
-  dh_trend_term <- dh %>% 
+# The loop repeats a nearly identical process for terminated employees. The key difference is that we are filtering for rows where the job was the employee's last prior to terminating (<code>termination_flag == 1</code>.
+dh_trend_term <- dh %>% 
   filter(termination_flag == 1,
-         desk_id_end_date <= ceiling_date(month_list[i], "month"),
+         desk_id_end_date <= ceiling_date(month_list[i], "month") - 1,
          desk_id_end_date >= month_list[i]
   ) %>% 
   mutate(trend_month = month_list[i])
+
 
   # the last piece of the loop adds the new rows to our <code>dh_trend</code> table
   dh_trend <- bind_rows(dh_trend, dh_trend_active, dh_trend_term)
