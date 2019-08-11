@@ -85,7 +85,7 @@ for (i in 1:length(month_list)) {
   print(month_list[i])
   dh_trend_active <- dh %>% 
     filter(desk_id_start_date <= ceiling_date(month_list[i]),
-           desk_id_end_date > month_list[i]) %>% 
+           desk_id_end_date >= ceiling_date(month_list[i])) %>% 
     mutate(trend_month = month_list[i],
            termination_flag = 0)
   
@@ -111,7 +111,11 @@ for (i in 1:length(month_list)) {
 I THINK desk_id_end_date > month_list[i]) NEEDS TO BE CEILING DATE
 dh_trend_active <- dh %>% 
   filter(desk_id_start_date <= ceiling_date(month_list[i]),
-         desk_id_end_date > month_list[i]) %>%
+         desk_id_end_date >= ceiling_date(month_list[i])) %>%
+
+    # The next piece of this <em>dplyr chain</em> creates a new column for the month and recodes the <code>termination_flag</code> to 0 since these employees were all active during that month.
+  mutate(trend_month = month_list[i],
+         termination_flag = 0)
 
 # The loop repeats a nearly identical process for terminated employees. The only difference is there 
   dh_trend_term <- dh %>% 
@@ -121,10 +125,12 @@ dh_trend_active <- dh %>%
   ) %>% 
   mutate(trend_month = month_list[i])
 
-# The next piece of this <em>dplyr chain</em> creates a new column for the month and recodes the <code>termination_flag</code> to 0 since these employees were all active during that month.
-  mutate(trend_month = month_list[i],
-         termination_flag = 0)
-
+  # the last piece of the loop adds the new rows to our <code>dh_trend</code> table
+  dh_trend <- bind_rows(dh_trend, dh_trend_active, dh_trend_term)
+  
+#CHECK, SHOULD BE NONE >1
+  dh_trend %>% count(trend_month, employee_num, name = "empmonth", sort = T)
+#  ALSO CHECK THAT NO EMPIDS SHOW UP TWICE IN SAME MONTH, EXCEPT FOR THOSE TWO ERRORS
 
 # Convert date columns for SQLite
 #dh_trend_backup <- dh_trend # take this out
