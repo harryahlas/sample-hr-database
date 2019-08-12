@@ -34,6 +34,9 @@ start_date <- as.Date("1999-01-01")
 end_date <- as.Date("2018-12-31")  
 month_list <- seq.Date(start_date, end_date, by = "month")
 
+# View month_list
+month_list[1:5]
+
 # Loop
 for (i in 1:length(month_list)) {
   dh_trend_active <- dh %>% 
