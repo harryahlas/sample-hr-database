@@ -8,6 +8,9 @@ iterate through each list
 
 update php mysql
 
+Basic ETL with #rstats and #SQLite - Create a Calendar Table from Point In Time Data http://harry.ahlas.com/2019/08/11/pit-to-calendar/index.html
+http://harry.ahlas.com/2019/08/11/pit-to-calendar/twitter.png
+
 Today's blog post is a brief (2 minute read) on how to quickly upload large bunches of files to a remote server using #rstats.  Nice time save I use often.  http://harry.ahlas.com/2019/07/28/upload-directory-sftp-R/index.html
 
 
