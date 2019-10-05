@@ -1,3 +1,11 @@
+Next post:
+	Automating to pptx or pdf
+	test using officer with apache
+	think up good stats
+		cover page, acme
+		headcount by month past 2 yearsturnover by month past 2 years
+	Get nice photo of multiple pdfs/pptx stacked
+
 !!! ERROR: employee num 14405 has two start dates on 2008/10/15
 !!! and employee numb 19232 2016-09-07.  Looks like no others
 
