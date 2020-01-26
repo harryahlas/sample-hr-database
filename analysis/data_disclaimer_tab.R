@@ -1,4 +1,4 @@
-# from harry.ahlas.com/2019/04/07/information-security-tab/index.html
+# from harry.ahlas.com/post/use-r-to-add-a-data-disclaimer-to-an-excel-report/
 
 devtools::install_github("harryahlas/hrsample")
 library(hrsample)
