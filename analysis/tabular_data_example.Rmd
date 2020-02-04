@@ -1,0 +1,49 @@
+---
+title: "Company HC Analytics"
+author: "People Analytics Team"
+date: "2/9/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(hrsample) #devtools::install_github("harryahlas/hrsample")
+library(DT)
+default_color <- rgb(155/255, 186/255, 204/255)
+```
+
+## Headcount Summary {.tabset}
+
+### Headcount
+
+```{r echo=FALSE}
+active_roster <- deskhistory_table %>% 
+  filter(desk_id_end_date == "2999-01-01") %>% 
+  left_join(rollup_view, by = c("desk_id" = "lvl04_desk_id")) %>% 
+  left_join(hierarchy_table, by =c("lvl01_desk_id" = "desk_id"))
+
+active_roster %>% 
+  count(lvl01_org) %>% 
+  filter(lvl01_org != "CEO") %>% 
+  ggplot(aes(x = fct_reorder(lvl01_org, -n), y = n)) +
+  geom_col(fill = default_color, width = .6) +
+  labs(title = "Current Headcount by Line of Business") +
+  theme_minimal() +
+  theme(panel.grid.major = element_blank(), 
+        panel.grid.minor = element_blank(),
+        axis.title.y=element_blank(),
+        axis.title.x=element_blank(),
+        axis.text.x = element_text(angle = 45, hjust = 1)
+  ) +
+  geom_text(aes(label = n), size = 3.5)
+```
+
+### Breakout
+```{r echo=FALSE}
+active_roster %>% 
+  filter(lvl01_org != "CEO") %>% 
+  count(lvl01_org, lvl02_org) %>% 
+  datatable(filter = "top", options = list(pageLength = 5))
+```
+
